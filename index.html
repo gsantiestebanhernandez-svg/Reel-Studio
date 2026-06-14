@@ -1413,17 +1413,19 @@ function copyPrompt(id,btn){navigator.clipboard.writeText(document.getElementByI
     if(data.framework_detectado){
       const fw=data.framework_detectado;
       const d=document.createElement('div');d.className='card card-muted';
-      d.innerHTML=`<p style="font-weight:600;font-size:13px;margin-bottom:8px">🔍 Framework detectado: <span style="color:var(--indigo-light)">${fw.nombre||'—'}</span></p>`
-        +(fw.estructura_beats?.length?`<div class="mt8"><span class="section-label">Estructura por beats</span><div class="mt4">${fw.estructura_beats.map((b,i)=>`<div style="font-size:12px;color:var(--text2);padding:3px 0">${i+1}. ${b}</div>`).join('')}</div></div>`:'')
-        +(fw.tecnicas_virales?.length?`<div class="mt8"><span class="section-label">Tecnicas virales</span><div class="flex gap4 mt4" style="flex-wrap:wrap">${fw.tecnicas_virales.map(tv=>`<span class="badge badge-indigo">${tv}</span>`).join('')}</div></div>`:'')
-        +(fw.por_que_funciona?`<div class="card card-muted mt8" style="padding:10px"><span class="section-label">Por que funciona</span><p class="small mt4" style="line-height:1.5">${fw.por_que_funciona}</p></div>`:'');
+      var beatsHtml=fw.estructura_beats&&fw.estructura_beats.length?'<div class="mt8"><span class="section-label">Estructura por beats</span><div class="mt4">'+fw.estructura_beats.map(function(b,i){return'<div style="font-size:12px;color:var(--text2);padding:3px 0">'+(i+1)+'. '+b+'</div>';}).join('')+'</div></div>':'';
+      var fwTvHtml=fw.tecnicas_virales&&fw.tecnicas_virales.length?'<div class="mt8"><span class="section-label">Tecnicas virales</span><div class="flex gap4 mt4" style="flex-wrap:wrap">'+fw.tecnicas_virales.map(function(tv){return'<span class="badge badge-indigo">'+tv+'</span>';}).join('')+'</div></div>':'';
+      var fwFxHtml=fw.por_que_funciona?'<div class="card card-muted mt8" style="padding:10px"><span class="section-label">Por que funciona</span><p class="small mt4" style="line-height:1.5">'+fw.por_que_funciona+'</p></div>':'';
+      d.innerHTML='<p style="font-weight:600;font-size:13px;margin-bottom:8px">Framework detectado: <span style="color:var(--indigo-light)">'+(fw.nombre||'-')+'</span></p>'+beatsHtml+fwTvHtml+fwFxHtml;
       cont.appendChild(d);
       const badge=document.getElementById('mod-framework-badge');
       if(badge&&fw.nombre){badge.style.display='block';document.getElementById('mod-fw-name').textContent=fw.nombre;document.getElementById('mod-fw-desc').textContent=fw.por_que_funciona||'';}
     }
     if(data.analisis&&!data.framework_detectado){
       const a=data.analisis;const d=document.createElement('div');d.className='card card-muted';
-      d.innerHTML=`<p style="font-weight:600;font-size:13px;margin-bottom:8px">ADN narrativo detectado</p>`+bBlock('Gancho',a.gancho)+bBlock('Dolor',a.dolor)+bBlock('Ejemplo',a.ejemplo)+bBlock('Fondo',a.fondo)+bBlock('Cima',a.cima)+bBlock('Insight',a.insight)+bBlock('CTA',a.cta)+(a.tecnicas_virales?.length?`<div class="mt8"><span class="section-label">Tecnicas virales</span><div class="mt4">${a.tecnicas_virales.map(tv=>`<span class="badge badge-indigo">${tv}</span>`).join('')}</div></div>`:'')+(a.por_que_funciona?`<div class="card card-muted mt8" style="padding:10px"><span class="section-label">Por que funciona</span><p class="small mt4" style="line-height:1.5">${a.por_que_funciona}</p></div>`:'');
+      var tvHtml=a.tecnicas_virales&&a.tecnicas_virales.length?'<div class="mt8"><span class="section-label">Tecnicas virales</span><div class="mt4">'+a.tecnicas_virales.map(function(tv){return'<span class="badge badge-indigo">'+tv+'</span>';}).join('')+'</div></div>':'';
+      var fxHtml=a.por_que_funciona?'<div class="card card-muted mt8" style="padding:10px"><span class="section-label">Por que funciona</span><p class="small mt4" style="line-height:1.5">'+a.por_que_funciona+'</p></div>':'';
+      d.innerHTML='<p style="font-weight:600;font-size:13px;margin-bottom:8px">ADN narrativo detectado</p>'+bBlock('Gancho',a.gancho)+bBlock('Dolor',a.dolor)+bBlock('Ejemplo',a.ejemplo)+bBlock('Fondo',a.fondo)+bBlock('Cima',a.cima)+bBlock('Insight',a.insight)+bBlock('CTA',a.cta)+tvHtml+fxHtml;
       cont.appendChild(d);
     }
     (data.scripts||[]).forEach(s=>cont.appendChild(buildScriptCard(s,t,author?`Modelado de: @${author}`:'Modelado')));
