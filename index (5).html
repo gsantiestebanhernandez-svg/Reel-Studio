@@ -1,0 +1,1588 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Reel Studio — Crea contenido que conecta</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+<style>
+:root{
+  --bg:#06060f;
+  --bg2:#0d0d1f;
+  --bg3:#12122a;
+  --indigo:#4f46e5;
+  --indigo-light:#6366f1;
+  --electric:#00d4ff;
+  --electric2:#7c3aed;
+  --accent:#a855f7;
+  --text:#e8e8ff;
+  --text2:#9898c0;
+  --text3:#5858a0;
+  --border:#1e1e40;
+  --border2:#2d2d60;
+  --card:#0f0f24;
+  --card2:#141432;
+  --success:#10b981;
+  --danger:#ef4444;
+  --warn:#f59e0b;
+  --radius:12px;
+  --radius-lg:18px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+h1,h2,h3,.brand{font-family:'Syne',sans-serif}
+
+/* UTILS */
+.hidden{display:none!important}
+.flex{display:flex}.gap4{gap:4px}.gap8{gap:8px}.gap12{gap:12px}.gap16{gap:16px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.mt8{margin-top:8px}.mt12{margin-top:12px}.mt16{margin-top:16px}.mt20{margin-top:20px}
+.w100{width:100%}
+.label{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.08em}
+.small{font-size:12px;color:var(--text2)}
+
+/* INPUTS */
+input,select,textarea{
+  width:100%;padding:10px 14px;border-radius:var(--radius);
+  border:1px solid var(--border2);background:var(--bg3);
+  color:var(--text);font-family:'Space Grotesk',sans-serif;font-size:14px;
+  transition:border-color .2s;outline:none
+}
+input:focus,select:focus,textarea:focus{border-color:var(--indigo-light)}
+textarea{resize:vertical;line-height:1.6}
+label{font-size:12px;color:var(--text2);display:block;margin-bottom:5px;margin-top:12px}
+
+/* BUTTONS */
+.btn{padding:9px 18px;border-radius:var(--radius);border:1px solid var(--border2);background:transparent;color:var(--text);font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:6px}
+.btn:hover{background:var(--bg3);border-color:var(--border2)}
+.btn-primary{background:var(--indigo);border-color:var(--indigo);color:#fff}
+.btn-primary:hover{background:var(--indigo-light);border-color:var(--indigo-light)}
+.btn-electric{background:linear-gradient(135deg,var(--indigo),var(--electric2));border:none;color:#fff}
+.btn-electric:hover{opacity:.9}
+.btn-danger{color:var(--danger);border-color:rgba(239,68,68,.3)}
+.btn-danger:hover{background:rgba(239,68,68,.1)}
+.btn-sm{padding:5px 11px;font-size:11px}
+.btn-xs{padding:3px 8px;font-size:11px;border-radius:8px}
+
+/* CARDS */
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px 18px;margin-top:12px}
+.card-glow{border-color:var(--border2);box-shadow:0 0 20px rgba(79,70,229,.08)}
+.card-muted{background:var(--bg2)}
+
+/* BADGES */
+.badge{display:inline-block;font-size:11px;padding:2px 8px;border-radius:20px;font-weight:500}
+.badge-indigo{background:rgba(79,70,229,.2);color:var(--indigo-light);border:1px solid rgba(79,70,229,.3)}
+.badge-electric{background:rgba(0,212,255,.1);color:var(--electric);border:1px solid rgba(0,212,255,.2)}
+.badge-purple{background:rgba(168,85,247,.15);color:var(--accent);border:1px solid rgba(168,85,247,.25)}
+.badge-gray{background:rgba(255,255,255,.05);color:var(--text2);border:1px solid var(--border)}
+.badge-green{background:rgba(16,185,129,.15);color:#34d399;border:1px solid rgba(16,185,129,.2)}
+.badge-warn{background:rgba(245,158,11,.15);color:var(--warn);border:1px solid rgba(245,158,11,.2)}
+.badge-red{background:rgba(239,68,68,.15);color:#f87171;border:1px solid rgba(239,68,68,.2)}
+
+/* SCORE */
+.score-badge{font-size:11px;padding:2px 8px;border-radius:20px;background:rgba(16,185,129,.15);color:#34d399;border:1px solid rgba(16,185,129,.2);font-weight:500}
+
+/* SECTION LABEL */
+.section-label{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.1em}
+
+/* BLOCK */
+.block{padding-left:12px;border-left:2px solid var(--border2);margin-bottom:10px}
+.block p{font-size:14px;margin-top:3px;line-height:1.5;color:var(--text)}
+
+/* PROMPT BOX */
+.prompt-box{background:rgba(79,70,229,.08);border:1px solid rgba(79,70,229,.2);border-radius:var(--radius-lg);padding:16px;margin-top:14px}
+.prompt-box pre{font-size:12px;line-height:1.6;white-space:pre-wrap;word-break:break-word;color:var(--text2);margin-bottom:10px;max-height:180px;overflow-y:auto;font-family:'Space Grotesk',sans-serif}
+.import-box{background:rgba(16,185,129,.05);border:1px solid rgba(16,185,129,.2);border-radius:var(--radius-lg);padding:14px;margin-top:12px}
+.copy-btn{background:linear-gradient(135deg,var(--indigo),var(--electric2));border:none;border-radius:var(--radius);padding:8px 18px;color:#fff;font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:600;cursor:pointer;letter-spacing:.02em}
+
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(4px);z-index:200;align-items:center;justify-content:center;padding:16px}
+.modal-overlay.open{display:flex}
+.modal{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius-lg);padding:20px;width:100%;max-width:460px;max-height:88vh;overflow-y:auto}
+
+/* NOTIFY */
+.notify{position:fixed;top:20px;right:20px;z-index:999;background:var(--card2);border:1px solid var(--border2);border-radius:var(--radius);padding:12px 18px;font-size:13px;color:var(--text);box-shadow:0 8px 32px rgba(0,0,0,.4);display:none;max-width:320px}
+
+/* ===================== LANDING ===================== */
+#landing{min-height:100vh;display:flex;flex-direction:column}
+
+.land-nav{display:flex;justify-content:space-between;align-items:center;padding:20px 40px;border-bottom:1px solid var(--border)}
+.land-logo{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;background:linear-gradient(135deg,#fff,var(--electric));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.land-logo span{color:var(--electric)}
+
+.land-hero{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:60px 24px;position:relative;overflow:hidden}
+.land-hero::before{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:600px;height:600px;background:radial-gradient(circle,rgba(79,70,229,.15) 0%,transparent 70%);pointer-events:none}
+.land-tag{display:inline-flex;align-items:center;gap:6px;background:rgba(79,70,229,.15);border:1px solid rgba(79,70,229,.3);border-radius:20px;padding:6px 14px;font-size:12px;font-weight:600;color:var(--indigo-light);letter-spacing:.05em;margin-bottom:28px}
+.land-tag::before{content:'◆';font-size:8px}
+.land-h1{font-size:clamp(36px,6vw,72px);font-weight:800;line-height:1.05;margin-bottom:20px;letter-spacing:-.02em}
+.land-h1 .grad{background:linear-gradient(135deg,var(--indigo-light),var(--electric),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.land-sub{font-size:18px;color:var(--text2);max-width:560px;line-height:1.6;margin-bottom:36px}
+.land-cta-row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.land-cta{padding:14px 32px;border-radius:var(--radius);font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:600;cursor:pointer;transition:all .25s;border:none}
+.land-cta-main{background:linear-gradient(135deg,var(--indigo),var(--electric2));color:#fff;box-shadow:0 0 30px rgba(79,70,229,.35)}
+.land-cta-main:hover{transform:translateY(-2px);box-shadow:0 0 40px rgba(79,70,229,.5)}
+.land-cta-sec{background:transparent;border:1px solid var(--border2)!important;color:var(--text2)}
+.land-cta-sec:hover{border-color:var(--indigo-light)!important;color:var(--text)}
+
+.land-features{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;padding:48px 40px;max-width:960px;margin:0 auto;width:100%}
+.feat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;transition:border-color .2s}
+.feat-card:hover{border-color:var(--border2)}
+.feat-icon{font-size:28px;margin-bottom:10px}
+.feat-title{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;margin-bottom:6px;color:var(--text)}
+.feat-desc{font-size:13px;color:var(--text2);line-height:1.5}
+
+.land-footer{text-align:center;padding:24px;border-top:1px solid var(--border);font-size:12px;color:var(--text3)}
+
+/* ===================== LOGIN ===================== */
+#login{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;position:relative}
+#login::before{content:'';position:absolute;top:30%;left:50%;transform:translate(-50%,-50%);width:500px;height:500px;background:radial-gradient(circle,rgba(79,70,229,.12) 0%,transparent 70%);pointer-events:none}
+.login-box{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius-lg);padding:36px 32px;width:100%;max-width:400px;position:relative}
+.login-logo{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;background:linear-gradient(135deg,#fff,var(--electric));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:4px}
+.login-sub{font-size:13px;color:var(--text2);margin-bottom:28px}
+.login-err{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);border-radius:var(--radius);padding:10px 14px;font-size:13px;color:#f87171;margin-top:12px;display:none}
+
+/* ===================== APP ===================== */
+#app{min-height:100vh;display:flex;flex-direction:column}
+
+.app-nav{display:flex;justify-content:space-between;align-items:center;padding:14px 24px;background:var(--bg2);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50}
+.app-logo{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;background:linear-gradient(135deg,#fff,var(--electric));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.app-user{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--text2)}
+.app-avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--indigo),var(--electric2));display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff}
+
+.app-body{display:flex;flex:1}
+.app-sidebar{width:200px;min-height:calc(100vh - 57px);background:var(--bg2);border-right:1px solid var(--border);padding:16px 10px;flex-shrink:0;position:sticky;top:57px;height:calc(100vh - 57px);overflow-y:auto}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:var(--radius);cursor:pointer;font-size:13px;color:var(--text2);transition:all .15s;margin-bottom:2px;border:1px solid transparent}
+.nav-item:hover{background:var(--bg3);color:var(--text)}
+.nav-item.active{background:rgba(79,70,229,.15);color:var(--indigo-light);border-color:rgba(79,70,229,.2)}
+.nav-icon{font-size:16px;width:20px;text-align:center}
+.nav-section{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;padding:14px 12px 6px;margin-top:4px}
+
+.app-content{flex:1;padding:24px;max-width:760px;min-width:0}
+.page-title{font-family:'Syne',sans-serif;font-size:20px;font-weight:700;margin-bottom:4px}
+.page-sub{font-size:13px;color:var(--text2);margin-bottom:20px}
+.panel{display:none}.panel.active{display:block}
+
+/* VOZ */
+.voz-block{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;margin-top:12px}
+.voz-block h4{font-size:14px;font-weight:600;margin-bottom:3px}
+.voz-block p.desc{font-size:12px;color:var(--text2);margin-bottom:8px;line-height:1.5}
+.voz-saved{background:rgba(79,70,229,.08);border:1px solid rgba(79,70,229,.15);border-radius:var(--radius);padding:10px;margin-top:8px;font-size:13px;color:var(--text2);line-height:1.5;display:none}
+
+/* KNOWLEDGE */
+.book-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:14px;margin-top:8px}
+.concept-tag{display:inline-block;background:rgba(79,70,229,.15);color:var(--indigo-light);border:1px solid rgba(79,70,229,.2);border-radius:20px;padding:3px 10px;font-size:12px;margin:3px 3px 0 0;cursor:pointer}
+
+/* HOOK CARD */
+.hook-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:14px;margin-top:8px}
+.hook-text{font-size:15px;font-weight:500;line-height:1.4;margin-bottom:8px;color:var(--text)}
+
+/* CALENDAR */
+.cal-header-days{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-top:10px}
+.cal-body-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-top:3px}
+.cal-day-name{text-align:center;font-size:10px;font-weight:700;color:var(--text3);padding:6px 2px;text-transform:uppercase;letter-spacing:.05em}
+.cal-day{border-radius:8px;padding:6px 4px;min-height:56px;background:var(--card);border:1px solid var(--border);font-size:11px;cursor:pointer;transition:border-color .15s}
+.cal-day:hover{border-color:var(--border2)}
+.cal-day.today{border-color:var(--indigo);background:rgba(79,70,229,.08)}
+.cal-day.has-content{background:rgba(16,185,129,.05);border-color:rgba(16,185,129,.2)}
+.cal-day-num{font-weight:600;color:var(--text2);margin-bottom:2px;font-size:12px}
+.cal-entry{background:var(--indigo);color:#fff;border-radius:4px;padding:2px 4px;font-size:9px;margin-top:2px;line-height:1.2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cal-entry.publicado{background:#10b981}
+.cal-entry.borrador{background:var(--text3)}
+.cal-nav{display:flex;justify-content:space-between;align-items:center}
+.cal-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:700}
+
+/* FLASH */
+.flash-card{border-left:3px solid var(--indigo);border-radius:0 var(--radius-lg) var(--radius-lg) 0;padding:12px;margin-top:8px;background:var(--card);border-top:1px solid var(--border);border-right:1px solid var(--border);border-bottom:1px solid var(--border)}
+.flash-card.urgente{border-left-color:var(--danger)}
+.flash-card.inspiracion{border-left-color:var(--accent)}
+
+/* COMBINE SLOT */
+.combine-slot{background:var(--card);border:1px dashed var(--border2);border-radius:var(--radius-lg);padding:14px;margin-top:8px}
+.combine-slot.filled{border-style:solid;border-color:var(--indigo)}
+.part-btn{padding:4px 10px;border-radius:20px;border:1px solid var(--border2);background:transparent;cursor:pointer;font-size:11px;color:var(--text2);font-family:'Space Grotesk',sans-serif;transition:all .15s}
+.part-btn.active{background:var(--indigo);color:#fff;border-color:var(--indigo)}
+
+/* FILTERS */
+.filter-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.filter-btn{padding:5px 13px;border-radius:20px;border:1px solid var(--border);background:transparent;cursor:pointer;font-size:12px;color:var(--text2);font-family:'Space Grotesk',sans-serif;transition:all .15s}
+.filter-btn.active{border-color:var(--indigo-light);color:var(--indigo-light);background:rgba(79,70,229,.1)}
+
+/* DIAG */
+.diag-zone{border-radius:var(--radius);padding:14px;margin-top:10px}
+.diag-green{background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.2)}
+.diag-yellow{background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2)}
+.diag-red{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2)}
+.meter-bar{height:6px;border-radius:3px;background:var(--border);overflow:hidden;margin-top:6px}
+.meter-fill{height:100%;border-radius:3px}
+.meter-label{display:flex;justify-content:space-between;font-size:11px;color:var(--text2);margin-bottom:3px}
+
+/* METRIC CARDS */
+.metric-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:1.2rem}
+.metric-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px}
+.metric-card .val{font-size:22px;font-weight:700;margin-top:4px;font-family:'Syne',sans-serif}
+.metric-card .lbl{font-size:11px;color:var(--text2)}
+
+/* STYLE FILTERS */
+.sf-row{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:12px}
+.sf{padding:4px 11px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--text2);cursor:pointer;font-size:11px;font-family:'Space Grotesk',sans-serif;transition:all .15s}
+.sf.active{border-color:var(--indigo-light);color:var(--indigo-light);background:rgba(79,70,229,.1)}
+
+/* LOADING */
+.loading{display:flex;align-items:center;justify-content:center;gap:8px;padding:40px;color:var(--text2);font-size:14px}
+.spinner{width:20px;height:20px;border:2px solid var(--border2);border-top-color:var(--indigo);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* GLOW DIVIDER */
+.glow-divider{height:1px;background:linear-gradient(90deg,transparent,var(--indigo),transparent);margin:20px 0;opacity:.4}
+
+/* TOP ROW */
+.top-row{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+
+/* VOZ INDICATOR */
+.voz-indicator{display:none;background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.2);border-radius:var(--radius);padding:8px 12px;margin-bottom:14px;font-size:12px;color:#34d399;align-items:center;gap:6px}
+
+@media(max-width:640px){
+  .app-sidebar{display:none}
+  .app-content{padding:12px 12px 80px}
+  .land-features{padding:24px 16px}
+  .land-nav{padding:16px 20px}
+  .grid2,.grid3{grid-template-columns:1fr}
+  .app-nav{padding:10px 16px}
+  pre{font-size:11px;white-space:pre-wrap;word-break:break-word}
+  .prompt-box pre{max-height:200px;overflow-y:auto}
+  .page-title{font-size:20px}
+  .modal-box{margin:12px;width:calc(100% - 24px)}
+}
+
+/* NAV MÓVIL INFERIOR */
+.mobile-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--bg2);border-top:1px solid var(--border);z-index:100;padding:6px 0 env(safe-area-inset-bottom,6px)}
+.mobile-nav-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:0}
+.mobile-nav-item{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px 2px;cursor:pointer;border:none;background:none;color:var(--text3);font-size:9px;font-family:'Space Grotesk',sans-serif;gap:2px;transition:color .15s}
+.mobile-nav-item .mn-icon{font-size:18px;line-height:1}
+.mobile-nav-item.active{color:var(--indigo-light)}
+.mobile-nav-more{position:fixed;bottom:60px;right:12px;background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius-lg);padding:8px;z-index:200;display:none;flex-direction:column;gap:2px;box-shadow:0 8px 32px rgba(0,0,0,.4);min-width:160px}
+.mobile-nav-more.open{display:flex}
+.mobile-nav-more-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--radius);cursor:pointer;font-size:13px;color:var(--text2);transition:background .15s}
+.mobile-nav-more-item:hover,.mobile-nav-more-item.active{background:rgba(79,70,229,.15);color:var(--indigo-light)}
+@media(max-width:640px){.mobile-nav{display:block}}
+</style>
+</head>
+<body>
+
+<!-- NOTIFY -->
+<div class="notify" id="notify"></div>
+
+<!-- LANDING -->
+<div id="landing">
+  <nav class="land-nav">
+    <div class="land-logo">Reel<span>Studio</span></div>
+    <button class="land-cta land-cta-sec btn" onclick="showLogin()" style="margin-top:0">Iniciar sesion</button>
+  </nav>
+  <main class="land-hero">
+    <div class="land-tag">Para creadores de contenido consciente</div>
+    <h1 class="land-h1">Crea reels que<br><span class="grad">conectan de verdad</span></h1>
+    <p class="land-sub">La plataforma que aprende tu voz, tu historia y tu conocimiento para generar scripts que suenan a vos — no a una IA generica.</p>
+    <div class="land-cta-row">
+      <button class="land-cta land-cta-main" onclick="showLogin()">Acceder a la plataforma</button>
+    </div>
+  </main>
+  <section class="land-features">
+    <div class="feat-card"><div class="feat-icon">🎯</div><div class="feat-title">Tu voz, tu historia</div><div class="feat-desc">La IA aprende como hables, tus frases y tu marco conceptual para generar scripts autenticos.</div></div>
+    <div class="feat-card"><div class="feat-icon">📚</div><div class="feat-title">Base de conocimiento</div><div class="feat-desc">Carga tus libros e interpretaciones. Los insights tienen profundidad real, no generalidades.</div></div>
+    <div class="feat-card"><div class="feat-icon">🔬</div><div class="feat-title">Diagnostico por zonas</div><div class="feat-desc">Detecta si el reel falla en el gancho, el cuerpo o el CTA con datos reales de retencion.</div></div>
+    <div class="feat-card"><div class="feat-icon">⚡</div><div class="feat-title">Ideas Flash</div><div class="feat-desc">Captura ideas en el momento antes de que se pierdan. Conviertelas en scripts con un clic.</div></div>
+    <div class="feat-card"><div class="feat-icon">🧬</div><div class="feat-title">Combinar scripts</div><div class="feat-desc">Fusiona las mejores partes de tus reels exitosos para crear el script definitivo.</div></div>
+    <div class="feat-card"><div class="feat-icon">📅</div><div class="feat-title">Calendario editorial</div><div class="feat-desc">Planifica tu contenido semana a semana y mantenes la consistencia que genera crecimiento.</div></div>
+  </section>
+  <footer class="land-footer">© 2025 Reel Studio · Hecho para creadores de contenido consciente</footer>
+</div>
+
+<!-- LOGIN -->
+<div id="login" class="hidden">
+  <div class="login-box">
+    <div class="login-logo">ReelStudio</div>
+    <p class="login-sub">Tu plataforma de creacion de contenido</p>
+    <label style="margin-top:0">Usuario</label>
+    <input id="login-user" type="text" placeholder="usuario" autocomplete="username"/>
+    <label>Contrasena</label>
+    <input id="login-pass" type="password" placeholder="••••••••" autocomplete="current-password"
+      onkeydown="if(event.key==='Enter')doLogin()"/>
+    <div class="login-err" id="login-err">Usuario o contrasena incorrectos</div>
+    <button class="btn btn-electric w100 mt16" onclick="doLogin()">Entrar</button>
+    <p class="small mt12" style="text-align:center"><span style="cursor:pointer;color:var(--text2)" onclick="showLanding()">← Volver al inicio</span></p>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app" class="hidden">
+  <nav class="app-nav">
+    <div class="app-logo">ReelStudio</div>
+    <div class="app-user">
+      <span id="nav-username"></span>
+      <div class="app-avatar" id="nav-avatar"></div>
+      <button class="btn btn-sm" onclick="doLogout()">Salir</button>
+    </div>
+  </nav>
+  <div class="app-body">
+    <aside class="app-sidebar">
+      <div class="nav-section">Identidad</div>
+      <div class="nav-item" onclick="switchTab('voz')"><span class="nav-icon">🎙</span>Mi Voz</div>
+      <div class="nav-item" onclick="switchTab('conocimiento')"><span class="nav-icon">📚</span>Conocimiento</div>
+      <div class="nav-section">Crear</div>
+      <div class="nav-item" onclick="switchTab('generar')"><span class="nav-icon">⚡</span>Generar</div>
+      <div class="nav-item" onclick="switchTab('modelar')"><span class="nav-icon">🔍</span>Modelar</div>
+      <div class="nav-item" onclick="switchTab('combinar')"><span class="nav-icon">🧬</span>Combinar</div>
+      <div class="nav-section">Optimizar</div>
+      <div class="nav-item" onclick="switchTab('diagnostico')"><span class="nav-icon">🔬</span>Diagnostico</div>
+      <div class="nav-item" onclick="switchTab('ganchos')"><span class="nav-icon">🪝</span>Ganchos</div>
+      <div class="nav-section">Organizar</div>
+      <div class="nav-item" onclick="switchTab('calendario')"><span class="nav-icon">📅</span>Calendario</div>
+      <div class="nav-item" onclick="switchTab('flash')"><span class="nav-icon">💡</span>Ideas Flash</div>
+      <div class="nav-item" onclick="switchTab('biblioteca')"><span class="nav-icon">🗂</span>Biblioteca</div>
+      <div class="nav-item" onclick="switchTab('analytics')"><span class="nav-icon">📊</span>Analytics</div>
+    </aside>
+    <main class="app-content">
+
+      <!-- VOZ -->
+      <div id="tab-voz" class="panel active">
+        <div class="page-title">Mi Voz</div>
+        <p class="page-sub">Educa la plataforma con quien sos. Se inyecta en cada script que generes.</p>
+        <div id="voz-empty-warn" style="display:none;background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2);border-radius:var(--radius);padding:10px 14px;font-size:12px;color:var(--warn);margin-bottom:4px">Completa esta seccion primero. Es lo que diferencia tus scripts de cualquier IA generica.</div>
+
+        <div class="voz-block"><h4>Historia personal</h4><p class="desc">Los momentos que te formaron. Tu quiebre con la Bioneuroemocion. Lo que viviste que te llevo a este camino.</p><textarea id="voz-historia" rows="4" placeholder="Crecí en una familia donde el dolor emocional no se nombraba. A los 28 años tuve una crisis..."></textarea><div class="voz-saved" id="vs-historia"></div></div>
+        <div class="voz-block"><h4>Como hablas — tu tono natural</h4><p class="desc">Describe como te expresas. Que palabras usas siempre. Que palabras evitas.</p><textarea id="voz-tono" rows="3" placeholder="Hablo directo, sin rodeos. Uso mucho la metafora. Evito 'simplemente' porque el proceso no es simple..."></textarea><div class="voz-saved" id="vs-tono"></div></div>
+        <div class="voz-block"><h4>Frases y expresiones propias</h4><p class="desc">Las frases que dices siempre. Las metaforas que te salen natural. Una por linea.</p><textarea id="voz-frases" rows="4" placeholder="- El cuerpo no miente, la mente interpreta&#10;- Todo patron tiene un para que inconsciente&#10;- El arbol sangra por donde duele la raiz"></textarea><div class="voz-saved" id="vs-frases"></div></div>
+        <div class="voz-block"><h4>Arquetipos y creencias centrales</h4><p class="desc">Tu marco conceptual personal. Los principios que guian tu trabajo como los entendiste vos.</p><textarea id="voz-arquetipos" rows="4" placeholder="Creo que el conflicto biologico no es el enemigo, es el mensajero..."></textarea><div class="voz-saved" id="vs-arquetipos"></div></div>
+        <div class="voz-block"><h4>Anecdotas que puedes usar en reels</h4><p class="desc">Momentos reales de tu vida o sesiones que ilustran un concepto. La IA los usa como ejemplos.</p><textarea id="voz-anecdotas" rows="4" placeholder="- Una vez atendí a alguien con 10 años de dolor de espalda. Su abuelo cargaba costales a los 12..."></textarea><div class="voz-saved" id="vs-anecdotas"></div></div>
+        <div class="voz-block"><h4>Tu audiencia ideal</h4><p class="desc">A quien le hablas. Que siente, que busca, donde esta en su proceso.</p><textarea id="voz-audiencia" rows="3" placeholder="Personas de 30 a 50 anos que sienten que repiten los mismos patrones sin entender por que..."></textarea><div class="voz-saved" id="vs-audiencia"></div></div>
+
+        <button class="btn btn-electric w100 mt16" onclick="saveVoz()">Guardar toda mi voz</button>
+        <p class="small mt8" id="voz-status" style="color:#34d399;display:none">✓ Voz guardada. Todos tus scripts ahora suenan como vos.</p>
+      </div>
+
+      <!-- CONOCIMIENTO -->
+      <div id="tab-conocimiento" class="panel">
+        <div class="page-title">Base de Conocimiento</div>
+        <p class="page-sub">Libros, conceptos e interpretaciones que forman tu marco intelectual.</p>
+        <div class="flex gap8">
+          <button class="btn btn-primary btn-sm" onclick="openModal('add-book-modal')">+ Libro</button>
+          <button class="btn btn-sm" onclick="openModal('add-concept-modal')">+ Concepto suelto</button>
+        </div>
+        <div id="knowledge-list" class="mt12"></div>
+        <div class="glow-divider"></div>
+        <p style="font-size:13px;font-weight:600;margin-bottom:8px">Conceptos rapidos</p>
+        <div id="concepts-list"></div>
+      </div>
+
+      <!-- GENERAR -->
+      <div id="tab-generar" class="panel">
+        <div class="page-title">Generar Scripts</div>
+        <p class="page-sub">Scripts personalizados con tu voz y conocimiento activados.</p>
+        <div class="voz-indicator" id="voz-indicator">✓ Tu voz personal esta activada</div>
+
+        <!-- CAPA 1+2: Selector de categoría -->
+        <label>Categoría del tema</label>
+        <div class="flex gap8" style="flex-wrap:wrap;margin-bottom:8px" id="gen-cat-pills">
+          <button class="sf active" onclick="setGenCat('nucleo')">🧠 Tu núcleo BNE</button>
+          <button class="sf" onclick="setGenCat('aplicaciones')">🔗 Aplicaciones</button>
+          <button class="sf" onclick="setGenCat('libre')">✏️ Tema libre</button>
+        </div>
+
+        <!-- CAPA 1: Temas núcleo BNE (lenguaje del espectador) -->
+        <div id="gen-cat-nucleo">
+          <label>Tema</label>
+          <select id="gen-topic-nucleo">
+            <optgroup label="— Dolor emocional —">
+              <option value="Por qué repites los mismos patrones">Por qué repites los mismos patrones</option>
+              <option value="Ansiedad y miedo sin razón aparente">Ansiedad y miedo sin razón aparente</option>
+              <option value="Autoestima y autosabotaje">Autoestima y autosabotaje</option>
+              <option value="El cuerpo habla: síntomas con mensaje">El cuerpo habla: síntomas con mensaje</option>
+            </optgroup>
+            <optgroup label="— Herencia y familia —">
+              <option value="Lo que heredaste sin saberlo">Lo que heredaste sin saberlo</option>
+              <option value="Lealtades familiares inconscientes">Lealtades familiares inconscientes</option>
+              <option value="Trauma transgeneracional y epigenética">Trauma transgeneracional y epigenética</option>
+              <option value="Heridas de infancia en adultos">Heridas de infancia en adultos</option>
+            </optgroup>
+            <optgroup label="— Relaciones —">
+              <option value="Relaciones de pareja y vínculos inconscientes">Relaciones de pareja y vínculos inconscientes</option>
+              <option value="Vínculos tóxicos y dependencia emocional">Vínculos tóxicos y dependencia emocional</option>
+            </optgroup>
+            <optgroup label="— Identidad y consciencia —">
+              <option value="Lo que te mueve sin que lo sepas">Lo que te mueve sin que lo sepas (el inconsciente)</option>
+              <option value="Tu sombra: lo que rechazas de ti">Tu sombra: lo que rechazas de ti</option>
+              <option value="Creencias limitantes que frenan tu vida">Creencias limitantes que frenan tu vida</option>
+              <option value="Propósito y sensación de vacío">Propósito y sensación de vacío</option>
+            </optgroup>
+          </select>
+        </div>
+
+        <!-- CAPA 2: Aplicaciones del marco BNE a otros contextos -->
+        <div id="gen-cat-aplicaciones" style="display:none">
+          <label>Contexto de aplicación</label>
+          <select id="gen-topic-aplicaciones">
+            <optgroup label="— Dinero y negocios —">
+              <option value="Creencias inconscientes en la venta">Creencias inconscientes en la venta</option>
+              <option value="El miedo inconsciente a cobrar lo que vales">El miedo inconsciente a cobrar lo que vales</option>
+              <option value="Programas heredados sobre el dinero">Programas heredados sobre el dinero</option>
+              <option value="El autosabotaje en los negocios">El autosabotaje en los negocios</option>
+              <option value="Liderazgo y sombra: lo que el líder no ve de sí mismo">Liderazgo y sombra</option>
+            </optgroup>
+            <optgroup label="— Crianza y familia —">
+              <option value="Crianza consciente: no repetir lo que te hicieron">Crianza consciente: no repetir lo que te hicieron</option>
+              <option value="Lo que le transmites a tus hijos sin darte cuenta">Lo que le transmites a tus hijos sin darte cuenta</option>
+            </optgroup>
+            <optgroup label="— Salud y cuerpo —">
+              <option value="Emociones detrás de enfermedades recurrentes">Emociones detrás de enfermedades recurrentes</option>
+              <option value="El estrés crónico y el inconsciente">El estrés crónico y el inconsciente</option>
+            </optgroup>
+            <optgroup label="— Espiritualidad práctica —">
+              <option value="Despertar de consciencia sin perder los pies en la tierra">Despertar de consciencia sin perder los pies en la tierra</option>
+              <option value="La proyección: ver en otros lo que no aceptas en ti">La proyección: ver en otros lo que no aceptas en ti</option>
+            </optgroup>
+          </select>
+        </div>
+
+        <!-- CAPA 3: Tema completamente libre -->
+        <div id="gen-cat-libre" style="display:none">
+          <label>Escribe tu tema</label>
+          <input id="gen-topic-libre" placeholder="Ej: el inconsciente en las negociaciones, miedo al éxito, por qué atraes clientes difíciles..."/>
+          <p class="small mt4" style="color:var(--indigo-light)">La IA trabajará cualquier tema con tu voz y marco conceptual de BNE</p>
+        </div>
+
+        <div class="grid2 mt12">
+          <div>
+            <label style="margin-top:0">Estilo narrativo</label>
+            <select id="gen-style">
+              <option value="verdad-incomoda">🔥 Verdad incómoda</option>
+              <option value="storytelling-personal">📖 Storytelling personal</option>
+              <option value="dato-que-cambia-todo">🧬 Dato que cambia todo</option>
+              <option value="giro-inesperado">🌪 El giro inesperado</option>
+              <option value="contraintuitivo">🔄 Contraintuitivo</option>
+              <option value="reflexivo-filosofico">🌀 Reflexivo-filosófico</option>
+              <option value="educativo-revelador">💡 Educativo-revelador</option>
+              <option value="emocional-sanador">💙 Emocional-sanador</option>
+              <option value="provocador-disruptivo">⚡ Provocador-disruptivo</option>
+              <option value="conversacional-intimo">🎙 Conversacional-íntimo</option>
+            </select>
+          </div>
+          <div>
+            <label style="margin-top:0">Cantidad</label>
+            <select id="gen-qty-sel">
+              <option value="1">1 script</option>
+              <option value="2">2 scripts</option>
+              <option value="3" selected>3 scripts</option>
+              <option value="4">4 scripts</option>
+              <option value="5">5 scripts</option>
+            </select>
+          </div>
+        </div>
+
+        <label class="mt12">Estructura narrativa</label>
+        <select id="gen-structure">
+          <option value="secret">🔐 Secret Value — el más viral (5% lo usa)</option>
+          <option value="curiosity">🌀 Curiosity Peak — máxima retención</option>
+          <option value="clasica">🔥 Clásica — viaje emocional completo</option>
+          <option value="pas">⚡ PAS — directo al dolor</option>
+          <option value="bab">🔄 BAB — transformación visible</option>
+          <option value="pastor">🎯 PASTOR — conversión profunda</option>
+          <option value="aida">📈 AIDA — 4 beats exactos</option>
+          <option value="5cs">📖 5Cs — storytelling puro</option>
+        </select>
+
+        <label class="mt12">Duración del reel</label>
+        <div class="flex gap8" style="flex-wrap:wrap;margin-bottom:4px" id="gen-dur-pills">
+          <button class="sf active" onclick="setDur(15,this)">⚡ 15 seg</button>
+          <button class="sf" onclick="setDur(30,this)">30 seg</button>
+          <button class="sf" onclick="setDur(45,this)">45 seg</button>
+          <button class="sf" onclick="setDur(60,this)">60 seg</button>
+          <button class="sf" onclick="setDur(90,this)">90 seg</button>
+        </div>
+        <input type="hidden" id="gen-duration" value="15"/>
+
+        <button class="btn btn-electric mt12" onclick="buildGeneratePrompt()">⚡ Generar prompt ↗</button>
+        <div class="prompt-box" id="gen-prompt-box" style="display:none"><p class="small" style="color:var(--indigo-light);margin-bottom:8px;font-weight:600">Copia y pega en Claude:</p><pre id="gen-prompt-text"></pre><button class="copy-btn" onclick="copyPrompt('gen-prompt-text',this)">Copiar prompt</button></div>
+        <div class="import-box" id="gen-import-box" style="display:none"><p class="small" style="color:#34d399;margin-bottom:8px;font-weight:600">Pega la respuesta de Claude (JSON):</p><textarea id="gen-import-text" rows="4" placeholder='{"scripts":[]}'></textarea><button class="btn btn-primary btn-sm mt8" onclick="importScripts()">Importar scripts</button></div>
+        <div id="gen-results"></div>
+      </div>
+
+      <!-- MODELAR -->
+      <div id="tab-modelar" class="panel">
+        <div class="page-title">Modelar Reel</div>
+        <p class="page-sub">Pega un reel que te gustó. Claude detecta su framework exacto y crea tus scripts con esa misma estructura.</p>
+        <label style="margin-top:0">Autor / cuenta (opcional)</label><input id="mod-author" placeholder="@enriccorbera"/>
+        <label>Transcripción o descripción del reel</label><textarea id="mod-text" rows="5" placeholder="Pega aquí lo que dice el reel..."></textarea>
+        <div id="mod-framework-badge" style="display:none;margin-top:8px">
+          <span class="label">Framework detectado:</span>
+          <span id="mod-fw-name" style="margin-left:8px;background:rgba(79,70,229,.2);color:var(--indigo-light);padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600"></span>
+          <p id="mod-fw-desc" style="font-size:12px;color:var(--text2);margin-top:6px;line-height:1.5"></p>
+        </div>
+        <div class="grid2 mt12">
+          <div>
+            <label style="margin-top:0">Categoría del tema</label>
+            <div class="flex gap8" style="flex-wrap:wrap;margin-bottom:6px" id="mod-cat-pills">
+              <button class="sf active" onclick="setModCat('nucleo')">🧠 Núcleo BNE</button>
+              <button class="sf" onclick="setModCat('aplicaciones')">🔗 Aplicaciones</button>
+              <button class="sf" onclick="setModCat('libre')">✏️ Libre</button>
+            </div>
+            <div id="mod-cat-nucleo">
+              <select id="mod-topic-nucleo">
+                <optgroup label="— Dolor emocional —">
+                  <option value="Por qué repites los mismos patrones">Por qué repites los mismos patrones</option>
+                  <option value="Ansiedad y miedo sin razón aparente">Ansiedad y miedo sin razón aparente</option>
+                  <option value="Autoestima y autosabotaje">Autoestima y autosabotaje</option>
+                  <option value="El cuerpo habla: síntomas con mensaje">El cuerpo habla: síntomas con mensaje</option>
+                </optgroup>
+                <optgroup label="— Herencia y familia —">
+                  <option value="Lo que heredaste sin saberlo">Lo que heredaste sin saberlo</option>
+                  <option value="Lealtades familiares inconscientes">Lealtades familiares inconscientes</option>
+                  <option value="Trauma transgeneracional y epigenética">Trauma transgeneracional y epigenética</option>
+                  <option value="Heridas de infancia en adultos">Heridas de infancia en adultos</option>
+                </optgroup>
+                <optgroup label="— Relaciones —">
+                  <option value="Relaciones de pareja y vínculos inconscientes">Relaciones de pareja y vínculos inconscientes</option>
+                  <option value="Vínculos tóxicos y dependencia emocional">Vínculos tóxicos y dependencia emocional</option>
+                </optgroup>
+                <optgroup label="— Identidad —">
+                  <option value="Lo que te mueve sin que lo sepas">Lo que te mueve sin que lo sepas</option>
+                  <option value="Tu sombra: lo que rechazas de ti">Tu sombra: lo que rechazas de ti</option>
+                  <option value="Creencias limitantes que frenan tu vida">Creencias limitantes que frenan tu vida</option>
+                  <option value="Propósito y sensación de vacío">Propósito y sensación de vacío</option>
+                </optgroup>
+              </select>
+            </div>
+            <div id="mod-cat-aplicaciones" style="display:none">
+              <select id="mod-topic-aplicaciones">
+                <optgroup label="— Dinero y negocios —">
+                  <option value="Creencias inconscientes en la venta">Creencias inconscientes en la venta</option>
+                  <option value="El miedo inconsciente a cobrar lo que vales">Miedo a cobrar lo que vales</option>
+                  <option value="Programas heredados sobre el dinero">Programas heredados sobre el dinero</option>
+                  <option value="El autosabotaje en los negocios">El autosabotaje en los negocios</option>
+                  <option value="Liderazgo y sombra">Liderazgo y sombra</option>
+                </optgroup>
+                <optgroup label="— Crianza —">
+                  <option value="Crianza consciente: no repetir lo que te hicieron">Crianza consciente</option>
+                  <option value="Lo que le transmites a tus hijos sin darte cuenta">Lo que le transmites a tus hijos</option>
+                </optgroup>
+                <optgroup label="— Salud —">
+                  <option value="Emociones detrás de enfermedades recurrentes">Emociones detrás de enfermedades</option>
+                  <option value="El estrés crónico y el inconsciente">El estrés crónico y el inconsciente</option>
+                </optgroup>
+                <optgroup label="— Espiritualidad —">
+                  <option value="Despertar de consciencia sin perder los pies en la tierra">Despertar de consciencia</option>
+                  <option value="La proyección: ver en otros lo que no aceptas en ti">La proyección</option>
+                </optgroup>
+              </select>
+            </div>
+            <div id="mod-cat-libre" style="display:none">
+              <input id="mod-topic-libre" placeholder="Escribe tu tema..."/>
+            </div>
+          </div>
+          <div><label style="margin-top:0">Cantidad de versiones</label><select id="mod-qty"><option value="2">2 versiones</option><option value="3">3 versiones</option><option value="4">4 versiones</option></select></div>
+        </div>
+        <button class="btn btn-electric mt12" onclick="buildModelPrompt()">🔍 Detectar estructura y adaptar ↗</button>
+        <div class="prompt-box" id="mod-prompt-box" style="display:none"><p class="small" style="color:var(--indigo-light);margin-bottom:8px;font-weight:600">Copia y pega en Claude:</p><pre id="mod-prompt-text"></pre><button class="copy-btn" onclick="copyPrompt('mod-prompt-text',this)">Copiar prompt</button></div>
+        <div class="import-box" id="mod-import-box" style="display:none"><p class="small" style="color:#34d399;margin-bottom:8px;font-weight:600">Pega la respuesta (JSON):</p><textarea id="mod-import-text" rows="4" placeholder='{"scripts":[]}'></textarea><button class="btn btn-primary btn-sm mt8" onclick="importModelScripts()">Importar</button></div>
+        <div id="mod-results"></div>
+      </div>
+
+      <!-- COMBINAR -->
+      <div id="tab-combinar" class="panel">
+        <div class="page-title">Combinar Scripts</div>
+        <p class="page-sub">Fusiona las mejores partes de tus reels exitosos. Los mejores primero.</p>
+        <div id="combine-slots">
+          <div class="combine-slot" id="slot-0"><div class="flex" style="justify-content:space-between;align-items:center"><span class="small">Script 1</span><button class="btn btn-sm" onclick="openScriptPicker(0)">Seleccionar</button></div><div id="slot-0-info" style="display:none;margin-top:8px"><p style="font-weight:500;font-size:14px" id="slot-0-title"></p><p class="small mt4" id="slot-0-meta"></p><p style="font-size:12px;color:#34d399;margin-top:3px" id="slot-0-score"></p><p class="small mt8">Partes:</p><div class="flex gap4" style="flex-wrap:wrap;margin-top:4px" id="slot-0-parts"></div></div></div>
+          <div class="combine-slot" id="slot-1"><div class="flex" style="justify-content:space-between;align-items:center"><span class="small">Script 2</span><button class="btn btn-sm" onclick="openScriptPicker(1)">Seleccionar</button></div><div id="slot-1-info" style="display:none;margin-top:8px"><p style="font-weight:500;font-size:14px" id="slot-1-title"></p><p class="small mt4" id="slot-1-meta"></p><p style="font-size:12px;color:#34d399;margin-top:3px" id="slot-1-score"></p><p class="small mt8">Partes:</p><div class="flex gap4" style="flex-wrap:wrap;margin-top:4px" id="slot-1-parts"></div></div></div>
+          <div class="combine-slot" id="slot-2"><div class="flex" style="justify-content:space-between;align-items:center"><span class="small">Script 3 (opcional)</span><button class="btn btn-sm" onclick="openScriptPicker(2)">Seleccionar</button></div><div id="slot-2-info" style="display:none;margin-top:8px"><p style="font-weight:500;font-size:14px" id="slot-2-title"></p><p class="small mt4" id="slot-2-meta"></p><p style="font-size:12px;color:#34d399;margin-top:3px" id="slot-2-score"></p><p class="small mt8">Partes:</p><div class="flex gap4" style="flex-wrap:wrap;margin-top:4px" id="slot-2-parts"></div></div></div>
+        </div>
+        <label>Tema del script fusionado</label>
+        <input id="comb-topic-input" placeholder="Ej: por qué repites los mismos patrones, creencias en la venta..."/>
+        <button class="btn btn-electric mt12" onclick="buildCombinePrompt()">🧬 Fusionar con IA ↗</button>
+        <div class="prompt-box" id="comb-prompt-box" style="display:none"><p class="small" style="color:var(--indigo-light);margin-bottom:8px;font-weight:600">Copia y pega en Claude:</p><pre id="comb-prompt-text"></pre><button class="copy-btn" onclick="copyPrompt('comb-prompt-text',this)">Copiar prompt</button></div>
+        <div class="import-box" id="comb-import-box" style="display:none"><p class="small" style="color:#34d399;margin-bottom:8px;font-weight:600">Pega la respuesta (JSON):</p><textarea id="comb-import-text" rows="4" placeholder='{"scripts":[]}'></textarea><button class="btn btn-primary btn-sm mt8" onclick="importCombinedScripts()">Importar</button></div>
+        <div id="comb-results"></div>
+      </div>
+
+      <!-- DIAGNOSTICO -->
+      <div id="tab-diagnostico" class="panel">
+        <div class="page-title">Diagnostico</div>
+        <p class="page-sub">Detecta si el reel falla en el gancho, el cuerpo o el CTA con datos reales.</p>
+        <div class="prompt-box" style="margin-top:0">
+          <p style="font-size:12px;font-weight:600;color:var(--indigo-light);margin-bottom:8px">Donde encontrar los datos:</p>
+          <div class="grid2"><div><p style="font-size:12px;font-weight:600;margin-bottom:4px">Instagram</p><p class="small" style="line-height:1.7">Reel → 3 puntos → Ver estadisticas<br>Busca: Reproducciones, Completas, Alcance, Tiempo promedio</p></div><div><p style="font-size:12px;font-weight:600;margin-bottom:4px">TikTok</p><p class="small" style="line-height:1.7">Video → 3 puntos → Estadisticas<br>Busca: Vistas, % completo, Tiempo promedio</p></div></div>
+        </div>
+        <label>Reel a diagnosticar</label>
+        <select id="diag-select" onchange="loadDiagScript()"><option value="">-- Elige un reel publicado --</option></select>
+        <div id="diag-preview" style="display:none"><div class="card card-muted mt8"><p style="font-weight:500;font-size:13px" id="diag-title"></p><p class="small mt4" id="diag-parts" style="line-height:1.6"></p></div></div>
+        <div id="diag-form" style="display:none">
+          <div class="grid2 mt12"><div><label>Reproducciones</label><input type="number" id="d-reprod" placeholder="0" oninput="runDiag()"/></div><div><label>Alcance</label><input type="number" id="d-alcance" placeholder="0" oninput="runDiag()"/></div><div><label>Likes</label><input type="number" id="d-likes" placeholder="0" oninput="runDiag()"/></div><div><label>Comentarios</label><input type="number" id="d-coment" placeholder="0" oninput="runDiag()"/></div><div><label>Guardados</label><input type="number" id="d-guard" placeholder="0" oninput="runDiag()"/></div><div><label>Compartidos</label><input type="number" id="d-compart" placeholder="0" oninput="runDiag()"/></div></div>
+          <div class="grid3 mt12"><div><label>Reproducciones completas</label><input type="number" id="d-completas" placeholder="0" oninput="runDiag()"/></div><div><label>% retencion promedio</label><input type="number" id="d-retencion" placeholder="45" oninput="runDiag()"/></div><div><label>Duracion (seg)</label><input type="number" id="d-duracion" placeholder="30" oninput="runDiag()"/></div></div>
+          <div id="diag-result" class="mt16"></div>
+        </div>
+      </div>
+
+      <!-- GANCHOS -->
+      <div id="tab-ganchos" class="panel">
+        <div class="page-title">Banco de Ganchos</div>
+        <p class="page-sub">Coleccion de ganchos probados. El gancho es donde se gana o se pierde el reel.</p>
+        <div class="card" style="margin-top:0">
+          <textarea id="hook-text" rows="2" placeholder="Ej: Lo que te hicieron de nino no fue tu culpa. Lo que sigues haciendo de adulto, tampoco. Pero hay algo que si puedes cambiar hoy."></textarea>
+          <div class="grid2 mt8"><div><label style="margin-top:0">Categoria</label><select id="hook-cat"><option>Pregunta provocadora</option><option>Afirmacion incomoda</option><option>Dato sorprendente</option><option>Historia personal</option><option>Contradiccion</option><option>Promesa directa</option></select></div><div><label style="margin-top:0">Estilo</label><select id="hook-style"><option>Reflexivo</option><option>Educativo</option><option>Revelador</option><option>Storytelling</option><option>Emocional</option><option>Incomodo</option></select></div></div>
+          <label>Notas (opcional)</label><input id="hook-notes" placeholder="Funciona bien para temas de infancia..."/>
+          <button class="btn btn-primary btn-sm mt8" onclick="saveHook()">Guardar gancho</button>
+        </div>
+        <div class="sf-row mt16" id="hook-filters"></div>
+        <div id="hooks-list"></div>
+      </div>
+
+      <!-- CALENDARIO -->
+      <div id="tab-calendario" class="panel">
+        <div class="page-title">Calendario Editorial</div>
+        <p class="page-sub">Planifica tu contenido y mantenes la consistencia que genera crecimiento.</p>
+        <div class="cal-nav mt12"><button class="btn btn-sm" onclick="prevMonth()">← Anterior</button><div class="cal-title" id="cal-title"></div><button class="btn btn-sm" onclick="nextMonth()">Siguiente →</button></div>
+        <div class="cal-header-days mt12" id="cal-header"></div>
+        <div class="cal-body-grid" id="cal-body"></div>
+        <div id="cal-detail" style="display:none" class="mt16"><div class="card"><p style="font-weight:600;font-size:14px" id="cal-detail-title"></p><div id="cal-detail-entries"></div><button class="btn btn-primary btn-sm mt8" onclick="openModal('cal-add-modal')">+ Agregar</button></div></div>
+      </div>
+
+      <!-- FLASH -->
+      <div id="tab-flash" class="panel">
+        <div class="page-title">Ideas Flash</div>
+        <p class="page-sub">Captura ideas antes de que se pierdan. Conviertelás en scripts con un clic.</p>
+        <div class="card" style="margin-top:0">
+          <textarea id="flash-text" rows="3" placeholder="La idea que acabas de tener..."></textarea>
+          <div class="grid2 mt8"><div><label style="margin-top:0">Tipo</label><select id="flash-type"><option value="normal">Idea de reel</option><option value="urgente">Urgente — grabar hoy</option><option value="inspiracion">Inspiracion</option></select></div><div><label style="margin-top:0">Tema</label><select id="flash-tema"><option>Bioneuroemocion</option><option>Programas heredados</option><option>Lealtades familiares</option><option>Inconsciente</option><option>Relaciones de pareja</option><option>Sombra</option><option>General</option></select></div></div>
+          <button class="btn btn-electric w100 mt8" onclick="saveFlash()">Guardar idea</button>
+        </div>
+        <div id="flash-list" class="mt16"></div>
+      </div>
+
+      <!-- BIBLIOTECA -->
+      <div id="tab-biblioteca" class="panel">
+        <div class="page-title">Biblioteca</div>
+        <p class="page-sub">Todos tus scripts guardados con sus metricas y performance.</p>
+        <div class="sf-row" id="lib-filters"></div>
+        <div id="library-list"></div>
+      </div>
+
+      <!-- ANALYTICS -->
+      <div id="tab-analytics" class="panel">
+        <div class="page-title">Analytics</div>
+        <p class="page-sub">Que funciona, que no, y donde esta tu audiencia perdiendo el hilo.</p>
+        <div id="analytics-content"></div>
+      </div>
+
+    </main>
+
+    <!-- NAV MÓVIL INFERIOR -->
+    <nav class="mobile-nav">
+      <div class="mobile-nav-grid">
+        <button class="mobile-nav-item" onclick="switchTab('voz')" data-tab="voz"><span class="mn-icon">🎙</span>Mi Voz</button>
+        <button class="mobile-nav-item" onclick="switchTab('generar')" data-tab="generar"><span class="mn-icon">⚡</span>Generar</button>
+        <button class="mobile-nav-item" onclick="switchTab('modelar')" data-tab="modelar"><span class="mn-icon">🔍</span>Modelar</button>
+        <button class="mobile-nav-item" onclick="switchTab('ganchos')" data-tab="ganchos"><span class="mn-icon">🪝</span>Ganchos</button>
+        <button class="mobile-nav-item" onclick="switchTab('biblioteca')" data-tab="biblioteca"><span class="mn-icon">🗂</span>Scripts</button>
+        <button class="mobile-nav-item" onclick="toggleMoreMenu()" id="mn-more"><span class="mn-icon">⋯</span>Más</button>
+      </div>
+    </nav>
+    <!-- MENÚ "MÁS" MÓVIL -->
+    <div class="mobile-nav-more" id="mobile-more-menu">
+      <div class="mobile-nav-more-item" onclick="switchTab('conocimiento');toggleMoreMenu()" data-tab="conocimiento">📚 Conocimiento</div>
+      <div class="mobile-nav-more-item" onclick="switchTab('combinar');toggleMoreMenu()" data-tab="combinar">🧬 Combinar</div>
+      <div class="mobile-nav-more-item" onclick="switchTab('diagnostico');toggleMoreMenu()" data-tab="diagnostico">🔬 Diagnóstico</div>
+      <div class="mobile-nav-more-item" onclick="switchTab('calendario');toggleMoreMenu()" data-tab="calendario">📅 Calendario</div>
+      <div class="mobile-nav-more-item" onclick="switchTab('flash');toggleMoreMenu()" data-tab="flash">💡 Ideas Flash</div>
+      <div class="mobile-nav-more-item" onclick="switchTab('analytics');toggleMoreMenu()" data-tab="analytics">📊 Analytics</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- MODALES -->
+<div class="modal-overlay" id="metrics-modal">
+  <div class="modal">
+    <h3 style="font-size:14px;font-weight:600;margin-bottom:3px">Metricas reales</h3>
+    <p class="small" id="modal-title" style="margin-bottom:12px"></p>
+    <div class="grid2"><div><label>Alcance</label><input type="number" id="m-alcance" placeholder="0"/></div><div><label>Reproducciones</label><input type="number" id="m-reprod" placeholder="0"/></div><div><label>Likes</label><input type="number" id="m-likes" placeholder="0"/></div><div><label>Comentarios</label><input type="number" id="m-coment" placeholder="0"/></div><div><label>Compartidos</label><input type="number" id="m-compart" placeholder="0"/></div><div><label>Guardados</label><input type="number" id="m-guard" placeholder="0"/></div></div>
+    <label>Tipo</label><select id="m-tipo"><option value="organico">Organico</option><option value="pagado">Pagado</option></select>
+    <label>Rating: <span id="m-stars">★★★☆☆</span></label>
+    <input type="range" min="1" max="5" value="3" id="m-rating" oninput="updateStars(this.value)"/>
+    <label>Notas</label><textarea id="m-notas" rows="2" placeholder="Que funciono, que cambiarias..."></textarea>
+    <div class="flex gap8 mt12"><button class="btn btn-primary" style="flex:1" onclick="saveMetrics()">Guardar</button><button class="btn" onclick="closeModal('metrics-modal')">Cancelar</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="picker-modal">
+  <div class="modal" style="max-width:520px">
+    <h3 style="font-size:14px;font-weight:600;margin-bottom:10px">Seleccionar script</h3>
+    <div id="picker-list"></div>
+    <button class="btn w100 mt12" onclick="closeModal('picker-modal')">Cancelar</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="add-book-modal">
+  <div class="modal">
+    <h3 style="font-size:14px;font-weight:600;margin-bottom:10px">Agregar libro</h3>
+    <label style="margin-top:0">Titulo</label><input id="book-title" placeholder="La Biologia de la Creencia"/>
+    <label>Autor</label><input id="book-author" placeholder="Enric Corbera"/>
+    <label>Conceptos clave (uno por linea)</label><textarea id="book-concepts" rows="4" placeholder="El conflicto biologico como origen del sintoma&#10;La coherencia como estado de sanacion"></textarea>
+    <label>Mi interpretacion personal</label><textarea id="book-interp" rows="3" placeholder="Como entiendo y aplico estos conceptos..."></textarea>
+    <label>Ideas que me impactaron</label><textarea id="book-quotes" rows="2" placeholder="Las frases o ideas que mas me marcaron..."></textarea>
+    <div class="flex gap8 mt12"><button class="btn btn-primary" style="flex:1" onclick="saveBook()">Guardar</button><button class="btn" onclick="closeModal('add-book-modal')">Cancelar</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="add-concept-modal">
+  <div class="modal">
+    <h3 style="font-size:14px;font-weight:600;margin-bottom:10px">Concepto suelto</h3>
+    <label style="margin-top:0">Concepto</label><input id="concept-name" placeholder="Mapa de consciencia de Hawkins"/>
+    <label>Como lo entiendo y aplico</label><textarea id="concept-desc" rows="4" placeholder="Mi interpretacion personal..."></textarea>
+    <div class="flex gap8 mt12"><button class="btn btn-primary" style="flex:1" onclick="saveConcept()">Guardar</button><button class="btn" onclick="closeModal('add-concept-modal')">Cancelar</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="cal-add-modal">
+  <div class="modal">
+    <h3 style="font-size:14px;font-weight:600;margin-bottom:10px">Agregar al calendario</h3>
+    <p class="small" id="cal-add-date" style="margin-bottom:10px"></p>
+    <label style="margin-top:0">Contenido</label><input id="cal-entry-title" placeholder="Reel sobre lealtades familiares"/>
+    <label>Estado</label><select id="cal-entry-status"><option value="borrador">Borrador</option><option value="listo">Listo para grabar</option><option value="publicado">Publicado</option></select>
+    <label>Plataforma</label><select id="cal-entry-platform"><option value="ig">Instagram</option><option value="tt">TikTok</option><option value="ambas">Ambas</option><option value="yt">YouTube</option></select>
+    <label>Notas</label><textarea id="cal-entry-notes" rows="2" placeholder="Script, indicaciones..."></textarea>
+    <div class="flex gap8 mt12"><button class="btn btn-primary" style="flex:1" onclick="saveCalEntry()">Guardar</button><button class="btn" onclick="closeModal('cal-add-modal')">Cancelar</button></div>
+  </div>
+</div>
+
+<script>
+// ============ SUPABASE CONFIG ============
+const SB_URL='https://qgczftnuflxvrhlbyelb.supabase.co';
+const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnY3pmdG51Zmx4dnJobGJ5ZWxiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODExNTUxNjgsImV4cCI6MjA5NjczMTE2OH0.yfySblwq_oIa6oMbdg2O0OXM_TzSmaL4HfSaPVdFw5M';
+
+async function sbFetch(path,opts={}){
+  const res=await fetch(SB_URL+'/rest/v1/'+path,{
+    headers:{'Content-Type':'application/json','apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Prefer':'return=representation',...(opts.headers||{})},
+    ...opts
+  });
+  if(!res.ok&&res.status!==204){const err=await res.text();throw new Error(err);}
+  if(res.status===204)return null;
+  return res.json();
+}
+
+// ============ STATE ============
+let currentUser=null;
+let localVoz={},localBooks=[],localConcepts=[],localLibrary=[],localHooks=[],localCalendar={},localFlash=[];
+let currentMetricId=null,activeFilter='Todos',currentPickerSlot=0,slots=[null,null,null],slotParts=[{},{},{}],diagScriptId=null;
+let calYear=new Date().getFullYear(),calMonth=new Date().getMonth(),selectedCalDate=null,hookFilter='Todos';
+const PARTS=['gancho','dolor','ejemplo','fondo','cima','insight','cta'];
+const PL={gancho:'Gancho',dolor:'Dolor',ejemplo:'Ejemplo',fondo:'Fondo de pozo',cima:'Cima',insight:'Insight',cta:'CTA'};
+
+// ============ VIEWS ============
+function showLanding(){hide('login');hide('app');show('landing');localStorage.removeItem('rs_session');}
+function showLogin(){hide('landing');hide('app');show('login');}
+function showApp(){hide('landing');hide('login');show('app');}
+function saveSession(){if(currentUser)localStorage.setItem('rs_session',JSON.stringify({id:currentUser.id,username:currentUser.username,display_name:currentUser.display_name}));}
+function loadSession(){try{const s=localStorage.getItem('rs_session');return s?JSON.parse(s):null;}catch{return null;}}
+function saveActiveTab(name){localStorage.setItem('rs_tab',name);}
+function loadActiveTab(){return localStorage.getItem('rs_tab')||'voz';}
+function show(id){document.getElementById(id).classList.remove('hidden')}
+function hide(id){document.getElementById(id).classList.add('hidden')}
+function v(id){const el=document.getElementById(id);return el?el.value:'';}
+
+// ============ NOTIFY ============
+function notify(msg,type='success'){
+  const el=document.getElementById('notify');
+  el.textContent=msg;
+  el.style.borderColor=type==='error'?'rgba(239,68,68,.3)':'rgba(79,70,229,.3)';
+  el.style.color=type==='error'?'#f87171':type==='warn'?'#fbbf24':'var(--text)';
+  el.style.display='block';
+  setTimeout(()=>el.style.display='none',3000);
+}
+
+// ============ AUTH ============
+async function doLogin(){
+  const user=v('login-user').trim().toLowerCase();const pass=v('login-pass').trim();
+  if(!user||!pass){document.getElementById('login-err').style.display='block';return;}
+  document.getElementById('login-err').style.display='none';
+  const btn=document.querySelector('#login .btn-electric');
+  if(btn){btn.textContent='Entrando...';btn.disabled=true;}
+  try{
+    const res=await fetch(`${SB_URL}/rest/v1/rs_users?select=*&username=eq.${encodeURIComponent(user)}`,{
+      headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json'}
+    });
+    const rows=await res.json();
+    if(!rows||!rows.length||rows[0].password_hash!==pass){
+      document.getElementById('login-err').style.display='block';
+      if(btn){btn.textContent='Entrar';btn.disabled=false;}
+      return;
+    }
+    currentUser=rows[0];
+    document.getElementById('nav-username').textContent=currentUser.display_name||currentUser.username;
+    document.getElementById('nav-avatar').textContent=(currentUser.display_name||currentUser.username)[0].toUpperCase();
+    saveSession();
+    showApp();
+    await loadAllData();
+    switchTab(loadActiveTab());
+  }catch(e){
+    console.error('Login error:',e);
+    document.getElementById('login-err').textContent='Error de conexión. Intenta de nuevo.';
+    document.getElementById('login-err').style.display='block';
+    if(btn){btn.textContent='Entrar';btn.disabled=false;}
+  }
+}
+function doLogout(){currentUser=null;localVoz={};localBooks=[];localConcepts=[];localLibrary=[];localHooks=[];localCalendar={};localFlash=[];localStorage.removeItem('rs_session');localStorage.removeItem('rs_tab');showLanding();}
+
+// ============ LOAD ALL DATA ============
+async function loadAllData(){
+  const uid=currentUser.id;
+  try{
+    const [voz,books,concepts,library,hooks,cal,flash]=await Promise.all([
+      sbFetch(`rs_voz?user_id=eq.${uid}&select=*`),
+      sbFetch(`rs_books?user_id=eq.${uid}&select=*&order=created_at.desc`),
+      sbFetch(`rs_concepts?user_id=eq.${uid}&select=*&order=created_at.desc`),
+      sbFetch(`rs_library?user_id=eq.${uid}&select=*&order=created_at.desc`),
+      sbFetch(`rs_hooks?user_id=eq.${uid}&select=*&order=created_at.desc`),
+      sbFetch(`rs_calendar?user_id=eq.${uid}&select=*`),
+      sbFetch(`rs_flash?user_id=eq.${uid}&select=*&order=created_at.desc`)
+    ]);
+    if(voz&&voz.length){localVoz=voz[0];loadVozFields();}
+    localBooks=books||[];localConcepts=concepts||[];localLibrary=library||[];
+    localHooks=hooks||[];localFlash=flash||[];
+    if(cal){cal.forEach(e=>{const k=e.fecha;if(!localCalendar[k])localCalendar[k]=[];localCalendar[k].push(e);});}
+    updateHookSelect();updateVozIndicator();
+  }catch(e){notify('Error cargando datos','error');}
+}
+
+// ============ VOZ ============
+function loadVozFields(){
+  ['historia','tono','frases','arquetipos','anecdotas','audiencia'].forEach(k=>{
+    if(localVoz[k]){const inp=document.getElementById('voz-'+k);if(inp)inp.value=localVoz[k];}
+    const sv=document.getElementById('vs-'+k);if(sv)sv.style.display='none';
+  });
+  updateVozIndicator();
+}
+async function saveVoz(){
+  if(!currentUser)return;
+  const data={historia:v('voz-historia'),tono:v('voz-tono'),frases:v('voz-frases'),arquetipos:v('voz-arquetipos'),anecdotas:v('voz-anecdotas'),audiencia:v('voz-audiencia'),updated_at:new Date().toISOString()};
+  try{
+    if(localVoz.id){await sbFetch(`rs_voz?id=eq.${localVoz.id}`,{method:'PATCH',body:JSON.stringify(data)});}
+    else{const rows=await sbFetch('rs_voz',{method:'POST',body:JSON.stringify({...data,user_id:currentUser.id})});if(rows&&rows.length)localVoz=rows[0];}
+    localVoz={...localVoz,...data};
+    document.getElementById('voz-status').style.display='block';updateVozIndicator();
+    notify('Voz guardada correctamente');
+  }catch(e){notify('Error guardando voz','error');}
+}
+function updateVozIndicator(){
+  const ind=document.getElementById('voz-indicator');
+  const warn=document.getElementById('voz-empty-warn');
+  const hasVoz=localVoz.historia||localVoz.tono;
+  if(ind)ind.style.display=hasVoz?'flex':'none';
+  if(warn)warn.style.display=hasVoz?'none':'block';
+}
+function buildVozCtx(){
+  if(!localVoz.historia&&!localVoz.tono)return'';
+  let c='\n\nVOZ Y PERSONALIDAD DEL CREADOR:\n';
+  if(localVoz.historia)c+=`Historia personal: ${localVoz.historia}\n`;
+  if(localVoz.tono)c+=`Tono y estilo: ${localVoz.tono}\n`;
+  if(localVoz.frases)c+=`Frases propias: ${localVoz.frases}\n`;
+  if(localVoz.arquetipos)c+=`Creencias: ${localVoz.arquetipos}\n`;
+  if(localVoz.anecdotas)c+=`Anecdotas disponibles: ${localVoz.anecdotas}\n`;
+  if(localVoz.audiencia)c+=`Audiencia ideal: ${localVoz.audiencia}\n`;
+  c+='\nUSA esta informacion. Los scripts deben sonar exactamente como Guillermo, no como una IA generica.\n';
+  return c;
+}
+function buildKnowCtx(){
+  if(!localBooks.length&&!localConcepts.length)return'';
+  let c='\n\nBASE DE CONOCIMIENTO:\n';
+  localBooks.forEach(b=>{c+=`Libro: "${b.title}" (${b.author})\n`;if(b.concepts)c+=`Conceptos: ${b.concepts}\n`;if(b.interp)c+=`Mi interpretacion: ${b.interp}\n`;});
+  localConcepts.forEach(c2=>{c+=`Concepto: ${c2.name} — ${c2.description}\n`;});
+  c+='\nUsa este conocimiento para dar profundidad real a los insights. Referencialo de forma natural.\n';
+  return c;
+}
+
+// ============ KNOWLEDGE ============
+async function saveBook(){
+  const data={user_id:currentUser.id,title:v('book-title'),author:v('book-author'),concepts:v('book-concepts'),interp:v('book-interp'),quotes:v('book-quotes')};
+  try{const rows=await sbFetch('rs_books',{method:'POST',body:JSON.stringify(data)});if(rows)localBooks.unshift(rows[0]);closeModal('add-book-modal');['book-title','book-author','book-concepts','book-interp','book-quotes'].forEach(id=>document.getElementById(id).value='');renderKnowledge();notify('Libro guardado');}catch(e){notify('Error','error');}
+}
+async function saveConcept(){
+  const data={user_id:currentUser.id,name:v('concept-name'),description:v('concept-desc')};
+  try{const rows=await sbFetch('rs_concepts',{method:'POST',body:JSON.stringify(data)});if(rows)localConcepts.unshift(rows[0]);closeModal('add-concept-modal');['concept-name','concept-desc'].forEach(id=>document.getElementById(id).value='');renderKnowledge();notify('Concepto guardado');}catch(e){notify('Error','error');}
+}
+async function deleteBook(id){if(!confirm('Eliminar libro?'))return;try{await sbFetch(`rs_books?id=eq.${id}`,{method:'DELETE'});localBooks=localBooks.filter(b=>b.id!==id);renderKnowledge();}catch(e){notify('Error','error');}}
+async function deleteConcept(id){try{await sbFetch(`rs_concepts?id=eq.${id}`,{method:'DELETE'});localConcepts=localConcepts.filter(c=>c.id!==id);renderKnowledge();}catch(e){notify('Error','error');}}
+function renderKnowledge(){
+  const list=document.getElementById('knowledge-list');const cl=document.getElementById('concepts-list');
+  if(!list||!cl)return;
+  list.innerHTML=localBooks.length?localBooks.map(b=>`<div class="book-card"><div class="top-row"><div><p style="font-weight:600;font-size:14px">${b.title}</p><p class="small">${b.author}</p></div><button class="btn btn-xs btn-danger" onclick="deleteBook('${b.id}')">Eliminar</button></div>${b.concepts?`<div class="mt8"><span class="section-label">Conceptos</span><p class="small mt4" style="line-height:1.6">${b.concepts}</p></div>`:''}${b.interp?`<div class="mt8"><span class="section-label">Mi interpretacion</span><p class="small mt4" style="line-height:1.6">${b.interp}</p></div>`:''}</div>`).join(''):'<p class="small mt8">No hay libros agregados todavia.</p>';
+  cl.innerHTML=localConcepts.length?localConcepts.map(c=>`<span class="concept-tag" title="${c.description}">${c.name} <span onclick="deleteConcept('${c.id}')" style="margin-left:4px;opacity:.6">×</span></span>`).join(''):'<p class="small mt8">No hay conceptos sueltos.</p>';
+}
+
+// ============ HOOKS ============
+async function saveHook(){
+  const text=v('hook-text');if(!text.trim()){notify('Escribe el gancho primero','warn');return;}
+  const data={user_id:currentUser.id,text,categoria:v('hook-cat'),estilo:v('hook-style'),notes:v('hook-notes')};
+  try{const rows=await sbFetch('rs_hooks',{method:'POST',body:JSON.stringify(data)});if(rows)localHooks.unshift(rows[0]);document.getElementById('hook-text').value='';document.getElementById('hook-notes').value='';renderHooks();updateHookSelect();notify('Gancho guardado');}catch(e){notify('Error','error');}
+}
+async function deleteHook(id){if(!confirm('Eliminar gancho?'))return;try{await sbFetch(`rs_hooks?id=eq.${id}`,{method:'DELETE'});localHooks=localHooks.filter(h=>h.id!==id);renderHooks();updateHookSelect();}catch(e){notify('Error','error');}}
+async function incrementHookUso(id){try{const h=localHooks.find(x=>x.id===id);if(!h)return;const usos=(h.usos||0)+1;await sbFetch(`rs_hooks?id=eq.${id}`,{method:'PATCH',body:JSON.stringify({usos})});h.usos=usos;}catch(e){}}
+function renderHooks(){
+  const cats=['Todos','Pregunta provocadora','Afirmacion incomoda','Dato sorprendente','Historia personal','Contradiccion','Promesa directa'];
+  const filters=document.getElementById('hook-filters');if(filters)filters.innerHTML=cats.map(c=>`<button class="sf${c===hookFilter?' active':''}" onclick="setHookFilter('${c}')">${c}</button>`).join('');
+  const list=document.getElementById('hooks-list');if(!list)return;
+  const filtered=hookFilter==='Todos'?localHooks:localHooks.filter(h=>h.categoria===hookFilter);
+  list.innerHTML=filtered.length?filtered.map(h=>`<div class="hook-card"><div class="hook-text">"${h.text}"</div><div class="flex gap4" style="flex-wrap:wrap;margin-bottom:8px"><span class="badge badge-indigo">${h.categoria}</span><span class="badge badge-gray">${h.estilo}</span>${h.usos?`<span class="badge badge-green">${h.usos} usos</span>`:''}</div>${h.notes?`<p class="small">${h.notes}</p>`:''}<div class="flex gap4 mt8"><button class="btn btn-xs" onclick="copyHook('${h.id}',\`${h.text.replace(/`/g,"'")}\`,this)">Copiar</button><button class="btn btn-xs btn-danger" onclick="deleteHook('${h.id}')">Eliminar</button></div></div>`).join(''):'<p class="small mt8">No hay ganchos guardados.</p>';
+}
+function setHookFilter(c){hookFilter=c;renderHooks();}
+function copyHook(id,text,btn){navigator.clipboard.writeText(text).then(()=>{btn.textContent='Copiado!';setTimeout(()=>btn.textContent='Copiar',1500);});incrementHookUso(id);}
+function updateHookSelect(){const sel=document.getElementById('gen-hook-select');if(!sel)return;sel.innerHTML='<option value="">Generar gancho nuevo</option>';localHooks.forEach(h=>sel.innerHTML+=`<option value="${h.id}">${h.text.substring(0,60)}...</option>`);}
+
+// ============ FLASH ============
+async function saveFlash(){
+  const text=v('flash-text');if(!text.trim()){notify('Escribe la idea primero','warn');return;}
+  const data={user_id:currentUser.id,text,type:v('flash-type'),tema:v('flash-tema')};
+  try{const rows=await sbFetch('rs_flash',{method:'POST',body:JSON.stringify(data)});if(rows)localFlash.unshift(rows[0]);document.getElementById('flash-text').value='';renderFlash();notify('Idea guardada');}catch(e){notify('Error','error');}
+}
+async function markFlashDone(id){try{await sbFetch(`rs_flash?id=eq.${id}`,{method:'PATCH',body:JSON.stringify({desarrollada:true})});localFlash=localFlash.map(f=>f.id===id?{...f,desarrollada:true}:f);renderFlash();}catch(e){notify('Error','error');}}
+async function deleteFlash(id){if(!confirm('Eliminar idea?'))return;try{await sbFetch(`rs_flash?id=eq.${id}`,{method:'DELETE'});localFlash=localFlash.filter(f=>f.id!==id);renderFlash();}catch(e){notify('Error','error');}}
+function flashToGen(text){switchTab('generar');document.getElementById('gen-topic').value='Otro';document.getElementById('gen-custom-wrap').style.display='block';document.getElementById('gen-custom').value=text;}
+function renderFlash(){
+  const list=document.getElementById('flash-list');if(!list)return;
+  if(!localFlash.length){list.innerHTML='<p class="small">No hay ideas guardadas todavia.</p>';return;}
+  list.innerHTML=localFlash.map(f=>`<div class="flash-card ${f.type}"><div class="top-row"><div style="flex:1"><p style="font-size:14px;line-height:1.5;margin-bottom:6px">${f.text}</p><div class="flex gap4" style="flex-wrap:wrap"><span class="badge ${f.type==='urgente'?'badge-red':f.type==='inspiracion'?'badge-purple':'badge-indigo'}">${f.type==='urgente'?'Urgente':f.type==='inspiracion'?'Inspiracion':'Idea de reel'}</span><span class="badge badge-gray">${f.tema}</span>${f.desarrollada?'<span class="badge badge-green">Desarrollada</span>':''}</div></div><div class="flex gap4 mt4" style="flex-direction:column;margin-left:8px"><button class="btn btn-xs" onclick="markFlashDone('${f.id}')">✓</button><button class="btn btn-xs btn-danger" onclick="deleteFlash('${f.id}')">x</button></div></div>${!f.desarrollada?`<button class="btn btn-sm btn-primary mt8" onclick="flashToGen(\`${f.text.replace(/`/g,"'")}\`)">Convertir en reel →</button>`:''}
+  </div>`).join('');
+}
+
+// ============ CALENDAR ============
+function renderCalendar(){
+  const months=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+  const days=['Dom','Lun','Mar','Mie','Jue','Vie','Sab'];
+  const daysInMonth=new Date(calYear,calMonth+1,0).getDate();
+  const firstDay=new Date(calYear,calMonth,1).getDay();
+  const today=new Date();
+  document.getElementById('cal-title').textContent=`${months[calMonth]} ${calYear}`;
+  document.getElementById('cal-header').innerHTML=days.map(d=>`<div class="cal-day-name">${d}</div>`).join('');
+  let html='';
+  for(let i=0;i<firstDay;i++)html+='<div></div>';
+  for(let day=1;day<=daysInMonth;day++){
+    const key=`${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+    const entries=localCalendar[key]||[];
+    const isToday=today.getDate()===day&&today.getMonth()===calMonth&&today.getFullYear()===calYear;
+    html+=`<div class="cal-day${isToday?' today':''}${entries.length?' has-content':''}" onclick="selectCalDay('${key}',${day})"><div class="cal-day-num">${day}</div>${entries.slice(0,2).map(e=>`<div class="cal-entry ${e.status}">${(e.title||'').substring(0,10)}</div>`).join('')}${entries.length>2?`<div style="font-size:9px;color:var(--text3);margin-top:2px">+${entries.length-2}</div>`:''}</div>`;
+  }
+  document.getElementById('cal-body').innerHTML=html;
+}
+function prevMonth(){calMonth--;if(calMonth<0){calMonth=11;calYear--;}renderCalendar();}
+function nextMonth(){calMonth++;if(calMonth>11){calMonth=0;calYear++;}renderCalendar();}
+function selectCalDay(key,day){
+  selectedCalDate=key;
+  document.getElementById('cal-detail').style.display='block';
+  const months=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+  document.getElementById('cal-detail-title').textContent=`${day} de ${months[calMonth]}`;
+  renderCalEntries(key);
+}
+function renderCalEntries(key){
+  const entries=localCalendar[key]||[];
+  const cont=document.getElementById('cal-detail-entries');
+  if(!entries.length){cont.innerHTML='<p class="small mt8">Sin contenido programado.</p>';return;}
+  cont.innerHTML=entries.map((e,i)=>`<div style="padding:8px 0;border-bottom:1px solid var(--border)"><div class="top-row"><div><p style="font-size:14px;font-weight:500">${e.title}</p><div class="flex gap4 mt4"><span class="badge ${e.status==='publicado'?'badge-green':e.status==='listo'?'badge-electric':'badge-gray'}">${e.status}</span><span class="badge badge-gray">${e.platform==='ig'?'Instagram':e.platform==='tt'?'TikTok':e.platform==='ambas'?'IG+TT':'YouTube'}</span></div>${e.notes?`<p class="small mt4">${e.notes}</p>`:''}</div><button class="btn btn-xs btn-danger" onclick="deleteCalEntry('${key}','${e.id}')">x</button></div></div>`).join('');
+}
+async function saveCalEntry(){
+  if(!selectedCalDate)return;
+  const data={user_id:currentUser.id,fecha:selectedCalDate,title:v('cal-entry-title'),status:v('cal-entry-status'),platform:v('cal-entry-platform'),notes:v('cal-entry-notes')};
+  try{const rows=await sbFetch('rs_calendar',{method:'POST',body:JSON.stringify(data)});if(rows){if(!localCalendar[selectedCalDate])localCalendar[selectedCalDate]=[];localCalendar[selectedCalDate].push(rows[0]);}closeModal('cal-add-modal');['cal-entry-title','cal-entry-notes'].forEach(id=>document.getElementById(id).value='');renderCalEntries(selectedCalDate);renderCalendar();notify('Agregado al calendario');}catch(e){notify('Error','error');}
+}
+async function deleteCalEntry(key,id){try{await sbFetch(`rs_calendar?id=eq.${id}`,{method:'DELETE'});localCalendar[key]=(localCalendar[key]||[]).filter(e=>e.id!==id);renderCalEntries(key);renderCalendar();}catch(e){notify('Error','error');}}
+document.getElementById('cal-add-modal').addEventListener('click',function(e){if(e.target===this)closeModal('cal-add-modal');});
+
+// ============ LIBRARY ============
+async function saveToLibrary(s,tema,fuente){
+  const data={
+    user_id:currentUser.id,titulo:s.titulo,estilo:s.estilo,tema,fuente,
+    gancho:s.gancho||'',
+    cuerpo_parte1:s.cuerpo_parte1||s.dolor||'',
+    reenganche_1:s.reenganche_1||s.ejemplo||'',
+    cuerpo_parte2:s.cuerpo_parte2||s.fondo||'',
+    reenganche_2:s.reenganche_2||s.cima||'',
+    cierre_insight:s.cierre_insight||s.insight||'',
+    cta:s.cta||'',
+    triggers_activados:s.triggers_activados||[],
+    duracion_seg:s.duracion_seg||s.duracion_estimada||''
+  };
+  try{const rows=await sbFetch('rs_library',{method:'POST',body:JSON.stringify(data)});if(rows)localLibrary.unshift(rows[0]);notify('Script guardado en biblioteca');}catch(e){notify('Error al guardar','error');}
+}
+async function deleteItem(id){if(!confirm('Eliminar script?'))return;try{await sbFetch(`rs_library?id=eq.${id}`,{method:'DELETE'});localLibrary=localLibrary.filter(i=>i.id!==id);renderLibrary();}catch(e){notify('Error','error');}}
+async function saveMetrics(){
+  const data={metricas:{alcance:+v('m-alcance')||0,reproducciones:+v('m-reprod')||0,likes:+v('m-likes')||0,comentarios:+v('m-coment')||0,compartidos:+v('m-compart')||0,guardados:+v('m-guard')||0,tipo:v('m-tipo'),notas:v('m-notas')},rating:+v('m-rating'),publicado:true};
+  try{await sbFetch(`rs_library?id=eq.${currentMetricId}`,{method:'PATCH',body:JSON.stringify(data)});localLibrary=localLibrary.map(i=>i.id===currentMetricId?{...i,...data}:i);closeModal('metrics-modal');renderLibrary();notify('Metricas guardadas');}catch(e){notify('Error','error');}
+}
+function calcScore(item){if(!item.metricas)return null;const m=item.metricas;return(m.guardados||0)*3+(m.compartidos||0)*2+(m.likes||0);}
+function openMetricsModal(id){
+  currentMetricId=id;const item=localLibrary.find(i=>i.id===id);if(!item)return;
+  document.getElementById('modal-title').textContent=item.titulo;
+  document.getElementById('m-alcance').value=item.metricas?.alcance||'';document.getElementById('m-reprod').value=item.metricas?.reproducciones||'';
+  document.getElementById('m-likes').value=item.metricas?.likes||'';document.getElementById('m-coment').value=item.metricas?.comentarios||'';
+  document.getElementById('m-compart').value=item.metricas?.compartidos||'';document.getElementById('m-guard').value=item.metricas?.guardados||'';
+  document.getElementById('m-tipo').value=item.metricas?.tipo||'organico';document.getElementById('m-rating').value=item.rating||3;
+  document.getElementById('m-notas').value=item.metricas?.notas||'';updateStars(item.rating||3);
+  openModal('metrics-modal');
+}
+function updateStars(v){document.getElementById('m-stars').textContent='★'.repeat(v)+'☆'.repeat(5-v);}
+function renderLibrary(){
+  const styles=['Todos','Generado','Modelado','Combinado'];
+  const filters=document.getElementById('lib-filters');
+  if(filters)filters.innerHTML=styles.map(s=>`<button class="sf${s===activeFilter?' active':''}" onclick="setLibFilter('${s}')">${s}</button>`).join('');
+  const filtered=activeFilter==='Todos'?localLibrary:localLibrary.filter(i=>(i.fuente||'Generado').startsWith(activeFilter));
+  const list=document.getElementById('library-list');if(!list)return;
+  if(!filtered.length){list.innerHTML='<p class="small mt8">No hay scripts guardados.</p>';return;}
+  list.innerHTML=filtered.map(item=>{
+    const score=calcScore(item);
+    const fc=item.fuente==='Combinado'?'badge-purple':item.fuente?.startsWith('Modelado')?'badge-electric':'badge-gray';
+    const dur=item.duracion_seg||item.duracion_estimada||'';
+    // Armar bloques del script completo
+    const bloques=[
+      {label:'🎣 Gancho',val:item.gancho},
+      {label:'Cuerpo 1',val:item.cuerpo_parte1||item.dolor},
+      {label:'Re-enganche',val:item.reenganche_1||item.ejemplo},
+      {label:'Cuerpo 2',val:item.cuerpo_parte2||item.fondo},
+      {label:'Re-enganche 2',val:item.reenganche_2||item.cima},
+      {label:'💡 Cierre / Insight',val:item.cierre_insight||item.insight},
+      {label:'📣 CTA',val:item.cta}
+    ].filter(b=>b.val);
+    const scriptHTML=bloques.map(b=>`<div style="margin-bottom:10px"><span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--indigo-light)">${b.label}</span><p style="margin-top:3px;font-size:13px;line-height:1.6;color:var(--text)">${b.val}</p></div>`).join('');
+    const triggers=(item.triggers_activados||[]).length?`<div class="flex gap4 mt4" style="flex-wrap:wrap">${item.triggers_activados.map(t=>`<span class="badge badge-indigo">${t}</span>`).join('')}</div>`:'';
+    return`<div class="card" id="lib-card-${item.id}">
+      <div class="top-row">
+        <div style="flex:1">
+          <p style="font-weight:600;font-size:14px">${item.titulo}</p>
+          <p class="small mt4" style="color:var(--text2)">${item.tema||''} · ${item.estilo||''} ${dur?'· '+dur:''}s</p>
+          <div class="flex gap4 mt4" style="flex-wrap:wrap">
+            <span class="badge ${fc}">${item.fuente||'Generado'}</span>
+            ${score?`<span class="score-badge">${score} pts</span>`:''}
+          </div>
+          ${item.publicado&&item.metricas?`<div class="flex gap8 mt6" style="flex-wrap:wrap"><span class="small">Alcance: <strong>${(item.metricas.alcance||0).toLocaleString()}</strong></span><span class="small">Guardados: <strong>${item.metricas.guardados||0}</strong></span><span class="small">${'★'.repeat(item.rating||0)}${'☆'.repeat(5-(item.rating||0))}</span></div>`:`<span class="badge badge-warn mt4" style="margin-top:6px">Sin métricas</span>`}
+        </div>
+        <div class="flex gap4" style="flex-direction:column;margin-left:8px">
+          <button class="btn btn-xs" onclick="openMetricsModal('${item.id}')">Métricas</button>
+          <button class="btn btn-xs btn-danger" onclick="deleteItem('${item.id}')">×</button>
+        </div>
+      </div>
+      ${triggers}
+      <div id="lib-expand-${item.id}" style="display:none;margin-top:12px;border-top:1px solid var(--border);padding-top:12px">
+        ${scriptHTML}
+        <button class="copy-btn mt8" onclick="copyFullScript('${item.id}')">📋 Copiar script completo</button>
+      </div>
+      <button class="btn btn-xs mt8" style="width:100%;background:rgba(79,70,229,.08);color:var(--indigo-light);border:1px solid rgba(79,70,229,.2)" onclick="toggleLibScript('${item.id}')">Ver script completo ▾</button>
+    </div>`;
+  }).join('');
+}
+function toggleLibScript(id){
+  const el=document.getElementById('lib-expand-'+id);
+  const btn=el.nextElementSibling;
+  const open=el.style.display==='block';
+  el.style.display=open?'none':'block';
+  btn.textContent=open?'Ver script completo ▾':'Ocultar script ▲';
+}
+function copyFullScript(id){
+  const item=localLibrary.find(i=>i.id===id);if(!item)return;
+  const parts=[
+    item.gancho&&'GANCHO:\n'+item.gancho,
+    (item.cuerpo_parte1||item.dolor)&&'CUERPO:\n'+(item.cuerpo_parte1||item.dolor),
+    (item.reenganche_1||item.ejemplo)&&'RE-ENGANCHE:\n'+(item.reenganche_1||item.ejemplo),
+    (item.cuerpo_parte2||item.fondo)&&''+(item.cuerpo_parte2||item.fondo),
+    (item.reenganche_2||item.cima)&&''+(item.reenganche_2||item.cima),
+    (item.cierre_insight||item.insight)&&'CIERRE:\n'+(item.cierre_insight||item.insight),
+    item.cta&&'CTA:\n'+item.cta
+  ].filter(Boolean).join('\n\n');
+  navigator.clipboard.writeText(parts).then(()=>notify('Script copiado al portapapeles'));
+}
+function setLibFilter(s){activeFilter=s;renderLibrary();}
+
+// ============ DIAGNOSTICO ============
+function populateDiagSelect(){
+  const sel=document.getElementById('diag-select');if(!sel)return;
+  const pub=localLibrary.filter(i=>i.publicado);
+  sel.innerHTML='<option value="">-- Elige un reel publicado --</option>';
+  pub.forEach(item=>sel.innerHTML+=`<option value="${item.id}">${item.titulo}</option>`);
+}
+function loadDiagScript(){
+  const id=v('diag-select');if(!id){document.getElementById('diag-preview').style.display='none';document.getElementById('diag-form').style.display='none';return;}
+  diagScriptId=id;const item=localLibrary.find(i=>i.id===id);if(!item)return;
+  document.getElementById('diag-title').textContent=item.titulo;
+  document.getElementById('diag-parts').innerHTML=`<strong>Gancho:</strong> ${item.gancho||'—'}<br><strong>Cuerpo:</strong> ${[item.dolor,item.ejemplo,item.fondo,item.cima].filter(Boolean).join(' / ')}<br><strong>CTA:</strong> ${item.cta||'—'}`;
+  document.getElementById('diag-preview').style.display='block';document.getElementById('diag-form').style.display='block';
+  if(item.metricas){document.getElementById('d-reprod').value=item.metricas.reproducciones||'';document.getElementById('d-alcance').value=item.metricas.alcance||'';document.getElementById('d-likes').value=item.metricas.likes||'';document.getElementById('d-coment').value=item.metricas.comentarios||'';document.getElementById('d-guard').value=item.metricas.guardados||'';document.getElementById('d-compart').value=item.metricas.compartidos||'';}
+  runDiag();
+}
+function runDiag(){
+  const reprod=+v('d-reprod')||0,alcance=+v('d-alcance')||0,likes=+v('d-likes')||0,coment=+v('d-coment')||0,guard=+v('d-guard')||0,compart=+v('d-compart')||0,completas=+v('d-completas')||0,retencion=+v('d-retencion')||0,duracion=+v('d-duracion')||30;
+  const cont=document.getElementById('diag-result');if(!reprod&&!alcance){cont.innerHTML='';return;}
+  const cr=alcance>0?Math.round((reprod/alcance)*100):0;const cmp=reprod>0?Math.round((completas/reprod)*100):0;const er=reprod>0?Math.round(((likes+coment+guard+compart)/reprod)*100):0;const ret=retencion||cmp;
+  const gS=cr>=15?'green':cr>=8?'yellow':'red';const cS=ret>=50?'green':ret>=25?'yellow':'red';const ctaS=er>=5?'green':er>=2?'yellow':'red';
+  const si={green:'✅',yellow:'⚠️',red:'❌'};const sl={green:'Funciona bien',yellow:'Puede mejorar',red:'Aqui se cae'};const sc={green:'diag-green',yellow:'diag-yellow',red:'diag-red'};const col={green:'#10b981',yellow:'#f59e0b',red:'#ef4444'};
+  const probs=[];
+  if(gS==='red')probs.push({zona:'GANCHO',desc:`Solo el ${cr}% reprodujo el reel. El gancho no detiene el scroll.`,fix:'Reescribir con pregunta mas provocadora o afirmacion que genere incomodidad inmediata.'});
+  if(cS==='red')probs.push({zona:'CUERPO',desc:`La audiencia ve en promedio el ${ret}% del reel. El cuerpo pierde tension.`,fix:'El ejemplo cotidiano debe ser mas especifico y doloroso. El fondo de pozo antes del segundo '+Math.round(duracion*.5)+'.'});
+  if(ctaS==='red')probs.push({zona:'CTA',desc:`Solo el ${er}% tomo alguna accion.`,fix:'El CTA necesita mas urgencia o una pregunta que invite a comentarios.'});
+  let html=`<div class="grid3">${[['Gancho',cr,Math.min(cr*4,100),gS],['Cuerpo',ret,Math.min(ret*1.5,100),cS],['CTA',er,Math.min(er*10,100),ctaS]].map(([n,p,f,s])=>`<div class="diag-zone ${sc[s]}"><p style="font-size:13px;font-weight:600">${si[s]} ${n}</p><p class="small mt4">${sl[s]}</p><div class="meter-label mt8"><span>${p}%</span></div><div class="meter-bar"><div class="meter-fill" style="width:${f}%;background:${col[s]}"></div></div></div>`).join('')}</div>`;
+  if(!probs.length){html+=`<div class="diag-zone diag-green mt12"><p style="font-size:13px;font-weight:600">✅ El reel funciona en todas las zonas</p><p class="small mt4">Gancho, cuerpo y CTA estan sobre el umbral. Usa este como base para combinar.</p></div>`;}
+  else{probs.forEach(p=>{html+=`<div class="diag-zone diag-red mt12"><p style="font-size:13px;font-weight:600">❌ Problema: ${p.zona}</p><p class="small mt4">${p.desc}</p><div class="card card-muted mt8" style="padding:10px"><span class="section-label">Que hacer</span><p class="small mt4">${p.fix}</p></div></div>`;});
+    const item=localLibrary.find(i=>i.id===diagScriptId);const zonas=probs.map(p=>p.zona).join(' y ');
+    const dp=item?`Gancho: "${item.gancho||''}" / Dolor: "${item.dolor||''}" / Ejemplo: "${item.ejemplo||''}" / CTA: "${item.cta||''}"` : '';
+    const op=`Eres un experto en optimizacion de scripts virales.\n${buildVozCtx()}\nEste reel tiene problemas en: ${zonas}.\n\nSCRIPT:\n${dp}\n\nDATOS: Click-through ${cr}%, Retencion ${ret}%, Engagement ${er}%\n\nReescribe SOLO las partes problematicas (${zonas}). Suena como Guillermo. JSON puro, sin backticks.\n{"optimizado":{"gancho":"","dolor":"","ejemplo":"","fondo":"","cima":"","insight":"","cta":""},"explicacion":"por que estos cambios mejoran el rendimiento"}`;
+    html+=`<div class="prompt-box mt12"><p class="small" style="color:var(--indigo-light);margin-bottom:8px;font-weight:600">Prompt para optimizar — pega en Claude:</p><pre style="font-size:11px;line-height:1.5;white-space:pre-wrap;word-break:break-word;color:var(--text2);margin-bottom:8px;max-height:140px;overflow-y:auto">${op}</pre><button class="copy-btn" onclick="navigator.clipboard.writeText(this.previousElementSibling.textContent).then(()=>{this.textContent='Copiado!';setTimeout(()=>this.textContent='Copiar prompt',2000)})">Copiar prompt</button></div>`;
+  }
+  cont.innerHTML=html;
+}
+
+// ============ PROMPTS ============
+// ============ TOPIC HELPERS ============
+function getGenTopic(){
+  const cat=document.querySelector('#gen-cat-pills .sf.active');
+  const catName=cat?cat.textContent.trim():'';
+  if(catName.includes('Núcleo')||catName.includes('nucleo')||catName.includes('BNE')) return v('gen-topic-nucleo');
+  if(catName.includes('Aplicaciones')||catName.includes('aplicaciones')) return v('gen-topic-aplicaciones');
+  return v('gen-topic-libre');
+}
+function getModTopic(){
+  const cat=document.querySelector('#mod-cat-pills .sf.active');
+  const catName=cat?cat.textContent.trim():'';
+  if(catName.includes('Núcleo')||catName.includes('BNE')) return v('mod-topic-nucleo');
+  if(catName.includes('Aplicaciones')) return v('mod-topic-aplicaciones');
+  return v('mod-topic-libre');
+}
+function setGenCat(cat){
+  document.querySelectorAll('#gen-cat-pills .sf').forEach(b=>b.classList.remove('active'));
+  event.target.classList.add('active');
+  ['nucleo','aplicaciones','libre'].forEach(c=>document.getElementById('gen-cat-'+c).style.display=c===cat?'block':'none');
+}
+function setModCat(cat){
+  document.querySelectorAll('#mod-cat-pills .sf').forEach(b=>b.classList.remove('active'));
+  event.target.classList.add('active');
+  ['nucleo','aplicaciones','libre'].forEach(c=>document.getElementById('mod-cat-'+c).style.display=c===cat?'block':'none');
+}
+
+// ============ STYLE DESCRIPTIONS ============
+const STYLE_DESCS={
+  'reflexivo-filosofico':'Lento, pausado. Como si pensaras en voz alta. Frases cortas con silencios implícitos. El espectador siente que está dentro de tu mente.',
+  'educativo-revelador':'Enseñas algo que casi nadie dijo antes. Tono de descubrimiento, no de clase magistral. La audiencia siente que accedió a información privilegiada.',
+  'verdad-incomoda':'Directo, sin anestesia. Le dices algo que sabe pero no quería ver. Produce incomodidad productiva — no agresividad.',
+  'storytelling-personal':'Primera persona, anécdota real. Como contarle algo importante a un amigo en un café. Específico, concreto, con detalles que generan imágenes.',
+  'emocional-sanador':'Tono de acompañamiento. Cálido pero honesto. El espectador siente que por fin alguien lo entiende sin juzgarlo.',
+  'provocador-disruptivo':'Rompe una creencia que el espectador tiene por verdad absoluta. Genera tensión cognitiva. Polemiza sin ofender.',
+  'dato-que-cambia-todo':'Abre con un dato de epigenética, neurociencia o psicología que nadie esperaba. La audiencia queda descolocada y necesita escuchar el resto.',
+  'conversacional-intimo':'Como un mensaje de voz. Informal, cercano, sin producción aparente. La naturalidad ES el gancho.',
+  'giro-inesperado':'El setup parece ir en una dirección obvia — y en el segundo 15 rompe la expectativa por completo. Alta retención por curiosidad.',
+  'contraintuitivo':'Defiende algo que parece incorrecto o impopular, lo demuestra con lógica sólida, y deja al espectador reconsiderando algo que creía fijo.'
+};
+
+// ============ STRUCTURE DESCRIPTIONS ============
+const STRUCT_DESCS={
+  clasica:'Tu estructura propia: el viaje emocional completo. Funciona para temas profundos donde el espectador necesita ser llevado de la mano desde el dolor hasta la transformación.',
+  pas:'Problema → Agitar → Solución. Directo y eficiente. Ideal para reels cortos de 30-45 seg. Nombras el dolor, lo haces más grande, ofreces la salida.',
+  bab:'Antes → Puente → Después. Transformación visible. "Así vivías antes / esto pasó / así vives ahora." Alta retención porque el espectador quiere ver el resultado.',
+  pastor:'La estructura de conversión más completa. Identifica la persona, amplifica el dolor, cuenta una historia real, muestra la transformación, hace una oferta clara.',
+  secret:'La más efectiva según datos (solo el 5% la usa). Promete revelar algo que pocos saben, genera expectativa, entrega el insight, dice cómo aplicarlo hoy.',
+  curiosity:'Abre con una pregunta o afirmación que el espectador no puede ignorar. Lee su mente ("sé lo que estás pensando"). Gira inesperadamente. Alto alcance orgánico.',
+  aida:'Atención → Interés → Deseo → Acción. Clásico del marketing adaptado a video corto. Cada segundo tiene un trabajo específico.',
+  '5cs':'Contexto → Conflicto → Clímax → Conclusión → CTA. Para historias con inicio, nudo y desenlace. Funciona si tienes una anécdota poderosa que contar.'
+};
+
+function updateStyleDesc(){
+  const s=v('gen-style');const desc=document.getElementById('style-desc');
+  if(STYLE_DESCS[s]){desc.textContent=STYLE_DESCS[s];desc.style.display='block';}
+  else desc.style.display='none';
+}
+function updateStructureDesc(){
+  const s=v('gen-structure');const desc=document.getElementById('structure-desc');
+  if(STRUCT_DESCS[s]){desc.textContent=STRUCT_DESCS[s];desc.style.display='block';}
+  else desc.style.display='none';
+}
+
+// ============ STRUCTURE PROMPT BUILDER ============
+function buildStructureInstructions(structure, hookObj){
+  const H=hookObj?`USA ESTE GANCHO EXACTO: "${hookObj.text}"`:'Genera un gancho original que detenga el scroll en 1.5 segundos';
+  const structs={
+    clasica:`ESTRUCTURA — CLÁSICA (7 pasos):
+1. GANCHO — ${H}
+2. DOLOR — El problema que el espectador reconoce en sí mismo (usa sus palabras, no jerga técnica)
+3. EJEMPLO COTIDIANO — Situación concreta y específica que ilustra el dolor
+4. FONDO DE POZO — El momento de mayor crisis o toma de consciencia
+5. CIMA DE LA MONTAÑA — El giro, el insight que lo cambia todo
+6. INSIGHT — La enseñanza central con profundidad real, desde el marco BNE
+7. CTA — Llamada a la acción clara, directa, sin presión`,
+
+    pas:`ESTRUCTURA — PAS (3 movimientos):
+1. PROBLEMA — ${H} / Nombra el problema exacto con las palabras que usa el espectador cuando se queja a solas
+2. AGITAR — Profundiza en el dolor. Muestra las consecuencias de no resolverlo. Hazlo más real, más urgente
+3. SOLUCIÓN — El insight desde tu marco. La salida concreta. CTA directo al final
+(Reel corto: 30-45 seg. Sin relleno.)`,
+
+    bab:`ESTRUCTURA — BAB (Antes/Puente/Después):
+1. ANTES — ${H} / Pinta el estado actual del espectador: cómo vive, qué siente, qué repite sin entender por qué
+2. PUENTE — El momento de consciencia. Qué descubriste / qué cambió / cuál fue la clave
+3. DESPUÉS — La vida cuando ese patrón se transforma. Concreto, visual, emocional. CTA`,
+
+    pastor:`ESTRUCTURA — PASTOR (conversión profunda):
+1. PERSONA/PROBLEMA — ${H} / Describe con precisión a quién le hablas y qué le duele
+2. AMPLIFICAR — Expande el dolor. Qué pasa si esto no se resuelve. El costo real de no cambiar
+3. HISTORIA/SOLUCIÓN — Una anécdota real (tuya o de un caso) donde esto se resolvió
+4. TRANSFORMACIÓN — Cómo quedó esa persona después. Qué cambió concretamente
+5. OFERTA/INSIGHT — El marco conceptual que lo explica. La enseñanza central
+6. RESPUESTA/CTA — Qué debe hacer el espectador ahora mismo`,
+
+    secret:`ESTRUCTURA — SECRET VALUE (la más viral según datos):
+1. GANCHO SECRETO — ${H} / "Hay algo sobre [tema] que casi nadie te dice / que descubrí después de [X]..."
+2. CONTEXTO — Por qué este secreto existe / por qué la mayoría no lo sabe
+3. REVELACIÓN — El insight. Lo que realmente está pasando. Desde tu marco BNE, profundo y claro
+4. APLICACIÓN — Cómo aplicar esto hoy, ahora, en su vida concreta
+5. CTA — Invita a guardar / comentar / preguntar`,
+
+    curiosity:`ESTRUCTURA — CURIOSITY PEAK (máxima retención):
+1. PREGUNTA/AFIRMACIÓN — ${H} / Algo que el espectador no puede ignorar
+2. LEE LA MENTE — "Sé lo que estás pensando..." Anticipa su objeción o creencia. Valídala brevemente
+3. GIRO — La información inesperada. Algo que contradice lo que creía. El momento de "espera, ¿qué?"
+4. INSIGHT — La explicación profunda del giro. Por qué esto es así desde la BNE
+5. CTA — Pregunta que invite a comentar o reflexionar`,
+
+    aida:`ESTRUCTURA — AIDA (4 beats exactos):
+1. ATENCIÓN (0-2 seg) — ${H} / Golpe visual o verbal que rompe el scroll
+2. INTERÉS (2-15 seg) — Desarrolla el tema con datos, historia o paradoja que genere curiosidad real
+3. DESEO (15-40 seg) — Muestra la transformación posible. Qué gana el espectador si entiende esto
+4. ACCIÓN (últimos 5 seg) — CTA específico: guardar, comentar, escribirte, aplicar algo hoy`,
+
+    '5cs':`ESTRUCTURA — 5Cs (storytelling completo):
+1. CONTEXTO — ${H} / Sitúa al espectador: quién, cuándo, dónde empieza la historia
+2. CONFLICTO — El problema central. La tensión que hace que valga la pena escuchar
+3. CLÍMAX — El punto de máxima tensión o el momento de quiebre / revelación
+4. CONCLUSIÓN — Cómo se resolvió. El insight. Lo que aprendiste o lo que cambió
+5. CTA — Cierre con llamada a la acción conectada a la conclusión`
+  };
+  return structs[structure]||structs.clasica;
+}
+
+// ============ STYLE TONE INSTRUCTIONS ============
+function buildStyleTone(style){
+  const tones={
+    'reflexivo-filosofico':'TONO: Lento y contemplativo. Frases cortas. Como pensar en voz alta. El espectador siente que está dentro de tu mente procesando algo. Evita las explicaciones largas.',
+    'educativo-revelador':'TONO: Descubrimiento, no clase magistral. Usa "pocos saben que...", "lo que nadie explica es...", "la ciencia acaba de confirmar...". La audiencia siente acceso privilegiado.',
+    'verdad-incomoda':'TONO: Directo, sin anestesia ni suavizadores. Dice lo que el espectador sabe pero evita pensar. No es agresivo — es honesto. Produce incomodidad productiva.',
+    'storytelling-personal':'TONO: Primera persona, anécdota específica y real. Detalles concretos que generan imágenes. Como contarle algo a un amigo. Nada genérico.',
+    'emocional-sanador':'TONO: Cálido, de acompañamiento. El espectador siente que por fin alguien lo entiende sin juzgarlo. Valida antes de enseñar.',
+    'provocador-disruptivo':'TONO: Rompe una creencia popular. Genera tensión cognitiva. Polemiza sin atacar. Usa afirmaciones fuertes que hagan al espectador pensar "momento, eso no puede ser así".',
+    'dato-que-cambia-todo':'TONO: Abre con un dato real de epigenética, neurociencia o psicología evolutiva que descoloca. La sorpresa ES el gancho. Luego explica las implicaciones.',
+    'conversacional-intimo':'TONO: Informal, como un mensaje de voz. Sin producción aparente. La naturalidad es el gancho. Habla como si hubiera solo una persona escuchando.',
+    'giro-inesperado':'TONO: El setup parece llevar a una conclusión obvia — y en el segundo 15 rompe la expectativa por completo. La estructura misma genera retención.',
+    'contraintuitivo':'TONO: Defiende algo que parece incorrecto o impopular. Lo demuestra con lógica sólida y ejemplos reales. Deja al espectador reconsiderando algo que creía inamovible.'
+  };
+  return tones[style]||'TONO: Emocional y directo. Voz auténtica de Guillermo.';
+}
+
+function setDur(val,btn){
+  document.getElementById('gen-duration').value=val;
+  document.querySelectorAll('#gen-dur-pills .sf').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+// ============ VIRAL CORE — triggers, timing, CTA ============
+const VIRAL_RULES=`
+REGLAS VIRALES (algoritmo Instagram/TikTok 2025-2026):
+
+GANCHO (0-3 seg) — activa LOS 3 triggers simultáneamente:
+① PATTERN INTERRUPT: afirmación bold, paradoja o statement contraintuitivo que rompa el scroll
+② TRIGGER PSICOLÓGICO: FOMO / Negativo ("el error que cometes") / Secreto / Transformación de alto riesgo
+③ OPEN LOOP: pregunta sin responder que solo se cierra viendo el video completo
+Máximo 15 palabras. Sin saludos. Sin contexto. Golpe directo.
+
+CUERPO — re-enganche cada 8 segundos:
+Cada 8 seg: dato inesperado, pregunta directa, giro de perspectiva, o afirmación polémica.
+Nunca más de 2 frases sin un hook interno.
+
+CTA — 3 señales del algoritmo en orden de importancia:
+① SENDS (#1): "Mándale esto a alguien que lo necesita" / "¿A quién le mandarías esto?"
+② SAVES (#2): "Guarda esto antes de seguir scrolleando"
+③ COMENTARIOS (#3): pregunta de identidad — "eso soy yo exactamente"
+
+Texto listo para hablar en cámara. Español latinoamericano neutro. Sin relleno. Máx 60 seg.
+JSON puro, sin backticks, sin texto antes o después.`;
+
+function buildGeneratePrompt(){
+  const t=getGenTopic();
+  if(!t||!t.trim()){notify('Elige o escribe un tema primero','warn');return;}
+  const style=v('gen-style');
+  const qty=v('gen-qty-sel')||'3';
+  const structure=v('gen-structure');
+  const dur=v('gen-duration')||'30';
+  const structInstr=buildStructureInstructions(structure,null);
+  const styleTone=buildStyleTone(style);
+
+  const durGuide={
+    '15':'DURACIÓN: 15 segundos. Máximo 40 palabras en total. Solo gancho + una idea + CTA de una frase. Sin desarrollo. Golpe directo.',
+    '30':'DURACIÓN: 30 segundos. Máximo 80 palabras. Gancho + desarrollo breve (2-3 frases) + CTA corto.',
+    '45':'DURACIÓN: 45 segundos. Máximo 120 palabras. Gancho + desarrollo con un re-enganche + cierre + CTA.',
+    '60':'DURACIÓN: 60 segundos. Máximo 160 palabras. Estructura completa con dos re-enganches.',
+    '90':'DURACIÓN: 90 segundos. Máximo 240 palabras. Estructura completa con storytelling desarrollado.'
+  }[dur]||'DURACIÓN: 30 segundos. Máximo 80 palabras.';
+
+  const prompt=`Eres el mejor generador de scripts virales para reels del mundo hispanohablante. Especialidad: consciencia, psicología y transformación personal.${buildVozCtx()}${buildKnowCtx()}
+${VIRAL_RULES}
+
+${durGuide}
+CRÍTICO: Respeta el límite de palabras. Cada palabra debe ganarse su lugar. Sin relleno.
+
+${structInstr}
+
+${styleTone}
+
+Crea ${qty} scripts DISTINTOS sobre: "${t}"
+Cada uno con gancho diferente, ángulo diferente, entrada diferente. Compiten entre sí.
+
+{"scripts":[{"titulo":"","estilo":"${style}","estructura":"${structure}","gancho":"","cuerpo_parte1":"","reenganche_1":"","cuerpo_parte2":"","reenganche_2":"","cierre_insight":"","cta":"","triggers_activados":[],"duracion_seg":"${dur}"}]}`;
+  document.getElementById('gen-prompt-text').textContent=prompt;
+  document.getElementById('gen-prompt-box').style.display='block';
+  document.getElementById('gen-import-box').style.display='block';
+}
+
+function buildModelPrompt(){
+  const text=v('mod-text');if(!text.trim()){notify('Pega la transcripción primero','warn');return;}
+  const author=v('mod-author');
+  const t=getModTopic();
+  if(!t||!t.trim()){notify('Elige o escribe un tema','warn');return;}
+  const qty=v('mod-qty')||'2';
+  const prompt=`Eres un experto en ingeniería inversa de contenido viral.${buildVozCtx()}${buildKnowCtx()}
+
+TAREA 1 — DISECCIÓN VIRAL
+Reel${author?' de @'+author:''}:
+"${text}"
+
+Extrae con precisión:
+- FRAMEWORK: nombre exacto (PAS, BAB, PASTOR, Secret Value, Curiosity Peak, AIDA, 5Cs, otro)
+- GANCHO: qué triggers activa (pattern interrupt / trigger psicológico / open loop) y cómo
+- RE-ENGANCHES: dónde y cómo resetea la atención
+- CTA: a qué señal apunta (sends / saves / comentarios)
+- RAZÓN VIRAL: por qué psicológicamente funciona
+
+TAREA 2 — REPLICAR CON VOZ DE GUILLERMO
+${qty} scripts con el mismo framework, los mismos triggers y la misma ingeniería de retención.
+Tema: "${t}" — cada script con ángulo distinto.
+${VIRAL_RULES}
+
+{"framework_detectado":{"nombre":"","gancho_triggers":[],"reenganches":[],"cta_signal":"","razon_viral":""},"scripts":[{"titulo":"","framework":"","gancho":"","cuerpo_parte1":"","reenganche_1":"","cuerpo_parte2":"","reenganche_2":"","cierre_insight":"","cta":"","triggers_activados":[],"duracion_seg":""}]}`;
+  document.getElementById('mod-prompt-text').textContent=prompt;
+  document.getElementById('mod-prompt-box').style.display='block';
+  document.getElementById('mod-import-box').style.display='block';
+}
+
+function buildCombinePrompt(){
+  const filled=slots.map((s,i)=>({script:s,parts:slotParts[i]})).filter(s=>s.script);
+  if(filled.length<2){notify('Selecciona al menos 2 scripts','warn');return;}
+  const t=v('comb-topic-input');
+  if(!t||!t.trim()){notify('Escribe el tema del script fusionado','warn');return;}
+  let details='';
+  filled.forEach((slot,i)=>{
+    details+=`\nSCRIPT ${i+1} — "${slot.script.titulo}"\n`;
+    ['gancho','cuerpo_parte1','reenganche_1','cuerpo_parte2','reenganche_2','cierre_insight','dolor','ejemplo','fondo','cima','insight','cta'].forEach(p=>{if(slot.script[p])details+=`${p}: ${slot.script[p]}\n`;});
+  });
+  const prompt=`Eres el mejor editor de scripts virales del mundo hispanohablante.${buildVozCtx()}${buildKnowCtx()}
+
+TAREA: Extrae lo mejor de cada script y crea UN script nuevo, superior a todos.
+Mejor gancho + mejor re-enganche + mejor cierre. Algo que ninguno tiene por separado.
+Tema: "${t}"
+${details}
+${VIRAL_RULES}
+
+{"scripts":[{"titulo":"","gancho":"","cuerpo_parte1":"","reenganche_1":"","cuerpo_parte2":"","reenganche_2":"","cierre_insight":"","cta":"","triggers_activados":[],"duracion_seg":"","nota_fusion":""}]}`;
+  document.getElementById('comb-prompt-text').textContent=prompt;
+  document.getElementById('comb-prompt-box').style.display='block';
+  document.getElementById('comb-import-box').style.display='block';
+}
+
+function copyPrompt(id,btn){navigator.clipboard.writeText(document.getElementById(id).textContent).then(()=>{btn.textContent='Copiado!';setTimeout(()=>btn.textContent='Copiar prompt',2000);});}
+
+// ============ IMPORT ============
+function importScripts(){
+  try{
+    const data=JSON.parse(v('gen-import-text').replace(/```json|```/g,''));
+    const t=getGenTopic();
+    const cont=document.getElementById('gen-results');cont.innerHTML='';
+    (data.scripts||[]).forEach(s=>cont.appendChild(buildScriptCard(s,t,'Generado')));
+  }catch(e){notify('Formato inválido. Pega el JSON completo.','error');}
+}
+
+function importModelScripts(){
+  try{
+    const data=JSON.parse(v('mod-import-text').replace(/```json|```/g,''));
+    const t=getModTopic();
+    const cont=document.getElementById('mod-results');cont.innerHTML='';
+    if(data.framework_detectado){
+      const fw=data.framework_detectado;
+      const d=document.createElement('div');d.className='card card-muted';
+      d.innerHTML='<p style="font-weight:600;font-size:13px;margin-bottom:8px">🔍 Framework detectado: <span style="color:var(--indigo-light)">'+( fw.nombre||'—')+'</span></p>'
+        +(fw.gancho_triggers?.length?'<div class="mt8"><span class="section-label">Triggers del gancho</span><div class="flex gap4 mt4" style="flex-wrap:wrap">'+fw.gancho_triggers.map(t=>'<span class="badge badge-indigo">'+t+'</span>').join('')+'</div></div>':'')
+        +(fw.cta_signal?'<div class="mt8"><span class="section-label">CTA signal</span><p class="small mt4">'+fw.cta_signal+'</p></div>':'')
+        +(fw.razon_viral?'<div class="card card-muted mt8" style="padding:10px"><span class="section-label">Por qué funciona</span><p class="small mt4" style="line-height:1.5">'+fw.razon_viral+'</p></div>':'');
+      cont.appendChild(d);
+      const badge=document.getElementById('mod-framework-badge');
+      if(badge&&fw.nombre){badge.style.display='block';document.getElementById('mod-fw-name').textContent=fw.nombre;document.getElementById('mod-fw-desc').textContent=fw.razon_viral||'';}
+    }
+    (data.scripts||[]).forEach(s=>cont.appendChild(buildScriptCard(s,t,'Modelado')));
+  }catch(e){notify('Formato inválido. Pega el JSON completo.','error');}
+}
+
+function importCombinedScripts(){
+  try{
+    const data=JSON.parse(v('comb-import-text').replace(/```json|```/g,''));
+    const t=v('comb-topic-input')||'Combinado';
+    const cont=document.getElementById('comb-results');cont.innerHTML='';
+    (data.scripts||[]).forEach(s=>{
+      const card=buildScriptCard(s,t,'Combinado');
+      if(s.nota_fusion){const n=document.createElement('div');n.style.cssText='margin-top:8px;padding:10px;background:rgba(168,85,247,.08);border:1px solid rgba(168,85,247,.2);border-radius:8px';n.innerHTML='<span class="section-label" style="color:var(--accent)">Nota de fusión</span><p class="small mt4" style="line-height:1.5">'+s.nota_fusion+'</p>';card.appendChild(n);}
+      cont.appendChild(card);
+    });
+  }catch(e){notify('Formato inválido.','error');}
+}
+
+
+function bBlock(label,val){if(!val)return'';return`<div class="block"><span class="section-label">${label}</span><p>${val}</p></div>`;}
+function buildScriptCard(s,tema,fuente){
+  const div=document.createElement('div');div.className='card';
+  const fc=fuente==='Combinado'?'badge-purple':fuente.startsWith('Modelado')?'badge-electric':'badge-gray';
+  const dur=s.duracion_seg||s.duracion_estimada||'';
+  const triggers=(s.triggers_activados||[]).length
+    ?`<div class="flex gap4 mt6" style="flex-wrap:wrap">${s.triggers_activados.map(t=>`<span class="badge badge-indigo">${t}</span>`).join('')}</div>`:'';
+  // Bloques del script — soporta formato nuevo (cuerpo_parte1) y viejo (dolor/ejemplo/etc)
+  const bloques=[
+    {label:'GANCHO',val:s.gancho},
+    {label:'CUERPO',val:s.cuerpo_parte1||s.dolor},
+    {label:'RE-ENGANCHE',val:s.reenganche_1||s.ejemplo},
+    {label:'DESARROLLO',val:s.cuerpo_parte2||s.fondo},
+    {label:'RE-ENGANCHE 2',val:s.reenganche_2||s.cima},
+    {label:'CIERRE / INSIGHT',val:s.cierre_insight||s.insight},
+    {label:'CTA',val:s.cta}
+  ].filter(b=>b.val);
+  const scriptHTML=bloques.map(b=>`<div style="margin-bottom:10px"><span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--indigo-light)">${b.label}</span><p style="margin-top:3px;font-size:13px;line-height:1.6;color:var(--text)">${b.val}</p></div>`).join('');
+  div.innerHTML=`
+    <div class="top-row">
+      <div style="flex:1">
+        <p style="font-weight:600;font-size:14px">${s.titulo||'Sin título'}</p>
+        <p class="small mt4" style="color:var(--text2)">${s.estilo||''} ${dur?'· '+dur+'s':''}</p>
+        <span class="badge ${fc}" style="margin-top:4px">${fuente}</span>
+        ${triggers}
+      </div>
+      <div class="flex gap4" style="flex-direction:column;margin-left:8px">
+        <button class="btn btn-xs" onclick='addHookFromScript("${(s.gancho||'').replace(/"/g,"'").replace(/\n/g,' ')}","${s.estilo||''}")'>+ Gancho</button>
+        <button class="btn btn-xs btn-primary" onclick='saveToLibrary(JSON.parse(decodeURIComponent("${encodeURIComponent(JSON.stringify(s))}")), "${tema}","${fuente}")'>Guardar</button>
+      </div>
+    </div>
+    <div class="mt12" style="border-top:1px solid var(--border);padding-top:12px">${scriptHTML}</div>
+    <button class="copy-btn mt8" onclick="copyFullScriptFromCard(this)">📋 Copiar script</button>`;
+  // Guardar texto completo en dataset para copiar
+  div.querySelector('.copy-btn').dataset.script=bloques.map(b=>b.label+':\n'+b.val).join('\n\n');
+  return div;
+}
+function copyFullScriptFromCard(btn){
+  navigator.clipboard.writeText(btn.dataset.script).then(()=>{btn.textContent='✓ Copiado';setTimeout(()=>btn.textContent='📋 Copiar script',2000);});
+}
+async function addHookFromScript(text,style){
+  if(!text)return;
+  const data={user_id:currentUser.id,text,categoria:'Otro',estilo:style,notes:'Extraido de script'};
+  try{const rows=await sbFetch('rs_hooks',{method:'POST',body:JSON.stringify(data)});if(rows)localHooks.unshift(rows[0]);updateHookSelect();notify('Gancho guardado en el banco');}catch(e){notify('Error','error');}
+}
+
+// ============ COMBINAR ============
+function renderCombineSlots(){
+  [0,1,2].forEach(i=>{const slot=slots[i];const info=document.getElementById(`slot-${i}-info`);const el=document.getElementById(`slot-${i}`);
+  if(slot){info.style.display='block';el.classList.add('filled');document.getElementById(`slot-${i}-title`).textContent=slot.titulo;document.getElementById(`slot-${i}-meta`).textContent=`${slot.estilo} · ${slot.tema}`;const sc=calcScore(slot);document.getElementById(`slot-${i}-score`).textContent=sc?`Score: ${sc} pts`:'Sin metricas';document.getElementById(`slot-${i}-parts`).innerHTML=PARTS.map(p=>`<button class="part-btn${slotParts[i][p]?' active':''}" onclick="togglePart(${i},'${p}',this)">${PL[p]}</button>`).join('');}else{info.style.display='none';el.classList.remove('filled');}});
+}
+function togglePart(si,part,btn){slotParts[si][part]=!slotParts[si][part];btn.classList.toggle('active',slotParts[si][part]);}
+function openScriptPicker(si){
+  currentPickerSlot=si;const list=document.getElementById('picker-list');
+  if(!localLibrary.length){list.innerHTML='<p class="small">No hay scripts en biblioteca.</p>';}
+  else{const sorted=[...localLibrary].sort((a,b)=>(calcScore(b)||0)-(calcScore(a)||0));list.innerHTML=sorted.map(item=>{const sc=calcScore(item);return`<div class="card" style="cursor:pointer;padding:10px 12px;margin-top:6px" onclick="selectScript('${item.id}')"><div class="top-row"><div><p style="font-weight:500;font-size:13px">${item.titulo}</p><p class="small mt4">${item.estilo} · ${item.tema}</p></div>${sc?`<span class="score-badge">${sc} pts</span>`:''}</div></div>`;}).join('');}
+  openModal('picker-modal');
+}
+function selectScript(id){slots[currentPickerSlot]=localLibrary.find(i=>i.id===id);slotParts[currentPickerSlot]={};closeModal('picker-modal');renderCombineSlots();}
+
+// ============ ANALYTICS ============
+function renderAnalytics(){
+  const pub=localLibrary.filter(i=>i.publicado&&i.metricas);const cont=document.getElementById('analytics-content');
+  if(!pub.length){cont.innerHTML='<p class="small">No hay reels con metricas todavia.</p>';return;}
+  const tA=pub.reduce((a,i)=>a+(i.metricas?.alcance||0),0);const tG=pub.reduce((a,i)=>a+(i.metricas?.guardados||0),0);const avgR=(pub.reduce((a,i)=>a+(i.rating||0),0)/pub.length).toFixed(1);
+  const styles=['Reflexivo','Educativo','Revelador','Storytelling','Emocional','Incomodo'];
+  const byStyle=styles.map(s=>{const items=pub.filter(i=>i.estilo===s);return items.length?{style:s,count:items.length,avg:(items.reduce((a,i)=>a+(i.rating||0),0)/items.length).toFixed(1),guardados:items.reduce((a,i)=>a+(i.metricas?.guardados||0),0)}:null;}).filter(Boolean);
+  const top=[...pub].sort((a,b)=>(calcScore(b)||0)-(calcScore(a)||0)).slice(0,3);
+  const byFuente=['Generado','Modelado','Combinado'].map(f=>{const items=pub.filter(i=>i.fuente===f||i.fuente?.startsWith(f));return items.length?{fuente:f,count:items.length,avgScore:Math.round(items.reduce((a,i)=>a+(calcScore(i)||0),0)/items.length)}:null;}).filter(Boolean);
+  cont.innerHTML=`<div class="metric-grid"><div class="metric-card"><div class="lbl">Reels publicados</div><div class="val">${pub.length}</div></div><div class="metric-card"><div class="lbl">Alcance total</div><div class="val">${tA.toLocaleString()}</div></div><div class="metric-card"><div class="lbl">Guardados totales</div><div class="val">${tG.toLocaleString()}</div></div><div class="metric-card"><div class="lbl">Rating promedio</div><div class="val">${avgR}/5</div></div></div>
+  ${byFuente.length>1?`<div class="glow-divider"></div><p style="font-size:13px;font-weight:600;margin-bottom:8px">Generado vs Modelado vs Combinado</p>${byFuente.map(f=>`<div class="card" style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px"><span style="font-weight:500">${f.fuente}</span><div class="flex gap12"><span class="small">${f.count} reels</span><span class="small">Score prom: <strong>${f.avgScore}</strong></span></div></div>`).join('')}`:''}
+  ${byStyle.length?`<div class="glow-divider"></div><p style="font-size:13px;font-weight:600;margin:0 0 8px">Por estilo</p>${byStyle.map(s=>`<div class="card" style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px"><span style="font-weight:500">${s.style}</span><div class="flex gap12"><span class="small">${s.count} reels</span><span class="small">Guardados: <strong>${s.guardados}</strong></span><span class="small">Rating: <strong>${s.avg}</strong></span></div></div>`).join('')}`:''}
+  ${top.length?`<div class="glow-divider"></div><p style="font-size:13px;font-weight:600;margin:0 0 8px">Top reels</p>${top.map((item,i)=>`<div class="card" style="padding:10px 14px"><div class="flex gap8"><span style="font-size:18px;font-weight:700;color:var(--text3);min-width:24px">#${i+1}</span><div><p style="font-weight:500;font-size:13px">${item.titulo}</p><p class="small mt4">${item.estilo} · ${item.fuente}</p><p class="small mt4">Score: <strong>${calcScore(item)}</strong> · Guardados: <strong>${item.metricas?.guardados||0}</strong></p></div></div></div>`).join('')}`:''}`;
+}
+
+// ============ MODALS ============
+function openModal(id){document.getElementById(id).classList.add('open');}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+
+// ============ SWITCH TAB ============
+function toggleMoreMenu(){const m=document.getElementById('mobile-more-menu');m.classList.toggle('open');}
+document.addEventListener('click',function(e){const m=document.getElementById('mobile-more-menu');if(m&&m.classList.contains('open')&&!m.contains(e.target)&&e.target.id!=='mn-more'){m.classList.remove('open');}});
+
+function switchTab(name){
+  saveActiveTab(name);
+  const names=['voz','conocimiento','generar','modelar','combinar','diagnostico','ganchos','calendario','flash','biblioteca','analytics'];
+  document.querySelectorAll('.nav-item').forEach((el,i)=>el.classList.toggle('active',names[i]===name));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  const panel=document.getElementById('tab-'+name);if(panel)panel.classList.add('active');
+  // Sync mobile nav
+  document.querySelectorAll('.mobile-nav-item[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===name));
+  document.querySelectorAll('.mobile-nav-more-item[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===name));
+  if(name==='biblioteca')renderLibrary();
+  if(name==='analytics')renderAnalytics();
+  if(name==='combinar')renderCombineSlots();
+  if(name==='diagnostico')populateDiagSelect();
+  if(name==='ganchos')renderHooks();
+  if(name==='calendario')renderCalendar();
+  if(name==='flash')renderFlash();
+  if(name==='conocimiento')renderKnowledge();
+  if(name==='generar'){updateVozIndicator();updateHookSelect();}
+}
+
+// ============ AUTO-LOGIN DESDE SESIÓN GUARDADA ============
+(async function tryAutoLogin(){
+  const sess=loadSession();
+  if(!sess)return;
+  hide('landing');show('login');
+  document.getElementById('login-user').value=sess.username||'';
+  const btn=document.querySelector('#login .btn-electric');
+  if(btn){btn.textContent='Verificando...';btn.disabled=true;}
+  try{
+    const rows=await sbFetch(`rs_users?username=eq.${encodeURIComponent(sess.username)}&select=*`);
+    if(rows&&rows.length){
+      currentUser=rows[0];
+      document.getElementById('nav-username').textContent=currentUser.display_name||currentUser.username;
+      document.getElementById('nav-avatar').textContent=(currentUser.display_name||currentUser.username)[0].toUpperCase();
+      showApp();
+      await loadAllData();
+      switchTab(loadActiveTab());
+    } else {
+      localStorage.removeItem('rs_session');
+      if(btn){btn.textContent='Entrar';btn.disabled=false;}
+      document.getElementById('login-user').value='';
+    }
+  }catch(e){
+    localStorage.removeItem('rs_session');
+    if(btn){btn.textContent='Entrar';btn.disabled=false;}
+  }
+})();
+
+// Init descriptions on load
+// style/structure desc removed
+
+// ============ LANDING ANIMATION ============
+document.querySelectorAll('.feat-card').forEach((card,i)=>{
+  card.style.opacity='0';card.style.transform='translateY(20px)';
+  setTimeout(()=>{card.style.transition='opacity .5s ease, transform .5s ease';card.style.opacity='1';card.style.transform='translateY(0)';},300+i*80);
+});
+</script>
+</body>
+</html>
