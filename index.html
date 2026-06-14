@@ -793,14 +793,19 @@ function notify(msg,type='success'){
 // ============ AUTH ============
 async function doLogin(){
   const user=v('login-user').trim().toLowerCase();const pass=v('login-pass').trim();
+  if(!user||!pass){document.getElementById('login-err').style.display='block';return;}
   document.getElementById('login-err').style.display='none';
+  const btn=document.querySelector('#login .btn-electric');
+  if(btn){btn.textContent='Entrando...';btn.disabled=true;}
   try{
     const res=await fetch(`${SB_URL}/rest/v1/rs_users?select=*&username=eq.${encodeURIComponent(user)}`,{
       headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json'}
     });
     const rows=await res.json();
     if(!rows||!rows.length||rows[0].password_hash!==pass){
-      document.getElementById('login-err').style.display='block';return;
+      document.getElementById('login-err').style.display='block';
+      if(btn){btn.textContent='Entrar';btn.disabled=false;}
+      return;
     }
     currentUser=rows[0];
     document.getElementById('nav-username').textContent=currentUser.display_name||currentUser.username;
@@ -811,7 +816,9 @@ async function doLogin(){
     switchTab(loadActiveTab());
   }catch(e){
     console.error('Login error:',e);
+    document.getElementById('login-err').textContent='Error de conexión. Intenta de nuevo.';
     document.getElementById('login-err').style.display='block';
+    if(btn){btn.textContent='Entrar';btn.disabled=false;}
   }
 }
 function doLogout(){currentUser=null;localVoz={};localBooks=[];localConcepts=[];localLibrary=[];localHooks=[];localCalendar={};localFlash=[];localStorage.removeItem('rs_session');localStorage.removeItem('rs_tab');showLanding();}
@@ -1397,8 +1404,12 @@ function switchTab(name){
 (async function tryAutoLogin(){
   const sess=loadSession();
   if(!sess)return;
+  hide('landing');show('login');
+  document.getElementById('login-user').value=sess.username||'';
+  const btn=document.querySelector('#login .btn-electric');
+  if(btn){btn.textContent='Verificando...';btn.disabled=true;}
   try{
-    const rows=await sbFetch(`rs_users?username=eq.${sess.username}&select=*`);
+    const rows=await sbFetch(`rs_users?username=eq.${encodeURIComponent(sess.username)}&select=*`);
     if(rows&&rows.length){
       currentUser=rows[0];
       document.getElementById('nav-username').textContent=currentUser.display_name||currentUser.username;
@@ -1406,10 +1417,17 @@ function switchTab(name){
       showApp();
       await loadAllData();
       switchTab(loadActiveTab());
+    } else {
+      localStorage.removeItem('rs_session');
+      if(btn){btn.textContent='Entrar';btn.disabled=false;}
+      document.getElementById('login-user').value='';
     }
-  }catch(e){localStorage.removeItem('rs_session');}
+  }catch(e){
+    localStorage.removeItem('rs_session');
+    if(btn){btn.textContent='Entrar';btn.disabled=false;}
+  }
 })();
-// comb-topic removed
+
 // Init descriptions on load
 // style/structure desc removed
 
