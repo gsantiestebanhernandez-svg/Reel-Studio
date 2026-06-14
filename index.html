@@ -1072,8 +1072,8 @@ document.getElementById('cal-add-modal').addEventListener('click',function(e){if
 
 // ============ LIBRARY ============
 async function saveToLibrary(s,tema,fuente){
-  const data={user_id:currentUser.id,titulo:s.titulo,estilo:s.estilo,tema,fuente,gancho:s.gancho,dolor:s.dolor,ejemplo:s.ejemplo,fondo:s.fondo,cima:s.cima,insight:s.insight,cta:s.cta,duracion_estimada:s.duracion_estimada};
-  try{const rows=await sbFetch('rs_library',{method:'POST',body:JSON.stringify(data)});if(rows)localLibrary.unshift(rows[0]);notify('Script guardado en biblioteca');}catch(e){notify('Error','error');}
+  const data={user_id:currentUser.id,titulo:s.titulo,estilo:s.estilo,estructura:s.estructura||s.framework||'',tema,fuente,gancho:s.gancho,cuerpo_parte1:s.cuerpo_parte1||'',reenganche_1:s.reenganche_1||'',cuerpo_parte2:s.cuerpo_parte2||'',reenganche_2:s.reenganche_2||'',cierre_insight:s.cierre_insight||'',dolor:s.dolor,ejemplo:s.ejemplo,fondo:s.fondo,cima:s.cima,insight:s.insight,cta:s.cta,triggers_activados:s.triggers_activados||[],duracion_seg:s.duracion_seg||'',duracion_estimada:s.duracion_estimada};
+  try{const rows=await sbFetch('rs_library',{method:'POST',body:JSON.stringify(data)});if(rows&&rows.length)localLibrary.unshift(rows[0]);notify('Script guardado en biblioteca');}catch(e){console.error('saveToLibrary:',e);notify('Error: '+e.message,'error');}
 }
 async function deleteItem(id){if(!confirm('Eliminar script?'))return;try{await sbFetch(`rs_library?id=eq.${id}`,{method:'DELETE'});localLibrary=localLibrary.filter(i=>i.id!==id);renderLibrary();}catch(e){notify('Error','error');}}
 async function saveMetrics(){
@@ -1140,15 +1140,35 @@ function reutilizarScript(id){
   saveToLibrary({titulo:item.titulo,estilo:item.estilo,gancho:item.gancho,dolor:item.dolor,ejemplo:item.ejemplo,fondo:item.fondo,cima:item.cima,insight:item.insight,cta:item.cta,duracion_estimada:item.duracion_estimada},item.tema||'','Reutilizado');
 }
 function renderLibrary(){
-  const styles=['Todos','Reflexivo','Educativo','Revelador','Storytelling','Emocional','Incomodo'];
-  const fuenteFilters=['Modelado','Combinado'];
+  // Filtros de fuente (origen del script)
+  const fuenteFilters=[
+    {key:'Generado',label:'⚡ Generado',color:'color:var(--indigo-light);border-color:rgba(99,102,241,.3)'},
+    {key:'Modelado',label:'🔍 Modelado',color:'color:var(--electric);border-color:rgba(0,212,255,.3)'},
+    {key:'Combinado',label:'🧬 Combinado',color:'color:var(--accent);border-color:rgba(168,85,247,.3)'},
+  ];
+  // Filtros de estilo (tono narrativo)
+  const estiloFilters=[
+    {key:'verdad-incomoda',label:'🔥 Verdad incómoda'},
+    {key:'storytelling-personal',label:'📖 Storytelling'},
+    {key:'dato-que-cambia-todo',label:'🧬 Dato viral'},
+    {key:'reflexivo-filosofico',label:'🌀 Reflexivo'},
+    {key:'educativo-revelador',label:'💡 Educativo'},
+    {key:'emocional-sanador',label:'💙 Emocional'},
+    {key:'contraintuitivo',label:'🔄 Contraintuitivo'},
+    {key:'provocador-disruptivo',label:'⚡ Provocador'},
+    {key:'conversacional-intimo',label:'🎙 Íntimo'},
+    {key:'giro-inesperado',label:'🌪 Giro'},
+  ];
   const filters=document.getElementById('lib-filters');
   if(filters)filters.innerHTML=
-    styles.map(s=>`<button class="sf${s===activeFilter?' active':''}" onclick="setLibFilter('${s}')">${s}</button>`).join('')+
-    '<span style="width:1px;background:var(--border);margin:0 4px;align-self:stretch;display:inline-block"></span>'+
-    fuenteFilters.map(f=>`<button class="sf${f===activeFilter?' active':''}" onclick="setLibFilter('${f}')" style="${f==='Modelado'?'color:var(--electric);border-color:rgba(0,212,255,.3)':'color:var(--accent);border-color:rgba(168,85,247,.3)'}">${f==='Modelado'?'🔍 ':f==='Combinado'?'🧬 ':''}${f}</button>`).join('');
+    `<button class="sf${activeFilter==='Todos'?' active':''}" onclick="setLibFilter('Todos')">Todos</button>`+
+    '<span style="width:1px;background:var(--border);margin:2px 4px;align-self:stretch;display:inline-block"></span>'+
+    fuenteFilters.map(f=>`<button class="sf${f.key===activeFilter?' active':''}" onclick="setLibFilter('${f.key}')" style="${f.color}">${f.label}</button>`).join('')+
+    '<span style="width:1px;background:var(--border);margin:2px 4px;align-self:stretch;display:inline-block"></span>'+
+    estiloFilters.map(f=>`<button class="sf${f.key===activeFilter?' active':''}" onclick="setLibFilter('${f.key}')">${f.label}</button>`).join('');
+  const isFuente=fuenteFilters.some(f=>f.key===activeFilter);
   const filtered=activeFilter==='Todos'?localLibrary
-    :fuenteFilters.includes(activeFilter)
+    :isFuente
       ?localLibrary.filter(i=>i.fuente===activeFilter||i.fuente?.startsWith(activeFilter))
       :localLibrary.filter(i=>i.estilo===activeFilter);
   const list=document.getElementById('library-list');if(!list)return;
@@ -1574,7 +1594,6 @@ async function saveGenScript(i){
     reenganche_2:s.reenganche_2||'',
     cierre_insight:s.cierre_insight||'',
     cta:s.cta||'',
-    // compatibilidad con estructura clásica
     dolor:s.dolor||'',
     ejemplo:s.ejemplo||'',
     fondo:s.fondo||'',
@@ -1585,12 +1604,14 @@ async function saveGenScript(i){
   };
   try{
     const rows=await sbFetch('rs_library',{method:'POST',body:JSON.stringify(data)});
-    if(rows)localLibrary.unshift(rows[0]);
+    if(rows&&rows.length)localLibrary.unshift(rows[0]);
     notify('✅ Script guardado en biblioteca');
-    // deshabilitar botón para evitar duplicados
-    const btn=document.querySelector(`#gen-script-${i} .btn-primary`);
+    const btn=document.querySelector(`#gen-script-${i} button.btn-primary`);
     if(btn){btn.textContent='✓ Guardado';btn.disabled=true;btn.style.opacity='.5';}
-  }catch(e){notify('Error guardando','error');}
+  }catch(e){
+    console.error('saveGenScript error:',e);
+    notify('Error al guardar: '+e.message,'error');
+  }
 }
 
 function buildModelPrompt(){
