@@ -455,21 +455,17 @@ label{font-size:12px;color:var(--text2);display:block;margin-bottom:5px;margin-t
         <div class="grid2 mt12">
           <div>
             <label style="margin-top:0">Estilo narrativo</label>
-            <select id="gen-style" onchange="updateStyleDesc()">
-              <optgroup label="— Los que tienes —">
-                <option value="reflexivo-filosofico">🌀 Reflexivo-filosófico</option>
-                <option value="educativo-revelador">💡 Educativo-revelador</option>
-                <option value="verdad-incomoda">🔥 Verdad incómoda</option>
-                <option value="storytelling-personal">📖 Storytelling personal</option>
-                <option value="emocional-sanador">💙 Emocional-sanador</option>
-                <option value="provocador-disruptivo">⚡ Provocador-disruptivo</option>
-              </optgroup>
-              <optgroup label="— Nuevos —">
-                <option value="dato-que-cambia-todo">🧬 Dato que cambia todo</option>
-                <option value="conversacional-intimo">🎙 Conversacional-íntimo</option>
-                <option value="giro-inesperado">🌪 El giro inesperado</option>
-                <option value="contraintuitivo">🔄 Contraintuitivo</option>
-              </optgroup>
+            <select id="gen-style">
+              <option value="verdad-incomoda">🔥 Verdad incómoda</option>
+              <option value="storytelling-personal">📖 Storytelling personal</option>
+              <option value="dato-que-cambia-todo">🧬 Dato que cambia todo</option>
+              <option value="giro-inesperado">🌪 El giro inesperado</option>
+              <option value="contraintuitivo">🔄 Contraintuitivo</option>
+              <option value="reflexivo-filosofico">🌀 Reflexivo-filosófico</option>
+              <option value="educativo-revelador">💡 Educativo-revelador</option>
+              <option value="emocional-sanador">💙 Emocional-sanador</option>
+              <option value="provocador-disruptivo">⚡ Provocador-disruptivo</option>
+              <option value="conversacional-intimo">🎙 Conversacional-íntimo</option>
             </select>
           </div>
           <div>
@@ -483,23 +479,19 @@ label{font-size:12px;color:var(--text2);display:block;margin-bottom:5px;margin-t
             </select>
           </div>
         </div>
-        <div id="style-desc" style="background:rgba(168,85,247,.08);border:1px solid rgba(168,85,247,.2);border-radius:var(--radius);padding:9px 13px;font-size:12px;color:var(--text2);line-height:1.6;margin-top:4px;display:none"></div>
 
         <label class="mt12">Estructura narrativa</label>
-        <select id="gen-structure" onchange="updateStructureDesc()">
-          <option value="clasica">🔥 Clásica — Gancho→Dolor→Ejemplo→Fondo→Cima→Insight→CTA</option>
-          <option value="pas">⚡ PAS — Problema→Agitar→Solución</option>
-          <option value="bab">🔄 BAB — Antes→Puente→Después</option>
-          <option value="pastor">🎯 PASTOR — Problema→Amplificar→Historia→Transformación→CTA</option>
-          <option value="secret">🔐 Secret Value — Secreto→Contexto→Revelación→Aplicación</option>
-          <option value="curiosity">🌀 Curiosity Peak — Pregunta→Lee la mente→Giro→Insight→CTA</option>
-          <option value="aida">📈 AIDA — Atención→Interés→Deseo→Acción</option>
-          <option value="5cs">📖 5Cs — Contexto→Conflicto→Clímax→Conclusión→CTA</option>
+        <select id="gen-structure">
+          <option value="secret">🔐 Secret Value — el más viral (5% lo usa)</option>
+          <option value="curiosity">🌀 Curiosity Peak — máxima retención</option>
+          <option value="clasica">🔥 Clásica — viaje emocional completo</option>
+          <option value="pas">⚡ PAS — directo al dolor</option>
+          <option value="bab">🔄 BAB — transformación visible</option>
+          <option value="pastor">🎯 PASTOR — conversión profunda</option>
+          <option value="aida">📈 AIDA — 4 beats exactos</option>
+          <option value="5cs">📖 5Cs — storytelling puro</option>
         </select>
-        <div id="structure-desc" style="background:rgba(79,70,229,.08);border:1px solid rgba(79,70,229,.2);border-radius:var(--radius);padding:9px 13px;font-size:12px;color:var(--text2);line-height:1.6;margin-top:4px"></div>
 
-        <label class="mt12">Usar gancho del banco (opcional)</label>
-        <select id="gen-hook-select"><option value="">Generar gancho nuevo</option></select>
         <button class="btn btn-electric mt12" onclick="buildGeneratePrompt()">⚡ Generar prompt ↗</button>
         <div class="prompt-box" id="gen-prompt-box" style="display:none"><p class="small" style="color:var(--indigo-light);margin-bottom:8px;font-weight:600">Copia y pega en Claude:</p><pre id="gen-prompt-text"></pre><button class="copy-btn" onclick="copyPrompt('gen-prompt-text',this)">Copiar prompt</button></div>
         <div class="import-box" id="gen-import-box" style="display:none"><p class="small" style="color:#34d399;margin-bottom:8px;font-weight:600">Pega la respuesta de Claude (JSON):</p><textarea id="gen-import-text" rows="4" placeholder='{"scripts":[]}'></textarea><button class="btn btn-primary btn-sm mt8" onclick="importScripts()">Importar scripts</button></div>
@@ -595,9 +587,9 @@ label{font-size:12px;color:var(--text2);display:block;margin-bottom:5px;margin-t
           <div class="combine-slot" id="slot-1"><div class="flex" style="justify-content:space-between;align-items:center"><span class="small">Script 2</span><button class="btn btn-sm" onclick="openScriptPicker(1)">Seleccionar</button></div><div id="slot-1-info" style="display:none;margin-top:8px"><p style="font-weight:500;font-size:14px" id="slot-1-title"></p><p class="small mt4" id="slot-1-meta"></p><p style="font-size:12px;color:#34d399;margin-top:3px" id="slot-1-score"></p><p class="small mt8">Partes:</p><div class="flex gap4" style="flex-wrap:wrap;margin-top:4px" id="slot-1-parts"></div></div></div>
           <div class="combine-slot" id="slot-2"><div class="flex" style="justify-content:space-between;align-items:center"><span class="small">Script 3 (opcional)</span><button class="btn btn-sm" onclick="openScriptPicker(2)">Seleccionar</button></div><div id="slot-2-info" style="display:none;margin-top:8px"><p style="font-weight:500;font-size:14px" id="slot-2-title"></p><p class="small mt4" id="slot-2-meta"></p><p style="font-size:12px;color:#34d399;margin-top:3px" id="slot-2-score"></p><p class="small mt8">Partes:</p><div class="flex gap4" style="flex-wrap:wrap;margin-top:4px" id="slot-2-parts"></div></div></div>
         </div>
-        <label>Tema central</label><select id="comb-topic"><option>Bioneuroemocion</option><option>Programas heredados</option><option>Lealtades familiares</option><option>Inconsciente</option><option>Relaciones de pareja</option><option>Sombra</option><option>Expansion de consciencia</option><option>Otro</option></select>
-        <div id="comb-custom-wrap" style="display:none"><label>Especifica</label><input id="comb-custom"/></div>
-        <button class="btn btn-electric mt12" onclick="buildCombinePrompt()">Armar prompt de fusion ↗</button>
+        <label>Tema del script fusionado</label>
+        <input id="comb-topic-input" placeholder="Ej: por qué repites los mismos patrones, creencias en la venta..."/>
+        <button class="btn btn-electric mt12" onclick="buildCombinePrompt()">🧬 Fusionar con IA ↗</button>
         <div class="prompt-box" id="comb-prompt-box" style="display:none"><p class="small" style="color:var(--indigo-light);margin-bottom:8px;font-weight:600">Copia y pega en Claude:</p><pre id="comb-prompt-text"></pre><button class="copy-btn" onclick="copyPrompt('comb-prompt-text',this)">Copiar prompt</button></div>
         <div class="import-box" id="comb-import-box" style="display:none"><p class="small" style="color:#34d399;margin-bottom:8px;font-weight:600">Pega la respuesta (JSON):</p><textarea id="comb-import-text" rows="4" placeholder='{"scripts":[]}'></textarea><button class="btn btn-primary btn-sm mt8" onclick="importCombinedScripts()">Importar</button></div>
         <div id="comb-results"></div>
@@ -1199,33 +1191,47 @@ function buildStyleTone(style){
   return tones[style]||'TONO: Emocional y directo. Voz auténtica de Guillermo.';
 }
 
+// ============ VIRAL CORE — triggers, timing, CTA ============
+const VIRAL_RULES=`
+REGLAS VIRALES (algoritmo Instagram/TikTok 2025-2026):
+
+GANCHO (0-3 seg) — activa LOS 3 triggers simultáneamente:
+① PATTERN INTERRUPT: afirmación bold, paradoja o statement contraintuitivo que rompa el scroll
+② TRIGGER PSICOLÓGICO: FOMO / Negativo ("el error que cometes") / Secreto / Transformación de alto riesgo
+③ OPEN LOOP: pregunta sin responder que solo se cierra viendo el video completo
+Máximo 15 palabras. Sin saludos. Sin contexto. Golpe directo.
+
+CUERPO — re-enganche cada 8 segundos:
+Cada 8 seg: dato inesperado, pregunta directa, giro de perspectiva, o afirmación polémica.
+Nunca más de 2 frases sin un hook interno.
+
+CTA — 3 señales del algoritmo en orden de importancia:
+① SENDS (#1): "Mándale esto a alguien que lo necesita" / "¿A quién le mandarías esto?"
+② SAVES (#2): "Guarda esto antes de seguir scrolleando"
+③ COMENTARIOS (#3): pregunta de identidad — "eso soy yo exactamente"
+
+Texto listo para hablar en cámara. Español latinoamericano neutro. Sin relleno. Máx 60 seg.
+JSON puro, sin backticks, sin texto antes o después.`;
+
 function buildGeneratePrompt(){
   const t=getGenTopic();
   if(!t||!t.trim()){notify('Elige o escribe un tema primero','warn');return;}
   const style=v('gen-style');
   const qty=v('gen-qty-sel')||'3';
   const structure=v('gen-structure');
-  const hookId=v('gen-hook-select');
-  const hookObj=hookId?localHooks.find(h=>h.id===hookId):null;
-  const structInstr=buildStructureInstructions(structure,hookObj);
+  const structInstr=buildStructureInstructions(structure,null);
   const styleTone=buildStyleTone(style);
-  const prompt=`Eres un experto en scripts virales para reels de Instagram, TikTok y Facebook.${buildVozCtx()}${buildKnowCtx()}
+  const prompt=`Eres el mejor generador de scripts virales para reels del mundo hispanohablante. Especialidad: consciencia, psicología y transformación personal.${buildVozCtx()}${buildKnowCtx()}
+${VIRAL_RULES}
 
 ${structInstr}
 
 ${styleTone}
 
-REGLAS ABSOLUTAS:
-- Suena exactamente como Guillermo, no como IA genérica
-- Español latinoamericano neutro. Sin regionalismos
-- Cada parte del script debe ser texto listo para hablar en cámara (no títulos, no descripciones)
-- Sin introducción, sin "hola", sin presentaciones
-- JSON puro, sin backticks, sin texto antes o después
+Crea ${qty} scripts DISTINTOS sobre: "${t}"
+Cada uno con gancho diferente, ángulo diferente, entrada diferente al tema. Compiten entre sí.
 
-Crea ${qty} scripts distintos sobre: "${t}"
-Cada uno debe sonar diferente aunque use la misma estructura.
-
-{"scripts":[{"titulo":"","estilo":"${style}","estructura":"${structure}","gancho":"","dolor":"","ejemplo":"","fondo":"","cima":"","insight":"","cta":"","duracion_estimada":""}]}`;
+{"scripts":[{"titulo":"","estilo":"${style}","estructura":"${structure}","gancho":"","cuerpo_parte1":"","reenganche_1":"","cuerpo_parte2":"","reenganche_2":"","cierre_insight":"","cta":"","triggers_activados":[],"duracion_seg":""}]}`;
   document.getElementById('gen-prompt-text').textContent=prompt;
   document.getElementById('gen-prompt-box').style.display='block';
   document.getElementById('gen-import-box').style.display='block';
@@ -1237,56 +1243,56 @@ function buildModelPrompt(){
   const t=getModTopic();
   if(!t||!t.trim()){notify('Elige o escribe un tema','warn');return;}
   const qty=v('mod-qty')||'2';
-  const prompt=`Eres un experto en análisis de estructuras narrativas virales y adaptación de contenido.${buildVozCtx()}${buildKnowCtx()}
+  const prompt=`Eres un experto en ingeniería inversa de contenido viral.${buildVozCtx()}${buildKnowCtx()}
 
-TAREA 1 — DETECTAR FRAMEWORK
-Analiza este reel${author?' de @'+author:''}:
+TAREA 1 — DISECCIÓN VIRAL
+Reel${author?' de @'+author:''}:
 "${text}"
 
-Identifica con precisión:
-- FRAMEWORK PRINCIPAL: ¿Es PAS, BAB, PASTOR, Secret Value, Curiosity Peak, AIDA, 5Cs, Clásica u otro?
-- ESTRUCTURA REAL: Describe cada beat/parte con su función narrativa
-- TÉCNICAS VIRALES: Qué hace exactamente para retener (giro, tensión, curiosity gap, etc.)
-- POR QUÉ FUNCIONA: La razón psicológica de su efectividad
+Extrae con precisión:
+- FRAMEWORK: nombre exacto (PAS, BAB, PASTOR, Secret Value, Curiosity Peak, AIDA, 5Cs, otro)
+- GANCHO: qué triggers activa (pattern interrupt / trigger psicológico / open loop) y cómo
+- RE-ENGANCHES: dónde y cómo resetea la atención
+- CTA: a qué señal apunta (sends / saves / comentarios)
+- RAZÓN VIRAL: por qué psicológicamente funciona
 
-TAREA 2 — ADAPTAR CON ESA ESTRUCTURA EXACTA
-Crea ${qty} scripts para Guillermo replicando EXACTAMENTE el mismo framework y técnicas detectadas.
-Tema: "${t}"
-Usa la voz, el marco conceptual y las anécdotas de Guillermo.
-Cada script debe sonar diferente entre sí aunque usen la misma estructura.
+TAREA 2 — REPLICAR CON VOZ DE GUILLERMO
+${qty} scripts con el mismo framework, los mismos triggers y la misma ingeniería de retención.
+Tema: "${t}" — cada script con ángulo distinto.
+${VIRAL_RULES}
 
-REGLAS: Español latinoamericano neutro. Texto listo para hablar en cámara. JSON puro, sin backticks.
-
-{"framework_detectado":{"nombre":"","estructura_beats":[],"tecnicas_virales":[],"por_que_funciona":""},"scripts":[{"titulo":"","estilo":"","estructura":"","gancho":"","dolor":"","ejemplo":"","fondo":"","cima":"","insight":"","cta":"","duracion_estimada":""}]}`;
+{"framework_detectado":{"nombre":"","gancho_triggers":[],"reenganches":[],"cta_signal":"","razon_viral":""},"scripts":[{"titulo":"","framework":"","gancho":"","cuerpo_parte1":"","reenganche_1":"","cuerpo_parte2":"","reenganche_2":"","cierre_insight":"","cta":"","triggers_activados":[],"duracion_seg":""}]}`;
   document.getElementById('mod-prompt-text').textContent=prompt;
   document.getElementById('mod-prompt-box').style.display='block';
   document.getElementById('mod-import-box').style.display='block';
 }
+
 function buildCombinePrompt(){
   const filled=slots.map((s,i)=>({script:s,parts:slotParts[i]})).filter(s=>s.script);
   if(filled.length<2){notify('Selecciona al menos 2 scripts','warn');return;}
-  const topic=v('comb-topic');const custom=v('comb-custom');const t=topic==='Otro'?custom:topic;
-  let details='';filled.forEach((slot,i)=>{const sp=Object.keys(slot.parts).filter(p=>slot.parts[p]);const pts=sp.length>0?sp:PARTS;details+=`\nSCRIPT ${i+1} — "${slot.script.titulo}"\nPartes: ${pts.map(p=>PL[p]).join(', ')}\n`;pts.forEach(p=>{if(slot.script[p])details+=`${PL[p]}: ${slot.script[p]}\n`;});});
-  const prompt=`Eres un experto en creacion de scripts virales.${buildVozCtx()}${buildKnowCtx()}
-TAREA: Fusiona las mejores partes de estos scripts en UN script nuevo para el tema "${t}".
-Debe sonar como Guillermo — usa su voz, sus frases, su forma de ver el mundo.
+  const t=v('comb-topic-input');
+  if(!t||!t.trim()){notify('Escribe el tema del script fusionado','warn');return;}
+  let details='';
+  filled.forEach((slot,i)=>{
+    details+=`\nSCRIPT ${i+1} — "${slot.script.titulo}"\n`;
+    ['gancho','cuerpo_parte1','reenganche_1','cuerpo_parte2','reenganche_2','cierre_insight','dolor','ejemplo','fondo','cima','insight','cta'].forEach(p=>{if(slot.script[p])details+=`${p}: ${slot.script[p]}\n`;});
+  });
+  const prompt=`Eres el mejor editor de scripts virales del mundo hispanohablante.${buildVozCtx()}${buildKnowCtx()}
+
+TAREA: Extrae lo mejor de cada script y crea UN script nuevo, superior a todos.
+Mejor gancho + mejor re-enganche + mejor cierre. Algo que ninguno tiene por separado.
+Tema: "${t}"
 ${details}
-ESTRUCTURA: GANCHO|DOLOR|EJEMPLO|FONDO|CIMA|INSIGHT|CTA
-REGLAS: Espanol latinoamericano neutro. Tono emocional. JSON puro, sin backticks.
-{"scripts":[{"titulo":"","estilo":"","gancho":"","dolor":"","ejemplo":"","fondo":"","cima":"","insight":"","cta":"","duracion_estimada":"","nota_fusion":""}]}`;
+${VIRAL_RULES}
+
+{"scripts":[{"titulo":"","gancho":"","cuerpo_parte1":"","reenganche_1":"","cuerpo_parte2":"","reenganche_2":"","cierre_insight":"","cta":"","triggers_activados":[],"duracion_seg":"","nota_fusion":""}]}`;
   document.getElementById('comb-prompt-text').textContent=prompt;
   document.getElementById('comb-prompt-box').style.display='block';
   document.getElementById('comb-import-box').style.display='block';
 }
+
 function copyPrompt(id,btn){navigator.clipboard.writeText(document.getElementById(id).textContent).then(()=>{btn.textContent='Copiado!';setTimeout(()=>btn.textContent='Copiar prompt',2000);});}
 
-// ============ IMPORT ============
-function importScripts(){
-  try{const data=JSON.parse(v('gen-import-text').replace(/```json|```/g,''));const t=getGenTopic();const cont=document.getElementById('gen-results');cont.innerHTML='';(data.scripts||[]).forEach((s,i)=>cont.appendChild(buildScriptCard(s,t,'Generado')));}catch{notify('Formato invalido. Pega el JSON completo.','error');}
-}
-function importModelScripts(){
-  try{
-    const data=JSON.parse(v('mod-import-text').replace(/```json|```/g,''));
     const author=v('mod-author');
     const t=getModTopic();
     const cont=document.getElementById('mod-results');cont.innerHTML='';
@@ -1403,10 +1409,9 @@ function switchTab(name){
     }
   }catch(e){localStorage.removeItem('rs_session');}
 })();
-document.getElementById('comb-topic').addEventListener('change',function(){document.getElementById('comb-custom-wrap').style.display=this.value==='Otro'?'block':'none';});
+// comb-topic removed
 // Init descriptions on load
-updateStructureDesc();
-updateStyleDesc();
+// style/structure desc removed
 
 // ============ LANDING ANIMATION ============
 document.querySelectorAll('.feat-card').forEach((card,i)=>{
