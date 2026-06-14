@@ -455,10 +455,19 @@ label{font-size:12px;color:var(--text2);display:block;margin-bottom:5px;margin-t
           <p class="small mt4" style="color:var(--indigo-light)">La IA trabajará cualquier tema con tu voz y marco conceptual de BNE</p>
         </div>
 
+        <!-- COMBINACIONES RECOMENDADAS -->
+        <div style="margin-top:14px">
+          <label style="margin-top:0;margin-bottom:6px;display:flex;align-items:center;gap:6px">
+            <span>⚡ Combinaciones probadas</span>
+            <span style="font-size:10px;font-weight:400;color:var(--text2);background:rgba(99,102,241,.15);padding:2px 7px;border-radius:10px">click para aplicar</span>
+          </label>
+          <div id="combo-pills" style="display:flex;flex-wrap:wrap;gap:6px"></div>
+        </div>
+
         <div class="grid2 mt12">
           <div>
             <label style="margin-top:0">Estilo narrativo</label>
-            <select id="gen-style">
+            <select id="gen-style" onchange="updateStyleDesc()">
               <option value="verdad-incomoda">🔥 Verdad incómoda</option>
               <option value="storytelling-personal">📖 Storytelling personal</option>
               <option value="dato-que-cambia-todo">🧬 Dato que cambia todo</option>
@@ -470,6 +479,7 @@ label{font-size:12px;color:var(--text2);display:block;margin-bottom:5px;margin-t
               <option value="provocador-disruptivo">⚡ Provocador-disruptivo</option>
               <option value="conversacional-intimo">🎙 Conversacional-íntimo</option>
             </select>
+            <div id="style-desc" style="display:none;font-size:11.5px;color:var(--text2);margin-top:5px;line-height:1.5;padding:6px 8px;background:rgba(99,102,241,.08);border-radius:6px;border-left:2px solid var(--indigo-light)"></div>
           </div>
           <div>
             <label style="margin-top:0">Cantidad</label>
@@ -484,7 +494,7 @@ label{font-size:12px;color:var(--text2);display:block;margin-bottom:5px;margin-t
         </div>
 
         <label class="mt12">Estructura narrativa</label>
-        <select id="gen-structure">
+        <select id="gen-structure" onchange="updateStructureDesc()">
           <option value="secret">🔐 Secret Value — el más viral (5% lo usa)</option>
           <option value="curiosity">🌀 Curiosity Peak — máxima retención</option>
           <option value="clasica">🔥 Clásica — viaje emocional completo</option>
@@ -494,6 +504,7 @@ label{font-size:12px;color:var(--text2);display:block;margin-bottom:5px;margin-t
           <option value="aida">📈 AIDA — 4 beats exactos</option>
           <option value="5cs">📖 5Cs — storytelling puro</option>
         </select>
+        <div id="structure-desc" style="display:none;font-size:11.5px;color:var(--text2);margin-top:5px;line-height:1.5;padding:6px 8px;background:rgba(99,102,241,.08);border-radius:6px;border-left:2px solid var(--indigo-light)"></div>
 
         <button class="btn btn-electric mt12" onclick="buildGeneratePrompt()">⚡ Generar prompt ↗</button>
         <div class="prompt-box" id="gen-prompt-box" style="display:none"><p class="small" style="color:var(--indigo-light);margin-bottom:8px;font-weight:600">Copia y pega en Claude:</p><pre id="gen-prompt-text"></pre><button class="copy-btn" onclick="copyPrompt('gen-prompt-text',this)">Copiar prompt</button></div>
@@ -819,7 +830,7 @@ const PL={gancho:'Gancho',dolor:'Dolor',ejemplo:'Ejemplo',fondo:'Fondo de pozo',
 // ============ VIEWS ============
 function showLanding(){hide('login');hide('app');show('landing');localStorage.removeItem('rs_session');}
 function showLogin(){hide('landing');hide('app');show('login');}
-function showApp(){hide('landing');hide('login');show('app');}
+function showApp(){hide('landing');hide('login');show('app');renderComboPills();updateStyleDesc();updateStructureDesc();}
 function saveSession(){if(currentUser)localStorage.setItem('rs_session',JSON.stringify({id:currentUser.id,username:currentUser.username,display_name:currentUser.display_name}));}
 function loadSession(){try{const s=localStorage.getItem('rs_session');return s?JSON.parse(s):null;}catch{return null;}}
 function saveActiveTab(name){localStorage.setItem('rs_tab',name);}
@@ -1265,6 +1276,51 @@ function updateStructureDesc(){
   else desc.style.display='none';
 }
 
+// ============ COMBINACIONES RECOMENDADAS ============
+const COMBOS=[
+  {label:'🔥 Máximo Alcance',estructura:'secret',estilo:'verdad-incomoda',tag:'viral'},
+  {label:'💊 Verdad que duele',estructura:'curiosity',estilo:'verdad-incomoda',tag:'retención'},
+  {label:'🧬 Dato + Ciencia',estructura:'aida',estilo:'dato-que-cambia-todo',tag:'educativo'},
+  {label:'📖 Historia real',estructura:'5cs',estilo:'storytelling-personal',tag:'conexión'},
+  {label:'🌀 Reflexión profunda',estructura:'clasica',estilo:'reflexivo-filosofico',tag:'BNE'},
+  {label:'⚡ Conversión directa',estructura:'pastor',estilo:'emocional-sanador',tag:'ventas'},
+  {label:'🔄 Romper creencia',estructura:'bab',estilo:'contraintuitivo',tag:'disruptivo'},
+  {label:'💬 Íntimo + Rápido',estructura:'pas',estilo:'conversacional-intimo',tag:'30seg'},
+];
+
+function renderComboPills(){
+  const container=document.getElementById('combo-pills');
+  if(!container)return;
+  container.innerHTML=COMBOS.map((c,i)=>`
+    <button onclick="applyCombo(${i})" style="
+      display:inline-flex;align-items:center;gap:5px;
+      background:rgba(99,102,241,.1);border:1px solid rgba(99,102,241,.25);
+      color:var(--text1);padding:4px 10px;border-radius:20px;
+      font-size:11px;cursor:pointer;transition:all .2s;white-space:nowrap"
+      onmouseover="this.style.background='rgba(99,102,241,.25)';this.style.borderColor='var(--indigo-light)'"
+      onmouseout="this.style.background='rgba(99,102,241,.1)';this.style.borderColor='rgba(99,102,241,.25)'">
+      ${c.label}
+      <span style="font-size:9px;padding:1px 5px;background:rgba(255,255,255,.07);border-radius:8px;color:var(--text2)">${c.tag}</span>
+    </button>`).join('');
+}
+
+function applyCombo(i){
+  const c=COMBOS[i];
+  const structSel=document.getElementById('gen-structure');
+  const styleSel=document.getElementById('gen-style');
+  if(structSel)structSel.value=c.estructura;
+  if(styleSel)styleSel.value=c.estilo;
+  updateStyleDesc();
+  updateStructureDesc();
+  // flash visual feedback
+  const pills=document.querySelectorAll('#combo-pills button');
+  pills.forEach((p,idx)=>{
+    p.style.background=idx===i?'rgba(99,102,241,.4)':'rgba(99,102,241,.1)';
+    p.style.borderColor=idx===i?'var(--indigo-light)':'rgba(99,102,241,.25)';
+  });
+  notify(`Combinación "${c.label}" aplicada`,'success');
+}
+
 // ============ STRUCTURE PROMPT BUILDER ============
 function buildStructureInstructions(structure, hookObj){
   const H=hookObj?`USA ESTE GANCHO EXACTO: "${hookObj.text}"`:'Genera un gancho original que detenga el scroll en 1.5 segundos';
@@ -1545,7 +1601,7 @@ function switchTab(name){
   if(name==='calendario')renderCalendar();
   if(name==='flash')renderFlash();
   if(name==='conocimiento')renderKnowledge();
-  if(name==='generar'){updateVozIndicator();updateHookSelect();}
+  if(name==='generar'){updateVozIndicator();updateHookSelect();renderComboPills();updateStyleDesc();updateStructureDesc();}
 }
 
 // ============ AUTO-LOGIN DESDE SESIÓN GUARDADA ============
