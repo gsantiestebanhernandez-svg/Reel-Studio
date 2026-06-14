@@ -1091,18 +1091,32 @@ async function saveResultado(){
     if(resultadoModelar)notify('Marcado para modelar — guardalo en Referencias');
   }catch(e){notify('Error al guardar','error');}
 }
+function toggleLibScript(id){
+  const el=document.getElementById('lib-script-'+id);
+  const btn=document.getElementById('lib-toggle-'+id);
+  if(!el)return;
+  const open=el.style.display==='none'||!el.style.display;
+  el.style.display=open?'block':'none';
+  if(btn)btn.textContent=open?'Ocultar script':'Ver script';
+}
+function reutilizarScript(id){
+  const item=localLibrary.find(i=>i.id===id);if(!item)return;
+  saveToLibrary({titulo:item.titulo,estilo:item.estilo,gancho:item.gancho,dolor:item.dolor,ejemplo:item.ejemplo,fondo:item.fondo,cima:item.cima,insight:item.insight,cta:item.cta,duracion_estimada:item.duracion_estimada},item.tema||'','Reutilizado');
+}
 function renderLibrary(){
   const styles=['Todos','Reflexivo','Educativo','Revelador','Storytelling','Emocional','Incomodo'];
   const filters=document.getElementById('lib-filters');if(filters)filters.innerHTML=styles.map(s=>`<button class="sf${s===activeFilter?' active':''}" onclick="setLibFilter('${s}')">${s}</button>`).join('');
   const filtered=activeFilter==='Todos'?localLibrary:localLibrary.filter(i=>i.estilo===activeFilter);
   const list=document.getElementById('library-list');if(!list)return;
   if(!filtered.length){list.innerHTML='<p class="small mt8">No hay scripts guardados.</p>';return;}
+  const zonaLabel={gancho:'Cayo en gancho',reenganche1:'Cayo en reenganche 1',cuerpo:'Cayo en cuerpo',reenganche2:'Cayo en reenganche 2',cta:'Cayo en CTA',ninguna:'Funciono bien'};
+  const accionLabel={dms:'DMs',follows:'Nuevos seguidores',clicks:'Clicks',varias:'Varias acciones',ninguna:'Sin accion'};
   list.innerHTML=filtered.map(item=>{
     const score=calcScore(item);
     const fc=item.fuente==='Combinado'?'badge-purple':item.fuente?.startsWith('Modelado')?'badge-electric':'badge-gray';
     const r=item.resultado;
-    const zonaLabel={gancho:'Cayo en gancho',reenganche1:'Cayo en reenganche 1',cuerpo:'Cayo en cuerpo',reenganche2:'Cayo en reenganche 2',cta:'Cayo en CTA',ninguna:'Funciono bien'};
-    const accionLabel={dms:'DMs',follows:'Nuevos seguidores',clicks:'Clicks',varias:'Varias acciones',ninguna:'Sin accion'};
+    const estiloKey=(item.estilo||'').toLowerCase().replace(/ /g,'-').replace(/[áéíóú]/g,c=>({á:'a',é:'e',í:'i',ó:'o',ú:'u'}[c]||c));
+    const estiloDesc=STYLE_DESCS[estiloKey]||STYLE_DESCS[item.estilo]||'';
     const resultadoHtml=r?`<div class="mt8" style="border-top:1px solid var(--border);padding-top:8px">
       <div class="flex gap4" style="flex-wrap:wrap">
         <span class="badge ${r.zona==='ninguna'?'badge-green':'badge-warn'}">${zonaLabel[r.zona]||r.zona}</span>
@@ -1111,21 +1125,41 @@ function renderLibrary(){
       </div>
       ${r.funciono?`<p class="small mt4" style="color:var(--text2)">${r.funciono}</p>`:''}
     </div>`:`<span class="badge badge-warn mt4">Sin resultado</span>`;
-    return`<div class="card"><div class="top-row"><div style="flex:1">
-      <p style="font-weight:500;font-size:14px">${item.titulo}</p>
-      <p class="small mt4">${item.tema} · ${item.estilo}</p>
-      <div class="flex gap4 mt4" style="flex-wrap:wrap">
-        <span class="badge ${fc}">${item.fuente||'Generado'}</span>
-        ${score?`<span class="score-badge">${score} pts</span>`:''}
+    const partes=[
+      {label:'Gancho',val:item.gancho},
+      {label:'Dolor',val:item.dolor},
+      {label:'Ejemplo cotidiano',val:item.ejemplo},
+      {label:'Fondo de pozo',val:item.fondo},
+      {label:'Cima',val:item.cima},
+      {label:'Insight',val:item.insight},
+      {label:'CTA',val:item.cta}
+    ].filter(p=>p.val);
+    const scriptHtml=partes.length?partes.map(p=>`<div style="margin-bottom:10px"><span class="section-label">${p.label}</span><p style="font-size:13px;line-height:1.6;margin-top:4px;color:var(--text)">${p.val}</p></div>`).join(''):'<p class="small">Script sin partes guardadas.</p>';
+    return`<div class="card">
+      <div class="top-row"><div style="flex:1">
+        <p style="font-weight:500;font-size:14px">${item.titulo}</p>
+        <p class="small mt4">${item.tema} · <strong>${item.estilo}</strong>${item.duracion_estimada?' · '+item.duracion_estimada:''}</p>
+        ${estiloDesc?`<p class="small mt4" style="color:var(--indigo-light);font-style:italic;line-height:1.5">${estiloDesc}</p>`:''}
+        <div class="flex gap4 mt6" style="flex-wrap:wrap">
+          <span class="badge ${fc}">${item.fuente||'Generado'}</span>
+          ${score?`<span class="score-badge">${score} pts</span>`:''}
+          ${item.estructura?`<span class="badge badge-gray">${item.estructura}</span>`:''}
+        </div>
+        ${item.publicado&&item.metricas?`<div class="flex gap8 mt6" style="flex-wrap:wrap"><span class="small">Alcance: <strong>${(item.metricas.alcance||0).toLocaleString()}</strong></span><span class="small">Guardados: <strong>${item.metricas.guardados||0}</strong></span><span class="small">${'★'.repeat(item.rating||0)}${'☆'.repeat(5-(item.rating||0))}</span></div>`:''}
+        ${resultadoHtml}
       </div>
-      ${item.publicado&&item.metricas?`<div class="flex gap8 mt6" style="flex-wrap:wrap"><span class="small">Alcance: <strong>${(item.metricas.alcance||0).toLocaleString()}</strong></span><span class="small">Guardados: <strong>${item.metricas.guardados||0}</strong></span><span class="small">${'★'.repeat(item.rating||0)}${'☆'.repeat(5-(item.rating||0))}</span></div>`:''}
-      ${resultadoHtml}
-    </div>
-    <div class="flex gap4 mt4" style="flex-direction:column;margin-left:8px">
-      <button class="btn btn-xs" onclick="openResultadoModal('${item.id}')">Resultado</button>
-      <button class="btn btn-xs" onclick="openMetricsModal('${item.id}')">Metricas</button>
-      <button class="btn btn-xs btn-danger" onclick="deleteItem('${item.id}')">x</button>
-    </div></div></div>`;
+      <div class="flex gap4 mt4" style="flex-direction:column;margin-left:8px">
+        <button id="lib-toggle-${item.id}" class="btn btn-xs btn-primary" onclick="toggleLibScript('${item.id}')">Ver script</button>
+        <button class="btn btn-xs" onclick="openResultadoModal('${item.id}')">Resultado</button>
+        <button class="btn btn-xs" onclick="openMetricsModal('${item.id}')">Metricas</button>
+        <button class="btn btn-xs btn-danger" onclick="deleteItem('${item.id}')">x</button>
+      </div></div>
+      <div id="lib-script-${item.id}" style="display:none;margin-top:12px;border-top:1px solid var(--border);padding-top:12px">
+        ${estiloDesc?`<div style="background:rgba(168,85,247,.08);border:1px solid rgba(168,85,247,.2);border-radius:8px;padding:8px 12px;margin-bottom:12px"><p class="small" style="color:var(--indigo-light);line-height:1.5"><strong>Estilo ${item.estilo}:</strong> ${estiloDesc}</p></div>`:''}
+        ${scriptHtml}
+        <button class="btn btn-sm btn-primary mt8 w100" onclick="reutilizarScript('${item.id}')">Reutilizar este script</button>
+      </div>
+    </div>`;
   }).join('');
 }
 function setLibFilter(s){activeFilter=s;renderLibrary();}
