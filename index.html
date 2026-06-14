@@ -1446,6 +1446,117 @@ Cada uno con gancho diferente, ángulo diferente, entrada diferente al tema. Com
   document.getElementById('gen-import-box').style.display='block';
 }
 
+// ============ IMPORT SCRIPTS ============
+function importScripts(){
+  const raw=document.getElementById('gen-import-text').value.trim();
+  if(!raw){notify('Pega el JSON primero','warn');return;}
+  let parsed;
+  try{
+    const clean=raw.replace(/^```(?:json)?\s*/i,'').replace(/\s*```$/,'').trim();
+    parsed=JSON.parse(clean);
+  }catch(e){
+    notify('JSON inválido — revisa el formato','error');
+    console.error(e);
+    return;
+  }
+  const scripts=parsed.scripts||[];
+  if(!scripts.length){notify('No se encontraron scripts en el JSON','warn');return;}
+  const tema=getGenTopic()||'Sin tema';
+  const container=document.getElementById('gen-results');
+  const CAMPOS=[
+    {key:'gancho',label:'🎣 Gancho'},
+    {key:'cuerpo_parte1',label:'📝 Cuerpo parte 1'},
+    {key:'reenganche_1',label:'🔁 Reenganche 1'},
+    {key:'cuerpo_parte2',label:'📝 Cuerpo parte 2'},
+    {key:'reenganche_2',label:'🔁 Reenganche 2'},
+    {key:'cierre_insight',label:'💡 Cierre / Insight'},
+    {key:'cta',label:'📣 CTA'},
+    // compatibilidad con estructura clásica vieja
+    {key:'dolor',label:'😣 Dolor'},
+    {key:'ejemplo',label:'📍 Ejemplo cotidiano'},
+    {key:'fondo',label:'⬇️ Fondo de pozo'},
+    {key:'cima',label:'⬆️ Cima'},
+    {key:'insight',label:'💡 Insight'},
+  ];
+  container.innerHTML=scripts.map((s,i)=>{
+    const partes=CAMPOS.filter(c=>s[c.key]&&s[c.key].trim());
+    const triggers=(s.triggers_activados||[]).join(', ');
+    const dur=s.duracion_seg?`${s.duracion_seg}s`:'';
+    const scriptId=`gen-script-${i}`;
+    const contenido=partes.map(c=>`
+      <div style="margin-bottom:10px">
+        <span class="section-label">${c.label}</span>
+        <p style="font-size:13px;line-height:1.7;margin-top:4px;color:var(--text)">${s[c.key]}</p>
+      </div>`).join('');
+    return`<div class="card" style="margin-top:12px">
+      <div class="top-row">
+        <div style="flex:1">
+          <p style="font-weight:600;font-size:14px">${s.titulo||'Script '+(i+1)}</p>
+          <div class="flex gap4 mt6" style="flex-wrap:wrap">
+            ${s.estilo?`<span class="badge badge-electric">${s.estilo}</span>`:''}
+            ${s.estructura?`<span class="badge badge-gray">${s.estructura}</span>`:''}
+            ${dur?`<span class="badge badge-gray">${dur}</span>`:''}
+          </div>
+          ${triggers?`<p class="small mt4" style="color:var(--indigo-light)">Triggers: ${triggers}</p>`:''}
+        </div>
+        <button class="btn btn-xs btn-primary" onclick="toggleGenScript('${scriptId}')">Ver</button>
+      </div>
+      <div id="${scriptId}" style="display:none;margin-top:12px;border-top:1px solid var(--border);padding-top:12px">
+        ${contenido||'<p class="small">Sin contenido en este script.</p>'}
+        <button class="btn btn-primary btn-sm mt8 w100" onclick="saveGenScript(${i})">💾 Guardar en biblioteca</button>
+      </div>
+    </div>`;
+  }).join('');
+
+  // guardar scripts en memoria para poder salvarlos
+  window._genScripts=scripts.map(s=>({...s,tema}));
+  notify(`${scripts.length} script${scripts.length>1?'s':''} importado${scripts.length>1?'s':''}`)
+  container.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function toggleGenScript(id){
+  const el=document.getElementById(id);if(!el)return;
+  const btn=el.previousElementSibling?.querySelector('button');
+  const visible=el.style.display!=='none';
+  el.style.display=visible?'none':'block';
+  if(btn)btn.textContent=visible?'Ver':'Cerrar';
+}
+
+async function saveGenScript(i){
+  const s=window._genScripts?.[i];if(!s){notify('Script no encontrado','error');return;}
+  const data={
+    user_id:currentUser.id,
+    titulo:s.titulo||`Script ${i+1}`,
+    estilo:s.estilo||'',
+    estructura:s.estructura||'',
+    tema:s.tema||'',
+    fuente:'Generado',
+    gancho:s.gancho||'',
+    cuerpo_parte1:s.cuerpo_parte1||'',
+    reenganche_1:s.reenganche_1||'',
+    cuerpo_parte2:s.cuerpo_parte2||'',
+    reenganche_2:s.reenganche_2||'',
+    cierre_insight:s.cierre_insight||'',
+    cta:s.cta||'',
+    // compatibilidad con estructura clásica
+    dolor:s.dolor||'',
+    ejemplo:s.ejemplo||'',
+    fondo:s.fondo||'',
+    cima:s.cima||'',
+    insight:s.insight||'',
+    triggers_activados:s.triggers_activados||[],
+    duracion_seg:s.duracion_seg||''
+  };
+  try{
+    const rows=await sbFetch('rs_library',{method:'POST',body:JSON.stringify(data)});
+    if(rows)localLibrary.unshift(rows[0]);
+    notify('✅ Script guardado en biblioteca');
+    // deshabilitar botón para evitar duplicados
+    const btn=document.querySelector(`#gen-script-${i} .btn-primary`);
+    if(btn){btn.textContent='✓ Guardado';btn.disabled=true;btn.style.opacity='.5';}
+  }catch(e){notify('Error guardando','error');}
+}
+
 function buildModelPrompt(){
   const text=v('mod-text');if(!text.trim()){notify('Pega la transcripción primero','warn');return;}
   const author=v('mod-author');
