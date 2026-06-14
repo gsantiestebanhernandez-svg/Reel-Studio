@@ -1141,8 +1141,16 @@ function reutilizarScript(id){
 }
 function renderLibrary(){
   const styles=['Todos','Reflexivo','Educativo','Revelador','Storytelling','Emocional','Incomodo'];
-  const filters=document.getElementById('lib-filters');if(filters)filters.innerHTML=styles.map(s=>`<button class="sf${s===activeFilter?' active':''}" onclick="setLibFilter('${s}')">${s}</button>`).join('');
-  const filtered=activeFilter==='Todos'?localLibrary:localLibrary.filter(i=>i.estilo===activeFilter);
+  const fuenteFilters=['Modelado','Combinado'];
+  const filters=document.getElementById('lib-filters');
+  if(filters)filters.innerHTML=
+    styles.map(s=>`<button class="sf${s===activeFilter?' active':''}" onclick="setLibFilter('${s}')">${s}</button>`).join('')+
+    '<span style="width:1px;background:var(--border);margin:0 4px;align-self:stretch;display:inline-block"></span>'+
+    fuenteFilters.map(f=>`<button class="sf${f===activeFilter?' active':''}" onclick="setLibFilter('${f}')" style="${f==='Modelado'?'color:var(--electric);border-color:rgba(0,212,255,.3)':'color:var(--accent);border-color:rgba(168,85,247,.3)'}">${f==='Modelado'?'🔍 ':f==='Combinado'?'🧬 ':''}${f}</button>`).join('');
+  const filtered=activeFilter==='Todos'?localLibrary
+    :fuenteFilters.includes(activeFilter)
+      ?localLibrary.filter(i=>i.fuente===activeFilter||i.fuente?.startsWith(activeFilter))
+      :localLibrary.filter(i=>i.estilo===activeFilter);
   const list=document.getElementById('library-list');if(!list)return;
   if(!filtered.length){list.innerHTML='<p class="small mt8">No hay scripts guardados.</p>';return;}
   const zonaLabel={gancho:'Cayo en gancho',reenganche1:'Cayo en reenganche 1',cuerpo:'Cayo en cuerpo',reenganche2:'Cayo en reenganche 2',cta:'Cayo en CTA',ninguna:'Funciono bien'};
