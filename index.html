@@ -1695,21 +1695,34 @@ async function importModels(){
       d.innerHTML=`<p style="font-weight:600;font-size:13px;margin-bottom:8px">ADN narrativo detectado</p>`+bBlock('Gancho',a.gancho)+bBlock('Dolor',a.dolor)+bBlock('Ejemplo',a.ejemplo)+bBlock('Fondo',a.fondo)+bBlock('Cima',a.cima)+bBlock('Insight',a.insight)+bBlock('CTA',a.cta)+(a.tecnicas_virales?.length?`<div class="mt8"><span class="section-label">Técnicas virales</span><div class="mt4">${a.tecnicas_virales.map(tv=>`<span class="badge badge-indigo">${tv}</span>`).join('')}</div></div>`:'')+(a.por_que_funciona?`<div class="card card-muted mt8" style="padding:10px"><span class="section-label">Por qué funciona</span><p class="small mt4" style="line-height:1.5">${a.por_que_funciona}</p></div>`:'');
       cont.appendChild(d);
     }
-    (data.scripts||[]).forEach(s=>cont.appendChild(buildScriptCard(s,t,author?`Modelado de: @${author}`:'Modelado')));
-  }catch(e){notify('Formato inválido. Pega el JSON completo.','error');}
+    const fuente=author?`Modelado de: @${author}`:'Modelado';
+    const scripts=data.scripts||[];
+    window._modScripts=scripts.map(s=>({...s,tema:t}));
+    scripts.forEach((s,i)=>cont.appendChild(buildScriptCard(s,t,fuente,i,'_modScripts')));
+  }catch(e){console.error(e);notify('Formato inválido. Pega el JSON completo.','error');}
 }
 
 function importCombinedScripts(){
-  try{const data=JSON.parse(v('comb-import-text').replace(/```json|```/g,''));const topic=v('comb-topic');const t=topic==='Otro'?v('comb-custom'):topic;const cont=document.getElementById('comb-results');cont.innerHTML='';
-  (data.scripts||[]).forEach((s,i)=>{const card=buildScriptCard(s,t,'Combinado');if(s.nota_fusion){const n=document.createElement('div');n.style.cssText='margin-top:8px;padding:10px;background:rgba(168,85,247,.08);border:1px solid rgba(168,85,247,.2);border-radius:8px';n.innerHTML=`<span class="section-label" style="color:var(--accent)">Nota de fusion</span><p class="small mt4" style="line-height:1.5">${s.nota_fusion}</p>`;card.appendChild(n);}cont.appendChild(card);});}catch{notify('Formato invalido.','error');}
+  try{
+    const data=JSON.parse(v('comb-import-text').replace(/```json|```/g,'').trim());
+    const t=v('comb-topic-input')||'Sin tema';
+    const cont=document.getElementById('comb-results');cont.innerHTML='';
+    const scripts=(data.scripts||[]);
+    window._combScripts=scripts.map(s=>({...s,tema:t}));
+    scripts.forEach((s,i)=>{
+      const card=buildScriptCard(s,t,'Combinado',i,'_combScripts');
+      if(s.nota_fusion){const n=document.createElement('div');n.style.cssText='margin-top:8px;padding:10px;background:rgba(168,85,247,.08);border:1px solid rgba(168,85,247,.2);border-radius:8px';n.innerHTML=`<span class="section-label" style="color:var(--accent)">Nota de fusion</span><p class="small mt4" style="line-height:1.5">${s.nota_fusion}</p>`;card.appendChild(n);}
+      cont.appendChild(card);
+    });
+    notify(`${scripts.length} script${scripts.length>1?'s':''} importado${scripts.length>1?'s':''}`);
+  }catch(e){console.error(e);notify('Formato inválido — revisa el JSON','error');}
 }
 function bBlock(label,val){if(!val)return'';return`<div class="block"><span class="section-label">${label}</span><p>${val}</p></div>`;}
-function buildScriptCard(s,tema,fuente){
+function buildScriptCard(s,tema,fuente,idx,store){
   const div=document.createElement('div');div.className='card';
   const fc=fuente==='Combinado'?'badge-purple':fuente.startsWith('Modelado')?'badge-electric':'badge-gray';
   const dur=s.duracion_seg?`${s.duracion_seg}s`:(s.duracion_estimada||'');
   const triggers=(s.triggers_activados||[]).join(', ');
-  // campos nuevos + compatibilidad clásica
   const bloques=[
     {k:'gancho',l:'Gancho'},{k:'cuerpo_parte1',l:'Cuerpo parte 1'},
     {k:'reenganche_1',l:'Reenganche 1'},{k:'cuerpo_parte2',l:'Cuerpo parte 2'},
@@ -1720,6 +1733,9 @@ function buildScriptCard(s,tema,fuente){
   ].filter(b=>s[b.k]&&s[b.k].trim());
   const scriptHtml=bloques.length?bloques.map(b=>bBlock(b.l,s[b.k])).join(''):'<p class="small">Sin contenido.</p>';
   const cardId='sc-'+Math.random().toString(36).slice(2,8);
+  const saveBtn=idx!=null&&store
+    ?`<button id="scbtn-${cardId}" class="btn btn-xs btn-primary" onclick="saveCardScript('${cardId}','${store}',${idx},'${fuente}')">Guardar</button>`
+    :`<button class="btn btn-xs btn-primary" onclick="saveToLibrary(${JSON.stringify(JSON.stringify(s))},'${tema}','${fuente}')">Guardar</button>`;
   div.innerHTML=`<div class="top-row"><div style="flex:1">
     <p style="font-weight:500;font-size:14px">${s.titulo||'Script'}</p>
     <p class="small mt4">${s.estilo||''} ${s.framework||''} ${dur?'· '+dur:''}</p>
@@ -1727,14 +1743,31 @@ function buildScriptCard(s,tema,fuente){
     <span class="badge ${fc}" style="margin-top:6px">${fuente}</span>
   </div>
   <div class="flex gap4" style="flex-direction:column;margin-left:8px">
-    <button class="btn btn-xs btn-primary" onclick="toggleScCard('${cardId}',this)">Ver</button>
+    <button class="btn btn-xs" onclick="toggleScCard('${cardId}',this)">Ver</button>
     <button class="btn btn-xs" onclick='addHookFromScript("${(s.gancho||'').replace(/"/g,"'").replace(/\n/g,' ')}","${s.estilo||''}")'>+ Gancho</button>
-    <button class="btn btn-xs" onclick='saveToLibrary(JSON.parse(decodeURIComponent("${encodeURIComponent(JSON.stringify(s))}")), "${tema}","${fuente}")'>Guardar</button>
+    ${saveBtn}
   </div></div>
   <div id="${cardId}" style="display:none;margin-top:12px;border-top:1px solid var(--border);padding-top:12px">${scriptHtml}</div>`;
   return div;
 }
-function toggleScCard(id,btn){const el=document.getElementById(id);if(!el)return;const v=el.style.display!=='none';el.style.display=v?'none':'block';btn.textContent=v?'Ver':'Cerrar';}
+async function saveCardScript(cardId,store,idx,fuente){
+  const s=window[store]?.[idx];if(!s){notify('Script no encontrado','error');return;}
+  const data={
+    user_id:currentUser.id,titulo:s.titulo||`Script ${idx+1}`,estilo:s.estilo||'',
+    estructura:s.estructura||s.framework||'',tema:s.tema||'',fuente,
+    gancho:s.gancho||'',cuerpo_parte1:s.cuerpo_parte1||'',reenganche_1:s.reenganche_1||'',
+    cuerpo_parte2:s.cuerpo_parte2||'',reenganche_2:s.reenganche_2||'',cierre_insight:s.cierre_insight||'',
+    cta:s.cta||'',dolor:s.dolor||'',ejemplo:s.ejemplo||'',fondo:s.fondo||'',cima:s.cima||'',
+    insight:s.insight||'',triggers_activados:s.triggers_activados||[],duracion_seg:s.duracion_seg||''
+  };
+  try{
+    const rows=await sbFetch('rs_library',{method:'POST',body:JSON.stringify(data)});
+    if(rows&&rows.length)localLibrary.unshift(rows[0]);
+    notify('✅ Guardado en biblioteca');
+    const btn=document.getElementById('scbtn-'+cardId);
+    if(btn){btn.textContent='✓ Guardado';btn.disabled=true;btn.style.opacity='.5';}
+  }catch(e){console.error('saveCardScript:',e);notify('Error: '+e.message,'error');}
+}
 async function addHookFromScript(text,style){
   if(!text)return;
   const data={user_id:currentUser.id,text,categoria:'Otro',estilo:style,notes:'Extraido de script'};
