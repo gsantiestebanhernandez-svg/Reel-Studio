@@ -349,7 +349,7 @@ label{font-size:12px;color:var(--text2);display:block;margin-bottom:5px;margin-t
       <div id="tab-voz" class="panel active">
         <div class="page-title">Mi Voz</div>
         <p class="page-sub">Educa la plataforma con quien sos. Se inyecta en cada script que generes.</p>
-        <div style="background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2);border-radius:var(--radius);padding:10px 14px;font-size:12px;color:var(--warn);margin-bottom:4px">Completa esta seccion primero. Es lo que diferencia tus scripts de cualquier IA generica.</div>
+        <div id="voz-empty-warn" style="display:none;background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2);border-radius:var(--radius);padding:10px 14px;font-size:12px;color:var(--warn);margin-bottom:4px">Completa esta seccion primero. Es lo que diferencia tus scripts de cualquier IA generica.</div>
 
         <div class="voz-block"><h4>Historia personal</h4><p class="desc">Los momentos que te formaron. Tu quiebre con la Bioneuroemocion. Lo que viviste que te llevo a este camino.</p><textarea id="voz-historia" rows="4" placeholder="Crecí en una familia donde el dolor emocional no se nombraba. A los 28 años tuve una crisis..."></textarea><div class="voz-saved" id="vs-historia"></div></div>
         <div class="voz-block"><h4>Como hablas — tu tono natural</h4><p class="desc">Describe como te expresas. Que palabras usas siempre. Que palabras evitas.</p><textarea id="voz-tono" rows="3" placeholder="Hablo directo, sin rodeos. Uso mucho la metafora. Evito 'simplemente' porque el proceso no es simple..."></textarea><div class="voz-saved" id="vs-tono"></div></div>
@@ -864,7 +864,13 @@ async function saveVoz(){
     notify('Voz guardada correctamente');
   }catch(e){notify('Error guardando voz','error');}
 }
-function updateVozIndicator(){const ind=document.getElementById('voz-indicator');if(ind)ind.style.display=localVoz.historia||localVoz.tono?'flex':'none';}
+function updateVozIndicator(){
+  const ind=document.getElementById('voz-indicator');
+  const warn=document.getElementById('voz-empty-warn');
+  const hasVoz=localVoz.historia||localVoz.tono;
+  if(ind)ind.style.display=hasVoz?'flex':'none';
+  if(warn)warn.style.display=hasVoz?'none':'block';
+}
 function buildVozCtx(){
   if(!localVoz.historia&&!localVoz.tono)return'';
   let c='\n\nVOZ Y PERSONALIDAD DEL CREADOR:\n';
