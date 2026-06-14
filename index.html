@@ -704,6 +704,51 @@ label{font-size:12px;color:var(--text2);display:block;margin-bottom:5px;margin-t
   </div>
 </div>
 
+<div class="modal-overlay" id="resultado-modal">
+  <div class="modal">
+    <h3 style="font-size:14px;font-weight:600;margin-bottom:3px">Registrar resultado</h3>
+    <p class="small" id="resultado-modal-title" style="margin-bottom:12px;color:var(--text2)"></p>
+    <label style="margin-top:0">¿Donde cayo la retencion?</label>
+    <select id="r-zona">
+      <option value="">-- Selecciona --</option>
+      <option value="gancho">Gancho (primeros 3 seg)</option>
+      <option value="reenganche1">Reenganche 1 (seg 5-15)</option>
+      <option value="cuerpo">Cuerpo (desarrollo)</option>
+      <option value="reenganche2">Reenganche 2 (seg 20-35)</option>
+      <option value="cta">CTA (cierre)</option>
+      <option value="ninguna">No cayo — funciono bien</option>
+    </select>
+    <label>Tipo de comentarios dominantes</label>
+    <select id="r-comentarios">
+      <option value="">-- Selecciona --</option>
+      <option value="identificacion">Identificacion emocional ("esto soy yo")</option>
+      <option value="preguntas">Preguntas sobre el tema</option>
+      <option value="emojis">Emojis vacios, sin texto</option>
+      <option value="criticas">Criticas o cuestionamientos</option>
+      <option value="ninguno">Ningun comentario relevante</option>
+    </select>
+    <label>Accion post-reel</label>
+    <select id="r-accion">
+      <option value="">-- Selecciona --</option>
+      <option value="dms">DMs recibidos</option>
+      <option value="follows">Nuevos seguidores</option>
+      <option value="clicks">Clicks al perfil/link</option>
+      <option value="varias">Varias acciones</option>
+      <option value="ninguna">Ninguna accion notable</option>
+    </select>
+    <label>¿Que funciono?</label>
+    <textarea id="r-funciono" rows="2" placeholder="El gancho genero identificacion inmediata..."></textarea>
+    <label>¿Que cambiarias?</label>
+    <textarea id="r-cambiaria" rows="2" placeholder="El CTA fue muy suave, sin urgencia..."></textarea>
+    <label>¿Vale la pena modelar esta estructura?</label>
+    <div class="flex gap8 mt4" style="margin-bottom:12px">
+      <button id="r-modelar-si" class="btn" style="flex:1;border:2px solid transparent" onclick="setModelar(true)">Si, modelar</button>
+      <button id="r-modelar-no" class="btn" style="flex:1;border:2px solid transparent" onclick="setModelar(false)">No por ahora</button>
+    </div>
+    <div class="flex gap8 mt4"><button class="btn btn-primary" style="flex:1" onclick="saveResultado()">Guardar resultado</button><button class="btn" onclick="closeModal('resultado-modal')">Cancelar</button></div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="picker-modal">
   <div class="modal" style="max-width:520px">
     <h3 style="font-size:14px;font-weight:600;margin-bottom:10px">Seleccionar script</h3>
@@ -1008,13 +1053,77 @@ function openMetricsModal(id){
   openModal('metrics-modal');
 }
 function updateStars(v){document.getElementById('m-stars').textContent='★'.repeat(v)+'☆'.repeat(5-v);}
+
+let resultadoId=null,resultadoModelar=null;
+function openResultadoModal(id){
+  resultadoId=id;resultadoModelar=null;
+  const item=localLibrary.find(i=>i.id===id);if(!item)return;
+  document.getElementById('resultado-modal-title').textContent=item.titulo;
+  const r=item.resultado||{};
+  document.getElementById('r-zona').value=r.zona||'';
+  document.getElementById('r-comentarios').value=r.comentarios||'';
+  document.getElementById('r-accion').value=r.accion||'';
+  document.getElementById('r-funciono').value=r.funciono||'';
+  document.getElementById('r-cambiaria').value=r.cambiaria||'';
+  if(r.modelar!==undefined)setModelar(r.modelar); else resetModelarBtns();
+  openModal('resultado-modal');
+}
+function setModelar(val){
+  resultadoModelar=val;
+  document.getElementById('r-modelar-si').style.borderColor=val?'var(--indigo)':'transparent';
+  document.getElementById('r-modelar-no').style.borderColor=val===false?'#ef4444':'transparent';
+}
+function resetModelarBtns(){
+  document.getElementById('r-modelar-si').style.borderColor='transparent';
+  document.getElementById('r-modelar-no').style.borderColor='transparent';
+}
+async function saveResultado(){
+  if(!resultadoId)return;
+  const data={resultado:{zona:v('r-zona'),comentarios:v('r-comentarios'),accion:v('r-accion'),funciono:v('r-funciono'),cambiaria:v('r-cambiaria'),modelar:resultadoModelar},publicado:true};
+  try{
+    await sbFetch(`rs_library?id=eq.${resultadoId}`,{method:'PATCH',body:JSON.stringify(data)});
+    localLibrary=localLibrary.map(i=>i.id===resultadoId?{...i,...data}:i);
+    closeModal('resultado-modal');renderLibrary();
+    notify('Resultado guardado');
+    if(resultadoModelar)notify('Marcado para modelar — guardalo en Referencias');
+  }catch(e){notify('Error al guardar','error');}
+}
 function renderLibrary(){
   const styles=['Todos','Reflexivo','Educativo','Revelador','Storytelling','Emocional','Incomodo'];
   const filters=document.getElementById('lib-filters');if(filters)filters.innerHTML=styles.map(s=>`<button class="sf${s===activeFilter?' active':''}" onclick="setLibFilter('${s}')">${s}</button>`).join('');
   const filtered=activeFilter==='Todos'?localLibrary:localLibrary.filter(i=>i.estilo===activeFilter);
   const list=document.getElementById('library-list');if(!list)return;
   if(!filtered.length){list.innerHTML='<p class="small mt8">No hay scripts guardados.</p>';return;}
-  list.innerHTML=filtered.map(item=>{const score=calcScore(item);const fc=item.fuente==='Combinado'?'badge-purple':item.fuente?.startsWith('Modelado')?'badge-electric':'badge-gray';return`<div class="card"><div class="top-row"><div style="flex:1"><p style="font-weight:500;font-size:14px">${item.titulo}</p><p class="small mt4">${item.tema} · ${item.estilo}</p><div class="flex gap4 mt4" style="flex-wrap:wrap"><span class="badge ${fc}">${item.fuente||'Generado'}</span>${score?`<span class="score-badge">${score} pts</span>`:''}</div>${item.publicado&&item.metricas?`<div class="flex gap8 mt8" style="flex-wrap:wrap"><span class="small">Alcance: <strong>${(item.metricas.alcance||0).toLocaleString()}</strong></span><span class="small">Guardados: <strong>${item.metricas.guardados||0}</strong></span><span class="small">${'★'.repeat(item.rating||0)}${'☆'.repeat(5-(item.rating||0))}</span></div>`:`<span class="badge badge-warn mt4">Sin metricas</span>`}</div><div class="flex gap4 mt4" style="flex-direction:column;margin-left:8px"><button class="btn btn-xs" onclick="openMetricsModal('${item.id}')">Metricas</button><button class="btn btn-xs btn-danger" onclick="deleteItem('${item.id}')">x</button></div></div></div>`;}).join('');
+  list.innerHTML=filtered.map(item=>{
+    const score=calcScore(item);
+    const fc=item.fuente==='Combinado'?'badge-purple':item.fuente?.startsWith('Modelado')?'badge-electric':'badge-gray';
+    const r=item.resultado;
+    const zonaLabel={gancho:'Cayo en gancho',reenganche1:'Cayo en reenganche 1',cuerpo:'Cayo en cuerpo',reenganche2:'Cayo en reenganche 2',cta:'Cayo en CTA',ninguna:'Funciono bien'};
+    const accionLabel={dms:'DMs',follows:'Nuevos seguidores',clicks:'Clicks',varias:'Varias acciones',ninguna:'Sin accion'};
+    const resultadoHtml=r?`<div class="mt8" style="border-top:1px solid var(--border);padding-top:8px">
+      <div class="flex gap4" style="flex-wrap:wrap">
+        <span class="badge ${r.zona==='ninguna'?'badge-green':'badge-warn'}">${zonaLabel[r.zona]||r.zona}</span>
+        ${r.accion?`<span class="badge badge-gray">${accionLabel[r.accion]||r.accion}</span>`:''}
+        ${r.modelar?'<span class="badge badge-purple">Modelar</span>':''}
+      </div>
+      ${r.funciono?`<p class="small mt4" style="color:var(--text2)">${r.funciono}</p>`:''}
+    </div>`:`<span class="badge badge-warn mt4">Sin resultado</span>`;
+    return`<div class="card"><div class="top-row"><div style="flex:1">
+      <p style="font-weight:500;font-size:14px">${item.titulo}</p>
+      <p class="small mt4">${item.tema} · ${item.estilo}</p>
+      <div class="flex gap4 mt4" style="flex-wrap:wrap">
+        <span class="badge ${fc}">${item.fuente||'Generado'}</span>
+        ${score?`<span class="score-badge">${score} pts</span>`:''}
+      </div>
+      ${item.publicado&&item.metricas?`<div class="flex gap8 mt6" style="flex-wrap:wrap"><span class="small">Alcance: <strong>${(item.metricas.alcance||0).toLocaleString()}</strong></span><span class="small">Guardados: <strong>${item.metricas.guardados||0}</strong></span><span class="small">${'★'.repeat(item.rating||0)}${'☆'.repeat(5-(item.rating||0))}</span></div>`:''}
+      ${resultadoHtml}
+    </div>
+    <div class="flex gap4 mt4" style="flex-direction:column;margin-left:8px">
+      <button class="btn btn-xs" onclick="openResultadoModal('${item.id}')">Resultado</button>
+      <button class="btn btn-xs" onclick="openMetricsModal('${item.id}')">Metricas</button>
+      <button class="btn btn-xs btn-danger" onclick="deleteItem('${item.id}')">x</button>
+    </div></div></div>`;
+  }).join('');
 }
 function setLibFilter(s){activeFilter=s;renderLibrary();}
 
