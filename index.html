@@ -245,11 +245,28 @@ label{font-size:12px;color:var(--text2);display:block;margin-bottom:5px;margin-t
 
 @media(max-width:640px){
   .app-sidebar{display:none}
-  .app-content{padding:16px}
+  .app-content{padding:12px 12px 80px}
   .land-features{padding:24px 16px}
   .land-nav{padding:16px 20px}
   .grid2,.grid3{grid-template-columns:1fr}
+  .app-nav{padding:10px 16px}
+  pre{font-size:11px;white-space:pre-wrap;word-break:break-word}
+  .prompt-box pre{max-height:200px;overflow-y:auto}
+  .page-title{font-size:20px}
+  .modal-box{margin:12px;width:calc(100% - 24px)}
 }
+
+/* NAV MÓVIL INFERIOR */
+.mobile-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--bg2);border-top:1px solid var(--border);z-index:100;padding:6px 0 env(safe-area-inset-bottom,6px)}
+.mobile-nav-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:0}
+.mobile-nav-item{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px 2px;cursor:pointer;border:none;background:none;color:var(--text3);font-size:9px;font-family:'Space Grotesk',sans-serif;gap:2px;transition:color .15s}
+.mobile-nav-item .mn-icon{font-size:18px;line-height:1}
+.mobile-nav-item.active{color:var(--indigo-light)}
+.mobile-nav-more{position:fixed;bottom:60px;right:12px;background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius-lg);padding:8px;z-index:200;display:none;flex-direction:column;gap:2px;box-shadow:0 8px 32px rgba(0,0,0,.4);min-width:160px}
+.mobile-nav-more.open{display:flex}
+.mobile-nav-more-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--radius);cursor:pointer;font-size:13px;color:var(--text2);transition:background .15s}
+.mobile-nav-more-item:hover,.mobile-nav-more-item.active{background:rgba(79,70,229,.15);color:var(--indigo-light)}
+@media(max-width:640px){.mobile-nav{display:block}}
 </style>
 </head>
 <body>
@@ -656,6 +673,28 @@ label{font-size:12px;color:var(--text2);display:block;margin-bottom:5px;margin-t
       </div>
 
     </main>
+
+    <!-- NAV MÓVIL INFERIOR -->
+    <nav class="mobile-nav">
+      <div class="mobile-nav-grid">
+        <button class="mobile-nav-item" onclick="switchTab('voz')" data-tab="voz"><span class="mn-icon">🎙</span>Mi Voz</button>
+        <button class="mobile-nav-item" onclick="switchTab('generar')" data-tab="generar"><span class="mn-icon">⚡</span>Generar</button>
+        <button class="mobile-nav-item" onclick="switchTab('modelar')" data-tab="modelar"><span class="mn-icon">🔍</span>Modelar</button>
+        <button class="mobile-nav-item" onclick="switchTab('ganchos')" data-tab="ganchos"><span class="mn-icon">🪝</span>Ganchos</button>
+        <button class="mobile-nav-item" onclick="switchTab('biblioteca')" data-tab="biblioteca"><span class="mn-icon">🗂</span>Scripts</button>
+        <button class="mobile-nav-item" onclick="toggleMoreMenu()" id="mn-more"><span class="mn-icon">⋯</span>Más</button>
+      </div>
+    </nav>
+    <!-- MENÚ "MÁS" MÓVIL -->
+    <div class="mobile-nav-more" id="mobile-more-menu">
+      <div class="mobile-nav-more-item" onclick="switchTab('conocimiento');toggleMoreMenu()" data-tab="conocimiento">📚 Conocimiento</div>
+      <div class="mobile-nav-more-item" onclick="switchTab('combinar');toggleMoreMenu()" data-tab="combinar">🧬 Combinar</div>
+      <div class="mobile-nav-more-item" onclick="switchTab('diagnostico');toggleMoreMenu()" data-tab="diagnostico">🔬 Diagnóstico</div>
+      <div class="mobile-nav-more-item" onclick="switchTab('calendario');toggleMoreMenu()" data-tab="calendario">📅 Calendario</div>
+      <div class="mobile-nav-more-item" onclick="switchTab('flash');toggleMoreMenu()" data-tab="flash">💡 Ideas Flash</div>
+      <div class="mobile-nav-more-item" onclick="switchTab('analytics');toggleMoreMenu()" data-tab="analytics">📊 Analytics</div>
+    </div>
+
   </div>
 </div>
 
@@ -738,9 +777,13 @@ const PARTS=['gancho','dolor','ejemplo','fondo','cima','insight','cta'];
 const PL={gancho:'Gancho',dolor:'Dolor',ejemplo:'Ejemplo',fondo:'Fondo de pozo',cima:'Cima',insight:'Insight',cta:'CTA'};
 
 // ============ VIEWS ============
-function showLanding(){hide('login');hide('app');show('landing');}
+function showLanding(){hide('login');hide('app');show('landing');localStorage.removeItem('rs_session');}
 function showLogin(){hide('landing');hide('app');show('login');}
 function showApp(){hide('landing');hide('login');show('app');}
+function saveSession(){if(currentUser)localStorage.setItem('rs_session',JSON.stringify({id:currentUser.id,username:currentUser.username,display_name:currentUser.display_name}));}
+function loadSession(){try{const s=localStorage.getItem('rs_session');return s?JSON.parse(s):null;}catch{return null;}}
+function saveActiveTab(name){localStorage.setItem('rs_tab',name);}
+function loadActiveTab(){return localStorage.getItem('rs_tab')||'voz';}
 function show(id){document.getElementById(id).classList.remove('hidden')}
 function hide(id){document.getElementById(id).classList.add('hidden')}
 function v(id){const el=document.getElementById(id);return el?el.value:'';}
@@ -770,15 +813,16 @@ async function doLogin(){
     currentUser=rows[0];
     document.getElementById('nav-username').textContent=currentUser.display_name||currentUser.username;
     document.getElementById('nav-avatar').textContent=(currentUser.display_name||currentUser.username)[0].toUpperCase();
+    saveSession();
     showApp();
     await loadAllData();
-    switchTab('voz');
+    switchTab(loadActiveTab());
   }catch(e){
     console.error('Login error:',e);
     document.getElementById('login-err').style.display='block';
   }
 }
-function doLogout(){currentUser=null;localVoz={};localBooks=[];localConcepts=[];localLibrary=[];localHooks=[];localCalendar={};localFlash=[];showLanding();}
+function doLogout(){currentUser=null;localVoz={};localBooks=[];localConcepts=[];localLibrary=[];localHooks=[];localCalendar={};localFlash=[];localStorage.removeItem('rs_session');localStorage.removeItem('rs_tab');showLanding();}
 
 // ============ LOAD ALL DATA ============
 async function loadAllData(){
@@ -804,7 +848,8 @@ async function loadAllData(){
 // ============ VOZ ============
 function loadVozFields(){
   ['historia','tono','frases','arquetipos','anecdotas','audiencia'].forEach(k=>{
-    if(localVoz[k]){const inp=document.getElementById('voz-'+k);const sv=document.getElementById('vs-'+k);if(inp)inp.value=localVoz[k];if(sv){sv.textContent=localVoz[k];sv.style.display='block';}}
+    if(localVoz[k]){const inp=document.getElementById('voz-'+k);if(inp)inp.value=localVoz[k];}
+    const sv=document.getElementById('vs-'+k);if(sv)sv.style.display='none';
   });
   updateVozIndicator();
 }
@@ -815,7 +860,6 @@ async function saveVoz(){
     if(localVoz.id){await sbFetch(`rs_voz?id=eq.${localVoz.id}`,{method:'PATCH',body:JSON.stringify(data)});}
     else{const rows=await sbFetch('rs_voz',{method:'POST',body:JSON.stringify({...data,user_id:currentUser.id})});if(rows&&rows.length)localVoz=rows[0];}
     localVoz={...localVoz,...data};
-    ['historia','tono','frases','arquetipos','anecdotas','audiencia'].forEach(k=>{const sv=document.getElementById('vs-'+k);if(sv&&data[k]){sv.textContent=data[k];sv.style.display='block';}});
     document.getElementById('voz-status').style.display='block';updateVozIndicator();
     notify('Voz guardada correctamente');
   }catch(e){notify('Error guardando voz','error');}
@@ -1314,11 +1358,18 @@ function openModal(id){document.getElementById(id).classList.add('open');}
 function closeModal(id){document.getElementById(id).classList.remove('open');}
 
 // ============ SWITCH TAB ============
+function toggleMoreMenu(){const m=document.getElementById('mobile-more-menu');m.classList.toggle('open');}
+document.addEventListener('click',function(e){const m=document.getElementById('mobile-more-menu');if(m&&m.classList.contains('open')&&!m.contains(e.target)&&e.target.id!=='mn-more'){m.classList.remove('open');}});
+
 function switchTab(name){
+  saveActiveTab(name);
   const names=['voz','conocimiento','generar','modelar','combinar','diagnostico','ganchos','calendario','flash','biblioteca','analytics'];
   document.querySelectorAll('.nav-item').forEach((el,i)=>el.classList.toggle('active',names[i]===name));
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
   const panel=document.getElementById('tab-'+name);if(panel)panel.classList.add('active');
+  // Sync mobile nav
+  document.querySelectorAll('.mobile-nav-item[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===name));
+  document.querySelectorAll('.mobile-nav-more-item[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===name));
   if(name==='biblioteca')renderLibrary();
   if(name==='analytics')renderAnalytics();
   if(name==='combinar')renderCombineSlots();
@@ -1330,7 +1381,22 @@ function switchTab(name){
   if(name==='generar'){updateVozIndicator();updateHookSelect();}
 }
 
-// ============ SELECT EVENTS ============
+// ============ AUTO-LOGIN DESDE SESIÓN GUARDADA ============
+(async function tryAutoLogin(){
+  const sess=loadSession();
+  if(!sess)return;
+  try{
+    const rows=await sbFetch(`rs_users?username=eq.${sess.username}&select=*`);
+    if(rows&&rows.length){
+      currentUser=rows[0];
+      document.getElementById('nav-username').textContent=currentUser.display_name||currentUser.username;
+      document.getElementById('nav-avatar').textContent=(currentUser.display_name||currentUser.username)[0].toUpperCase();
+      showApp();
+      await loadAllData();
+      switchTab(loadActiveTab());
+    }
+  }catch(e){localStorage.removeItem('rs_session');}
+})();
 document.getElementById('comb-topic').addEventListener('change',function(){document.getElementById('comb-custom-wrap').style.display=this.value==='Otro'?'block':'none';});
 // Init descriptions on load
 updateStructureDesc();
