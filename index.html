@@ -818,7 +818,7 @@ function showLanding(){hide('login');hide('app');show('landing');localStorage.re
 function showLogin(){hide('landing');hide('app');show('login');}
 function showApp(){hide('landing');hide('login');show('app');}
 function saveSession(){if(currentUser)localStorage.setItem('rs_session',JSON.stringify({id:currentUser.id,username:currentUser.username,display_name:currentUser.display_name}));}
-function loadSession(){try{const s=localStorage.getItem('rs_session');return s?JSON.parse(s):null;}catch(e){return null;}}
+function loadSession(){try{const s=localStorage.getItem('rs_session');return s?JSON.parse(s):null;}catch{return null;}}
 function saveActiveTab(name){localStorage.setItem('rs_tab',name);}
 function loadActiveTab(){return localStorage.getItem('rs_tab')||'voz';}
 function show(id){document.getElementById(id).classList.remove('hidden')}
@@ -1090,37 +1090,39 @@ async function saveResultado(){
 }
 function renderLibrary(){
   const styles=['Todos','Reflexivo','Educativo','Revelador','Storytelling','Emocional','Incomodo'];
-  const filters=document.getElementById('lib-filters');
-  if(filters)filters.innerHTML=styles.map(function(s){
-    return '<button class="sf'+(s===activeFilter?' active':'')+'" onclick="setLibFilter(&#39;'+s+'&#39;)">'+s+'</button>';
-  }).join('');
-  const filtered=activeFilter==='Todos'?localLibrary:localLibrary.filter(function(i){return i.estilo===activeFilter;});
+  const filters=document.getElementById('lib-filters');if(filters)filters.innerHTML=styles.map(s=>`<button class="sf${s===activeFilter?' active':''}" onclick="setLibFilter('${s}')">${s}</button>`).join('');
+  const filtered=activeFilter==='Todos'?localLibrary:localLibrary.filter(i=>i.estilo===activeFilter);
   const list=document.getElementById('library-list');if(!list)return;
   if(!filtered.length){list.innerHTML='<p class="small mt8">No hay scripts guardados.</p>';return;}
-  const zonaLabel={gancho:'Cayo en gancho',reenganche1:'Cayo en reenganche 1',cuerpo:'Cayo en cuerpo',reenganche2:'Cayo en reenganche 2',cta:'Cayo en CTA',ninguna:'Funciono bien'};
-  const accionLabel={dms:'DMs',follows:'Nuevos seguidores',clicks:'Clicks',varias:'Varias acciones',ninguna:'Sin accion'};
-  list.innerHTML=filtered.map(function(item){
-    var score=calcScore(item);
-    var fc=item.fuente==='Combinado'?'badge-purple':(item.fuente&&item.fuente.startsWith('Modelado'))?'badge-electric':'badge-gray';
-    var r=item.resultado;
-    var zonaBadge=r?('<span class="badge '+(r.zona==='ninguna'?'badge-green':'badge-warn')+'">'+(zonaLabel[r.zona]||r.zona||'')+'</span>'):'';
-    var accionBadge=(r&&r.accion)?('<span class="badge badge-gray">'+(accionLabel[r.accion]||r.accion)+'</span>'):'';
-    var modelarBadge=(r&&r.modelar)?'<span class="badge badge-purple">Modelar</span>':'';
-    var funcionoP=(r&&r.funciono)?('<p class="small mt4" style="color:var(--text2)">'+r.funciono+'</p>'):'';
-    var resultadoHtml=r?('<div class="mt8" style="border-top:1px solid var(--border);padding-top:8px"><div class="flex gap4" style="flex-wrap:wrap">'+zonaBadge+accionBadge+modelarBadge+'</div>'+funcionoP+'</div>'):'<span class="badge badge-warn mt4">Sin resultado</span>';
-    var metricasHtml=(item.publicado&&item.metricas)?('<div class="flex gap8 mt6" style="flex-wrap:wrap"><span class="small">Alcance: <strong>'+(item.metricas.alcance||0).toLocaleString()+'</strong></span><span class="small">Guardados: <strong>'+(item.metricas.guardados||0)+'</strong></span></div>'):'';
-    var scoreBadge=score?('<span class="score-badge">'+score+' pts</span>'):'';
-    var id=item.id;
-    return '<div class="card"><div class="top-row"><div style="flex:1">'+
-      '<p style="font-weight:500;font-size:14px">'+item.titulo+'</p>'+
-      '<p class="small mt4">'+(item.tema||'')+' - '+(item.estilo||'')+'</p>'+
-      '<div class="flex gap4 mt4" style="flex-wrap:wrap"><span class="badge '+fc+'">'+(item.fuente||'Generado')+'</span>'+scoreBadge+'</div>'+
-      metricasHtml+resultadoHtml+
-      '</div><div class="flex gap4 mt4" style="flex-direction:column;margin-left:8px">'+
-      '<button class="btn btn-xs" onclick="openResultadoModal(&#39;'+id+'&#39;)">Resultado</button>'+
-      '<button class="btn btn-xs" onclick="openMetricsModal(&#39;'+id+'&#39;)">Metricas</button>'+
-      '<button class="btn btn-xs btn-danger" onclick="deleteItem(&#39;'+id+'&#39;)">x</button>'+
-      '</div></div></div>';
+  list.innerHTML=filtered.map(item=>{
+    const score=calcScore(item);
+    const fc=item.fuente==='Combinado'?'badge-purple':item.fuente?.startsWith('Modelado')?'badge-electric':'badge-gray';
+    const r=item.resultado;
+    const zonaLabel={gancho:'Cayo en gancho',reenganche1:'Cayo en reenganche 1',cuerpo:'Cayo en cuerpo',reenganche2:'Cayo en reenganche 2',cta:'Cayo en CTA',ninguna:'Funciono bien'};
+    const accionLabel={dms:'DMs',follows:'Nuevos seguidores',clicks:'Clicks',varias:'Varias acciones',ninguna:'Sin accion'};
+    const resultadoHtml=r?`<div class="mt8" style="border-top:1px solid var(--border);padding-top:8px">
+      <div class="flex gap4" style="flex-wrap:wrap">
+        <span class="badge ${r.zona==='ninguna'?'badge-green':'badge-warn'}">${zonaLabel[r.zona]||r.zona}</span>
+        ${r.accion?`<span class="badge badge-gray">${accionLabel[r.accion]||r.accion}</span>`:''}
+        ${r.modelar?'<span class="badge badge-purple">Modelar</span>':''}
+      </div>
+      ${r.funciono?`<p class="small mt4" style="color:var(--text2)">${r.funciono}</p>`:''}
+    </div>`:`<span class="badge badge-warn mt4">Sin resultado</span>`;
+    return`<div class="card"><div class="top-row"><div style="flex:1">
+      <p style="font-weight:500;font-size:14px">${item.titulo}</p>
+      <p class="small mt4">${item.tema} · ${item.estilo}</p>
+      <div class="flex gap4 mt4" style="flex-wrap:wrap">
+        <span class="badge ${fc}">${item.fuente||'Generado'}</span>
+        ${score?`<span class="score-badge">${score} pts</span>`:''}
+      </div>
+      ${item.publicado&&item.metricas?`<div class="flex gap8 mt6" style="flex-wrap:wrap"><span class="small">Alcance: <strong>${(item.metricas.alcance||0).toLocaleString()}</strong></span><span class="small">Guardados: <strong>${item.metricas.guardados||0}</strong></span><span class="small">${'★'.repeat(item.rating||0)}${'☆'.repeat(5-(item.rating||0))}</span></div>`:''}
+      ${resultadoHtml}
+    </div>
+    <div class="flex gap4 mt4" style="flex-direction:column;margin-left:8px">
+      <button class="btn btn-xs" onclick="openResultadoModal('${item.id}')">Resultado</button>
+      <button class="btn btn-xs" onclick="openMetricsModal('${item.id}')">Metricas</button>
+      <button class="btn btn-xs btn-danger" onclick="deleteItem('${item.id}')">x</button>
+    </div></div></div>`;
   }).join('');
 }
 function setLibFilter(s){activeFilter=s;renderLibrary();}
@@ -1407,34 +1409,34 @@ ${VIRAL_RULES}
 
 function copyPrompt(id,btn){navigator.clipboard.writeText(document.getElementById(id).textContent).then(()=>{btn.textContent='Copiado!';setTimeout(()=>btn.textContent='Copiar prompt',2000);});}
 
+async function importModels(){
+  try{const data=JSON.parse(v('mod-import-text').replace(/```json|```/g,''));
     const author=v('mod-author');
     const t=getModTopic();
     const cont=document.getElementById('mod-results');cont.innerHTML='';
     if(data.framework_detectado){
       const fw=data.framework_detectado;
       const d=document.createElement('div');d.className='card card-muted';
-      var beatsHtml=fw.estructura_beats&&fw.estructura_beats.length?'<div class="mt8"><span class="section-label">Estructura por beats</span><div class="mt4">'+fw.estructura_beats.map(function(b,i){return'<div style="font-size:12px;color:var(--text2);padding:3px 0">'+(i+1)+'. '+b+'</div>';}).join('')+'</div></div>':'';
-      var fwTvHtml=fw.tecnicas_virales&&fw.tecnicas_virales.length?'<div class="mt8"><span class="section-label">Tecnicas virales</span><div class="flex gap4 mt4" style="flex-wrap:wrap">'+fw.tecnicas_virales.map(function(tv){return'<span class="badge badge-indigo">'+tv+'</span>';}).join('')+'</div></div>':'';
-      var fwFxHtml=fw.por_que_funciona?'<div class="card card-muted mt8" style="padding:10px"><span class="section-label">Por que funciona</span><p class="small mt4" style="line-height:1.5">'+fw.por_que_funciona+'</p></div>':'';
-      d.innerHTML='<p style="font-weight:600;font-size:13px;margin-bottom:8px">Framework detectado: <span style="color:var(--indigo-light)">'+(fw.nombre||'-')+'</span></p>'+beatsHtml+fwTvHtml+fwFxHtml;
+      d.innerHTML=`<p style="font-weight:600;font-size:13px;margin-bottom:8px">🔍 Framework detectado: <span style="color:var(--indigo-light)">${fw.nombre||'—'}</span></p>`
+        +(fw.estructura_beats?.length?`<div class="mt8"><span class="section-label">Estructura por beats</span><div class="mt4">${fw.estructura_beats.map((b,i)=>`<div style="font-size:12px;color:var(--text2);padding:3px 0">${i+1}. ${b}</div>`).join('')}</div></div>`:'')
+        +(fw.tecnicas_virales?.length?`<div class="mt8"><span class="section-label">Técnicas virales</span><div class="flex gap4 mt4" style="flex-wrap:wrap">${fw.tecnicas_virales.map(tv=>`<span class="badge badge-indigo">${tv}</span>`).join('')}</div></div>`:'')
+        +(fw.por_que_funciona?`<div class="card card-muted mt8" style="padding:10px"><span class="section-label">Por qué funciona</span><p class="small mt4" style="line-height:1.5">${fw.por_que_funciona}</p></div>`:'');
       cont.appendChild(d);
       const badge=document.getElementById('mod-framework-badge');
       if(badge&&fw.nombre){badge.style.display='block';document.getElementById('mod-fw-name').textContent=fw.nombre;document.getElementById('mod-fw-desc').textContent=fw.por_que_funciona||'';}
     }
     if(data.analisis&&!data.framework_detectado){
       const a=data.analisis;const d=document.createElement('div');d.className='card card-muted';
-      var tvHtml=a.tecnicas_virales&&a.tecnicas_virales.length?'<div class="mt8"><span class="section-label">Tecnicas virales</span><div class="mt4">'+a.tecnicas_virales.map(function(tv){return'<span class="badge badge-indigo">'+tv+'</span>';}).join('')+'</div></div>':'';
-      var fxHtml=a.por_que_funciona?'<div class="card card-muted mt8" style="padding:10px"><span class="section-label">Por que funciona</span><p class="small mt4" style="line-height:1.5">'+a.por_que_funciona+'</p></div>':'';
-      d.innerHTML='<p style="font-weight:600;font-size:13px;margin-bottom:8px">ADN narrativo detectado</p>'+bBlock('Gancho',a.gancho)+bBlock('Dolor',a.dolor)+bBlock('Ejemplo',a.ejemplo)+bBlock('Fondo',a.fondo)+bBlock('Cima',a.cima)+bBlock('Insight',a.insight)+bBlock('CTA',a.cta)+tvHtml+fxHtml;
+      d.innerHTML=`<p style="font-weight:600;font-size:13px;margin-bottom:8px">ADN narrativo detectado</p>`+bBlock('Gancho',a.gancho)+bBlock('Dolor',a.dolor)+bBlock('Ejemplo',a.ejemplo)+bBlock('Fondo',a.fondo)+bBlock('Cima',a.cima)+bBlock('Insight',a.insight)+bBlock('CTA',a.cta)+(a.tecnicas_virales?.length?`<div class="mt8"><span class="section-label">Técnicas virales</span><div class="mt4">${a.tecnicas_virales.map(tv=>`<span class="badge badge-indigo">${tv}</span>`).join('')}</div></div>`:'')+(a.por_que_funciona?`<div class="card card-muted mt8" style="padding:10px"><span class="section-label">Por qué funciona</span><p class="small mt4" style="line-height:1.5">${a.por_que_funciona}</p></div>`:'');
       cont.appendChild(d);
     }
     (data.scripts||[]).forEach(s=>cont.appendChild(buildScriptCard(s,t,author?`Modelado de: @${author}`:'Modelado')));
-  }catch(e){notify('Formato invalido. Pega el JSON completo.','error');}
+  }catch(e){notify('Formato inválido. Pega el JSON completo.','error');}
 }
 
 function importCombinedScripts(){
   try{const data=JSON.parse(v('comb-import-text').replace(/```json|```/g,''));const topic=v('comb-topic');const t=topic==='Otro'?v('comb-custom'):topic;const cont=document.getElementById('comb-results');cont.innerHTML='';
-  (data.scripts||[]).forEach((s,i)=>{const card=buildScriptCard(s,t,'Combinado');if(s.nota_fusion){const n=document.createElement('div');n.style.cssText='margin-top:8px;padding:10px;background:rgba(168,85,247,.08);border:1px solid rgba(168,85,247,.2);border-radius:8px';n.innerHTML=`<span class="section-label" style="color:var(--accent)">Nota de fusion</span><p class="small mt4" style="line-height:1.5">${s.nota_fusion}</p>`;card.appendChild(n);}cont.appendChild(card);});}catch(e){notify('Formato invalido.','error');}
+  (data.scripts||[]).forEach((s,i)=>{const card=buildScriptCard(s,t,'Combinado');if(s.nota_fusion){const n=document.createElement('div');n.style.cssText='margin-top:8px;padding:10px;background:rgba(168,85,247,.08);border:1px solid rgba(168,85,247,.2);border-radius:8px';n.innerHTML=`<span class="section-label" style="color:var(--accent)">Nota de fusion</span><p class="small mt4" style="line-height:1.5">${s.nota_fusion}</p>`;card.appendChild(n);}cont.appendChild(card);});}catch{notify('Formato invalido.','error');}
 }
 function bBlock(label,val){if(!val)return'';return`<div class="block"><span class="section-label">${label}</span><p>${val}</p></div>`;}
 function buildScriptCard(s,tema,fuente){
