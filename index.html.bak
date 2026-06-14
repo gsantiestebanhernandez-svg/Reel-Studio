@@ -364,127 +364,17 @@ label{font-size:12px;color:var(--text2);display:block;margin-bottom:5px;margin-t
         <div class="page-title">Generar Scripts</div>
         <p class="page-sub">Scripts personalizados con tu voz y conocimiento activados.</p>
         <div class="voz-indicator" id="voz-indicator">✓ Tu voz personal esta activada</div>
-
-        <!-- CAPA 1+2: Selector de categoría -->
-        <label>Categoría del tema</label>
-        <div class="flex gap8" style="flex-wrap:wrap;margin-bottom:8px" id="gen-cat-pills">
-          <button class="sf active" onclick="setGenCat('nucleo')">🧠 Tu núcleo BNE</button>
-          <button class="sf" onclick="setGenCat('aplicaciones')">🔗 Aplicaciones</button>
-          <button class="sf" onclick="setGenCat('libre')">✏️ Tema libre</button>
+        <div class="grid2">
+          <div><label>Tema</label><select id="gen-topic"><option>Bioneuroemocion</option><option>Programas heredados</option><option>Lealtades familiares</option><option>Inconsciente</option><option>Relaciones de pareja</option><option>Sombra</option><option>Expansion de consciencia</option><option>Otro</option></select></div>
+          <div><label>Estilo narrativo</label><select id="gen-style"><option>Reflexivo</option><option>Educativo</option><option>Revelador</option><option>Storytelling</option><option>Emocional</option><option>Incomodo</option></select></div>
         </div>
-
-        <!-- CAPA 1: Temas núcleo BNE (lenguaje del espectador) -->
-        <div id="gen-cat-nucleo">
-          <label>Tema</label>
-          <select id="gen-topic-nucleo">
-            <optgroup label="— Dolor emocional —">
-              <option value="Por qué repites los mismos patrones">Por qué repites los mismos patrones</option>
-              <option value="Ansiedad y miedo sin razón aparente">Ansiedad y miedo sin razón aparente</option>
-              <option value="Autoestima y autosabotaje">Autoestima y autosabotaje</option>
-              <option value="El cuerpo habla: síntomas con mensaje">El cuerpo habla: síntomas con mensaje</option>
-            </optgroup>
-            <optgroup label="— Herencia y familia —">
-              <option value="Lo que heredaste sin saberlo">Lo que heredaste sin saberlo</option>
-              <option value="Lealtades familiares inconscientes">Lealtades familiares inconscientes</option>
-              <option value="Trauma transgeneracional y epigenética">Trauma transgeneracional y epigenética</option>
-              <option value="Heridas de infancia en adultos">Heridas de infancia en adultos</option>
-            </optgroup>
-            <optgroup label="— Relaciones —">
-              <option value="Relaciones de pareja y vínculos inconscientes">Relaciones de pareja y vínculos inconscientes</option>
-              <option value="Vínculos tóxicos y dependencia emocional">Vínculos tóxicos y dependencia emocional</option>
-            </optgroup>
-            <optgroup label="— Identidad y consciencia —">
-              <option value="Lo que te mueve sin que lo sepas">Lo que te mueve sin que lo sepas (el inconsciente)</option>
-              <option value="Tu sombra: lo que rechazas de ti">Tu sombra: lo que rechazas de ti</option>
-              <option value="Creencias limitantes que frenan tu vida">Creencias limitantes que frenan tu vida</option>
-              <option value="Propósito y sensación de vacío">Propósito y sensación de vacío</option>
-            </optgroup>
-          </select>
-        </div>
-
-        <!-- CAPA 2: Aplicaciones del marco BNE a otros contextos -->
-        <div id="gen-cat-aplicaciones" style="display:none">
-          <label>Contexto de aplicación</label>
-          <select id="gen-topic-aplicaciones">
-            <optgroup label="— Dinero y negocios —">
-              <option value="Creencias inconscientes en la venta">Creencias inconscientes en la venta</option>
-              <option value="El miedo inconsciente a cobrar lo que vales">El miedo inconsciente a cobrar lo que vales</option>
-              <option value="Programas heredados sobre el dinero">Programas heredados sobre el dinero</option>
-              <option value="El autosabotaje en los negocios">El autosabotaje en los negocios</option>
-              <option value="Liderazgo y sombra: lo que el líder no ve de sí mismo">Liderazgo y sombra</option>
-            </optgroup>
-            <optgroup label="— Crianza y familia —">
-              <option value="Crianza consciente: no repetir lo que te hicieron">Crianza consciente: no repetir lo que te hicieron</option>
-              <option value="Lo que le transmites a tus hijos sin darte cuenta">Lo que le transmites a tus hijos sin darte cuenta</option>
-            </optgroup>
-            <optgroup label="— Salud y cuerpo —">
-              <option value="Emociones detrás de enfermedades recurrentes">Emociones detrás de enfermedades recurrentes</option>
-              <option value="El estrés crónico y el inconsciente">El estrés crónico y el inconsciente</option>
-            </optgroup>
-            <optgroup label="— Espiritualidad práctica —">
-              <option value="Despertar de consciencia sin perder los pies en la tierra">Despertar de consciencia sin perder los pies en la tierra</option>
-              <option value="La proyección: ver en otros lo que no aceptas en ti">La proyección: ver en otros lo que no aceptas en ti</option>
-            </optgroup>
-          </select>
-        </div>
-
-        <!-- CAPA 3: Tema completamente libre -->
-        <div id="gen-cat-libre" style="display:none">
-          <label>Escribe tu tema</label>
-          <input id="gen-topic-libre" placeholder="Ej: el inconsciente en las negociaciones, miedo al éxito, por qué atraes clientes difíciles..."/>
-          <p class="small mt4" style="color:var(--indigo-light)">La IA trabajará cualquier tema con tu voz y marco conceptual de BNE</p>
-        </div>
-
-        <div class="grid2 mt12">
-          <div>
-            <label style="margin-top:0">Estilo narrativo</label>
-            <select id="gen-style" onchange="updateStyleDesc()">
-              <optgroup label="— Los que tienes —">
-                <option value="reflexivo-filosofico">🌀 Reflexivo-filosófico</option>
-                <option value="educativo-revelador">💡 Educativo-revelador</option>
-                <option value="verdad-incomoda">🔥 Verdad incómoda</option>
-                <option value="storytelling-personal">📖 Storytelling personal</option>
-                <option value="emocional-sanador">💙 Emocional-sanador</option>
-                <option value="provocador-disruptivo">⚡ Provocador-disruptivo</option>
-              </optgroup>
-              <optgroup label="— Nuevos —">
-                <option value="dato-que-cambia-todo">🧬 Dato que cambia todo</option>
-                <option value="conversacional-intimo">🎙 Conversacional-íntimo</option>
-                <option value="giro-inesperado">🌪 El giro inesperado</option>
-                <option value="contraintuitivo">🔄 Contraintuitivo</option>
-              </optgroup>
-            </select>
-          </div>
-          <div>
-            <label style="margin-top:0">Cantidad</label>
-            <select id="gen-qty-sel">
-              <option value="1">1 script</option>
-              <option value="2">2 scripts</option>
-              <option value="3" selected>3 scripts</option>
-              <option value="4">4 scripts</option>
-              <option value="5">5 scripts</option>
-            </select>
-          </div>
-        </div>
-        <div id="style-desc" style="background:rgba(168,85,247,.08);border:1px solid rgba(168,85,247,.2);border-radius:var(--radius);padding:9px 13px;font-size:12px;color:var(--text2);line-height:1.6;margin-top:4px;display:none"></div>
-
-        <label class="mt12">Estructura narrativa</label>
-        <select id="gen-structure" onchange="updateStructureDesc()">
-          <option value="clasica">🔥 Clásica — Gancho→Dolor→Ejemplo→Fondo→Cima→Insight→CTA</option>
-          <option value="pas">⚡ PAS — Problema→Agitar→Solución</option>
-          <option value="bab">🔄 BAB — Antes→Puente→Después</option>
-          <option value="pastor">🎯 PASTOR — Problema→Amplificar→Historia→Transformación→CTA</option>
-          <option value="secret">🔐 Secret Value — Secreto→Contexto→Revelación→Aplicación</option>
-          <option value="curiosity">🌀 Curiosity Peak — Pregunta→Lee la mente→Giro→Insight→CTA</option>
-          <option value="aida">📈 AIDA — Atención→Interés→Deseo→Acción</option>
-          <option value="5cs">📖 5Cs — Contexto→Conflicto→Clímax→Conclusión→CTA</option>
-        </select>
-        <div id="structure-desc" style="background:rgba(79,70,229,.08);border:1px solid rgba(79,70,229,.2);border-radius:var(--radius);padding:9px 13px;font-size:12px;color:var(--text2);line-height:1.6;margin-top:4px"></div>
-
-        <label class="mt12">Usar gancho del banco (opcional)</label>
+        <div id="gen-custom-wrap" style="display:none"><label>Especifica el tema</label><input id="gen-custom" placeholder="Ej: miedo al exito..."/></div>
+        <label>Cantidad: <span id="qty-label">3</span></label>
+        <input type="range" min="1" max="5" value="3" oninput="document.getElementById('qty-label').textContent=this.value" id="gen-qty"/>
+        <label>Usar gancho del banco (opcional)</label>
         <select id="gen-hook-select"><option value="">Generar gancho nuevo</option></select>
-        <button class="btn btn-electric mt12" onclick="buildGeneratePrompt()">⚡ Generar prompt ↗</button>
-        <div class="prompt-box" id="gen-prompt-box" style="display:none"><p class="small" style="color:var(--indigo-light);margin-bottom:8px;font-weight:600">Copia y pega en Claude:</p><pre id="gen-prompt-text"></pre><button class="copy-btn" onclick="copyPrompt('gen-prompt-text',this)">Copiar prompt</button></div>
+        <button class="btn btn-electric mt12" onclick="buildGeneratePrompt()">Armar prompt ↗</button>
+        <div class="prompt-box" id="gen-prompt-box" style="display:none"><p class="small" style="color:var(--indigo-light);margin-bottom:8px;font-weight:600">Copia y pega en el chat de Claude:</p><pre id="gen-prompt-text"></pre><button class="copy-btn" onclick="copyPrompt('gen-prompt-text',this)">Copiar prompt</button></div>
         <div class="import-box" id="gen-import-box" style="display:none"><p class="small" style="color:#34d399;margin-bottom:8px;font-weight:600">Pega la respuesta de Claude (JSON):</p><textarea id="gen-import-text" rows="4" placeholder='{"scripts":[]}'></textarea><button class="btn btn-primary btn-sm mt8" onclick="importScripts()">Importar scripts</button></div>
         <div id="gen-results"></div>
       </div>
@@ -492,78 +382,12 @@ label{font-size:12px;color:var(--text2);display:block;margin-bottom:5px;margin-t
       <!-- MODELAR -->
       <div id="tab-modelar" class="panel">
         <div class="page-title">Modelar Reel</div>
-        <p class="page-sub">Pega un reel que te gustó. Claude detecta su framework exacto y crea tus scripts con esa misma estructura.</p>
+        <p class="page-sub">Pega un reel que te gusto. Claude detecta su estructura y la adapta con tu voz.</p>
         <label style="margin-top:0">Autor / cuenta (opcional)</label><input id="mod-author" placeholder="@enriccorbera"/>
-        <label>Transcripción o descripción del reel</label><textarea id="mod-text" rows="5" placeholder="Pega aquí lo que dice el reel..."></textarea>
-        <div id="mod-framework-badge" style="display:none;margin-top:8px">
-          <span class="label">Framework detectado:</span>
-          <span id="mod-fw-name" style="margin-left:8px;background:rgba(79,70,229,.2);color:var(--indigo-light);padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600"></span>
-          <p id="mod-fw-desc" style="font-size:12px;color:var(--text2);margin-top:6px;line-height:1.5"></p>
-        </div>
-        <div class="grid2 mt12">
-          <div>
-            <label style="margin-top:0">Categoría del tema</label>
-            <div class="flex gap8" style="flex-wrap:wrap;margin-bottom:6px" id="mod-cat-pills">
-              <button class="sf active" onclick="setModCat('nucleo')">🧠 Núcleo BNE</button>
-              <button class="sf" onclick="setModCat('aplicaciones')">🔗 Aplicaciones</button>
-              <button class="sf" onclick="setModCat('libre')">✏️ Libre</button>
-            </div>
-            <div id="mod-cat-nucleo">
-              <select id="mod-topic-nucleo">
-                <optgroup label="— Dolor emocional —">
-                  <option value="Por qué repites los mismos patrones">Por qué repites los mismos patrones</option>
-                  <option value="Ansiedad y miedo sin razón aparente">Ansiedad y miedo sin razón aparente</option>
-                  <option value="Autoestima y autosabotaje">Autoestima y autosabotaje</option>
-                  <option value="El cuerpo habla: síntomas con mensaje">El cuerpo habla: síntomas con mensaje</option>
-                </optgroup>
-                <optgroup label="— Herencia y familia —">
-                  <option value="Lo que heredaste sin saberlo">Lo que heredaste sin saberlo</option>
-                  <option value="Lealtades familiares inconscientes">Lealtades familiares inconscientes</option>
-                  <option value="Trauma transgeneracional y epigenética">Trauma transgeneracional y epigenética</option>
-                  <option value="Heridas de infancia en adultos">Heridas de infancia en adultos</option>
-                </optgroup>
-                <optgroup label="— Relaciones —">
-                  <option value="Relaciones de pareja y vínculos inconscientes">Relaciones de pareja y vínculos inconscientes</option>
-                  <option value="Vínculos tóxicos y dependencia emocional">Vínculos tóxicos y dependencia emocional</option>
-                </optgroup>
-                <optgroup label="— Identidad —">
-                  <option value="Lo que te mueve sin que lo sepas">Lo que te mueve sin que lo sepas</option>
-                  <option value="Tu sombra: lo que rechazas de ti">Tu sombra: lo que rechazas de ti</option>
-                  <option value="Creencias limitantes que frenan tu vida">Creencias limitantes que frenan tu vida</option>
-                  <option value="Propósito y sensación de vacío">Propósito y sensación de vacío</option>
-                </optgroup>
-              </select>
-            </div>
-            <div id="mod-cat-aplicaciones" style="display:none">
-              <select id="mod-topic-aplicaciones">
-                <optgroup label="— Dinero y negocios —">
-                  <option value="Creencias inconscientes en la venta">Creencias inconscientes en la venta</option>
-                  <option value="El miedo inconsciente a cobrar lo que vales">Miedo a cobrar lo que vales</option>
-                  <option value="Programas heredados sobre el dinero">Programas heredados sobre el dinero</option>
-                  <option value="El autosabotaje en los negocios">El autosabotaje en los negocios</option>
-                  <option value="Liderazgo y sombra">Liderazgo y sombra</option>
-                </optgroup>
-                <optgroup label="— Crianza —">
-                  <option value="Crianza consciente: no repetir lo que te hicieron">Crianza consciente</option>
-                  <option value="Lo que le transmites a tus hijos sin darte cuenta">Lo que le transmites a tus hijos</option>
-                </optgroup>
-                <optgroup label="— Salud —">
-                  <option value="Emociones detrás de enfermedades recurrentes">Emociones detrás de enfermedades</option>
-                  <option value="El estrés crónico y el inconsciente">El estrés crónico y el inconsciente</option>
-                </optgroup>
-                <optgroup label="— Espiritualidad —">
-                  <option value="Despertar de consciencia sin perder los pies en la tierra">Despertar de consciencia</option>
-                  <option value="La proyección: ver en otros lo que no aceptas en ti">La proyección</option>
-                </optgroup>
-              </select>
-            </div>
-            <div id="mod-cat-libre" style="display:none">
-              <input id="mod-topic-libre" placeholder="Escribe tu tema..."/>
-            </div>
-          </div>
-          <div><label style="margin-top:0">Cantidad de versiones</label><select id="mod-qty"><option value="2">2 versiones</option><option value="3">3 versiones</option><option value="4">4 versiones</option></select></div>
-        </div>
-        <button class="btn btn-electric mt12" onclick="buildModelPrompt()">🔍 Detectar estructura y adaptar ↗</button>
+        <label>Transcripcion o descripcion del reel</label><textarea id="mod-text" rows="5" placeholder="Pega aqui lo que dice el reel..."></textarea>
+        <label>Tema para adaptar</label><select id="mod-topic"><option>Bioneuroemocion</option><option>Programas heredados</option><option>Lealtades familiares</option><option>Inconsciente</option><option>Relaciones de pareja</option><option>Sombra</option><option>Expansion de consciencia</option><option>Otro</option></select>
+        <div id="mod-custom-wrap" style="display:none"><label>Especifica</label><input id="mod-custom"/></div>
+        <button class="btn btn-electric mt12" onclick="buildModelPrompt()">Armar prompt ↗</button>
         <div class="prompt-box" id="mod-prompt-box" style="display:none"><p class="small" style="color:var(--indigo-light);margin-bottom:8px;font-weight:600">Copia y pega en Claude:</p><pre id="mod-prompt-text"></pre><button class="copy-btn" onclick="copyPrompt('mod-prompt-text',this)">Copiar prompt</button></div>
         <div class="import-box" id="mod-import-box" style="display:none"><p class="small" style="color:#34d399;margin-bottom:8px;font-weight:600">Pega la respuesta (JSON):</p><textarea id="mod-import-text" rows="4" placeholder='{"scripts":[]}'></textarea><button class="btn btn-primary btn-sm mt8" onclick="importModelScripts()">Importar</button></div>
         <div id="mod-results"></div>
@@ -1007,207 +831,43 @@ function runDiag(){
 }
 
 // ============ PROMPTS ============
-// ============ TOPIC HELPERS ============
-function getGenTopic(){
-  const cat=document.querySelector('#gen-cat-pills .sf.active');
-  const catName=cat?cat.textContent.trim():'';
-  if(catName.includes('Núcleo')||catName.includes('nucleo')||catName.includes('BNE')) return v('gen-topic-nucleo');
-  if(catName.includes('Aplicaciones')||catName.includes('aplicaciones')) return v('gen-topic-aplicaciones');
-  return v('gen-topic-libre');
-}
-function getModTopic(){
-  const cat=document.querySelector('#mod-cat-pills .sf.active');
-  const catName=cat?cat.textContent.trim():'';
-  if(catName.includes('Núcleo')||catName.includes('BNE')) return v('mod-topic-nucleo');
-  if(catName.includes('Aplicaciones')) return v('mod-topic-aplicaciones');
-  return v('mod-topic-libre');
-}
-function setGenCat(cat){
-  document.querySelectorAll('#gen-cat-pills .sf').forEach(b=>b.classList.remove('active'));
-  event.target.classList.add('active');
-  ['nucleo','aplicaciones','libre'].forEach(c=>document.getElementById('gen-cat-'+c).style.display=c===cat?'block':'none');
-}
-function setModCat(cat){
-  document.querySelectorAll('#mod-cat-pills .sf').forEach(b=>b.classList.remove('active'));
-  event.target.classList.add('active');
-  ['nucleo','aplicaciones','libre'].forEach(c=>document.getElementById('mod-cat-'+c).style.display=c===cat?'block':'none');
-}
-
-// ============ STYLE DESCRIPTIONS ============
-const STYLE_DESCS={
-  'reflexivo-filosofico':'Lento, pausado. Como si pensaras en voz alta. Frases cortas con silencios implícitos. El espectador siente que está dentro de tu mente.',
-  'educativo-revelador':'Enseñas algo que casi nadie dijo antes. Tono de descubrimiento, no de clase magistral. La audiencia siente que accedió a información privilegiada.',
-  'verdad-incomoda':'Directo, sin anestesia. Le dices algo que sabe pero no quería ver. Produce incomodidad productiva — no agresividad.',
-  'storytelling-personal':'Primera persona, anécdota real. Como contarle algo importante a un amigo en un café. Específico, concreto, con detalles que generan imágenes.',
-  'emocional-sanador':'Tono de acompañamiento. Cálido pero honesto. El espectador siente que por fin alguien lo entiende sin juzgarlo.',
-  'provocador-disruptivo':'Rompe una creencia que el espectador tiene por verdad absoluta. Genera tensión cognitiva. Polemiza sin ofender.',
-  'dato-que-cambia-todo':'Abre con un dato de epigenética, neurociencia o psicología que nadie esperaba. La audiencia queda descolocada y necesita escuchar el resto.',
-  'conversacional-intimo':'Como un mensaje de voz. Informal, cercano, sin producción aparente. La naturalidad ES el gancho.',
-  'giro-inesperado':'El setup parece ir en una dirección obvia — y en el segundo 15 rompe la expectativa por completo. Alta retención por curiosidad.',
-  'contraintuitivo':'Defiende algo que parece incorrecto o impopular, lo demuestra con lógica sólida, y deja al espectador reconsiderando algo que creía fijo.'
-};
-
-// ============ STRUCTURE DESCRIPTIONS ============
-const STRUCT_DESCS={
-  clasica:'Tu estructura propia: el viaje emocional completo. Funciona para temas profundos donde el espectador necesita ser llevado de la mano desde el dolor hasta la transformación.',
-  pas:'Problema → Agitar → Solución. Directo y eficiente. Ideal para reels cortos de 30-45 seg. Nombras el dolor, lo haces más grande, ofreces la salida.',
-  bab:'Antes → Puente → Después. Transformación visible. "Así vivías antes / esto pasó / así vives ahora." Alta retención porque el espectador quiere ver el resultado.',
-  pastor:'La estructura de conversión más completa. Identifica la persona, amplifica el dolor, cuenta una historia real, muestra la transformación, hace una oferta clara.',
-  secret:'La más efectiva según datos (solo el 5% la usa). Promete revelar algo que pocos saben, genera expectativa, entrega el insight, dice cómo aplicarlo hoy.',
-  curiosity:'Abre con una pregunta o afirmación que el espectador no puede ignorar. Lee su mente ("sé lo que estás pensando"). Gira inesperadamente. Alto alcance orgánico.',
-  aida:'Atención → Interés → Deseo → Acción. Clásico del marketing adaptado a video corto. Cada segundo tiene un trabajo específico.',
-  '5cs':'Contexto → Conflicto → Clímax → Conclusión → CTA. Para historias con inicio, nudo y desenlace. Funciona si tienes una anécdota poderosa que contar.'
-};
-
-function updateStyleDesc(){
-  const s=v('gen-style');const desc=document.getElementById('style-desc');
-  if(STYLE_DESCS[s]){desc.textContent=STYLE_DESCS[s];desc.style.display='block';}
-  else desc.style.display='none';
-}
-function updateStructureDesc(){
-  const s=v('gen-structure');const desc=document.getElementById('structure-desc');
-  if(STRUCT_DESCS[s]){desc.textContent=STRUCT_DESCS[s];desc.style.display='block';}
-  else desc.style.display='none';
-}
-
-// ============ STRUCTURE PROMPT BUILDER ============
-function buildStructureInstructions(structure, hookObj){
-  const H=hookObj?`USA ESTE GANCHO EXACTO: "${hookObj.text}"`:'Genera un gancho original que detenga el scroll en 1.5 segundos';
-  const structs={
-    clasica:`ESTRUCTURA — CLÁSICA (7 pasos):
-1. GANCHO — ${H}
-2. DOLOR — El problema que el espectador reconoce en sí mismo (usa sus palabras, no jerga técnica)
-3. EJEMPLO COTIDIANO — Situación concreta y específica que ilustra el dolor
-4. FONDO DE POZO — El momento de mayor crisis o toma de consciencia
-5. CIMA DE LA MONTAÑA — El giro, el insight que lo cambia todo
-6. INSIGHT — La enseñanza central con profundidad real, desde el marco BNE
-7. CTA — Llamada a la acción clara, directa, sin presión`,
-
-    pas:`ESTRUCTURA — PAS (3 movimientos):
-1. PROBLEMA — ${H} / Nombra el problema exacto con las palabras que usa el espectador cuando se queja a solas
-2. AGITAR — Profundiza en el dolor. Muestra las consecuencias de no resolverlo. Hazlo más real, más urgente
-3. SOLUCIÓN — El insight desde tu marco. La salida concreta. CTA directo al final
-(Reel corto: 30-45 seg. Sin relleno.)`,
-
-    bab:`ESTRUCTURA — BAB (Antes/Puente/Después):
-1. ANTES — ${H} / Pinta el estado actual del espectador: cómo vive, qué siente, qué repite sin entender por qué
-2. PUENTE — El momento de consciencia. Qué descubriste / qué cambió / cuál fue la clave
-3. DESPUÉS — La vida cuando ese patrón se transforma. Concreto, visual, emocional. CTA`,
-
-    pastor:`ESTRUCTURA — PASTOR (conversión profunda):
-1. PERSONA/PROBLEMA — ${H} / Describe con precisión a quién le hablas y qué le duele
-2. AMPLIFICAR — Expande el dolor. Qué pasa si esto no se resuelve. El costo real de no cambiar
-3. HISTORIA/SOLUCIÓN — Una anécdota real (tuya o de un caso) donde esto se resolvió
-4. TRANSFORMACIÓN — Cómo quedó esa persona después. Qué cambió concretamente
-5. OFERTA/INSIGHT — El marco conceptual que lo explica. La enseñanza central
-6. RESPUESTA/CTA — Qué debe hacer el espectador ahora mismo`,
-
-    secret:`ESTRUCTURA — SECRET VALUE (la más viral según datos):
-1. GANCHO SECRETO — ${H} / "Hay algo sobre [tema] que casi nadie te dice / que descubrí después de [X]..."
-2. CONTEXTO — Por qué este secreto existe / por qué la mayoría no lo sabe
-3. REVELACIÓN — El insight. Lo que realmente está pasando. Desde tu marco BNE, profundo y claro
-4. APLICACIÓN — Cómo aplicar esto hoy, ahora, en su vida concreta
-5. CTA — Invita a guardar / comentar / preguntar`,
-
-    curiosity:`ESTRUCTURA — CURIOSITY PEAK (máxima retención):
-1. PREGUNTA/AFIRMACIÓN — ${H} / Algo que el espectador no puede ignorar
-2. LEE LA MENTE — "Sé lo que estás pensando..." Anticipa su objeción o creencia. Valídala brevemente
-3. GIRO — La información inesperada. Algo que contradice lo que creía. El momento de "espera, ¿qué?"
-4. INSIGHT — La explicación profunda del giro. Por qué esto es así desde la BNE
-5. CTA — Pregunta que invite a comentar o reflexionar`,
-
-    aida:`ESTRUCTURA — AIDA (4 beats exactos):
-1. ATENCIÓN (0-2 seg) — ${H} / Golpe visual o verbal que rompe el scroll
-2. INTERÉS (2-15 seg) — Desarrolla el tema con datos, historia o paradoja que genere curiosidad real
-3. DESEO (15-40 seg) — Muestra la transformación posible. Qué gana el espectador si entiende esto
-4. ACCIÓN (últimos 5 seg) — CTA específico: guardar, comentar, escribirte, aplicar algo hoy`,
-
-    '5cs':`ESTRUCTURA — 5Cs (storytelling completo):
-1. CONTEXTO — ${H} / Sitúa al espectador: quién, cuándo, dónde empieza la historia
-2. CONFLICTO — El problema central. La tensión que hace que valga la pena escuchar
-3. CLÍMAX — El punto de máxima tensión o el momento de quiebre / revelación
-4. CONCLUSIÓN — Cómo se resolvió. El insight. Lo que aprendiste o lo que cambió
-5. CTA — Cierre con llamada a la acción conectada a la conclusión`
-  };
-  return structs[structure]||structs.clasica;
-}
-
-// ============ STYLE TONE INSTRUCTIONS ============
-function buildStyleTone(style){
-  const tones={
-    'reflexivo-filosofico':'TONO: Lento y contemplativo. Frases cortas. Como pensar en voz alta. El espectador siente que está dentro de tu mente procesando algo. Evita las explicaciones largas.',
-    'educativo-revelador':'TONO: Descubrimiento, no clase magistral. Usa "pocos saben que...", "lo que nadie explica es...", "la ciencia acaba de confirmar...". La audiencia siente acceso privilegiado.',
-    'verdad-incomoda':'TONO: Directo, sin anestesia ni suavizadores. Dice lo que el espectador sabe pero evita pensar. No es agresivo — es honesto. Produce incomodidad productiva.',
-    'storytelling-personal':'TONO: Primera persona, anécdota específica y real. Detalles concretos que generan imágenes. Como contarle algo a un amigo. Nada genérico.',
-    'emocional-sanador':'TONO: Cálido, de acompañamiento. El espectador siente que por fin alguien lo entiende sin juzgarlo. Valida antes de enseñar.',
-    'provocador-disruptivo':'TONO: Rompe una creencia popular. Genera tensión cognitiva. Polemiza sin atacar. Usa afirmaciones fuertes que hagan al espectador pensar "momento, eso no puede ser así".',
-    'dato-que-cambia-todo':'TONO: Abre con un dato real de epigenética, neurociencia o psicología evolutiva que descoloca. La sorpresa ES el gancho. Luego explica las implicaciones.',
-    'conversacional-intimo':'TONO: Informal, como un mensaje de voz. Sin producción aparente. La naturalidad es el gancho. Habla como si hubiera solo una persona escuchando.',
-    'giro-inesperado':'TONO: El setup parece llevar a una conclusión obvia — y en el segundo 15 rompe la expectativa por completo. La estructura misma genera retención.',
-    'contraintuitivo':'TONO: Defiende algo que parece incorrecto o impopular. Lo demuestra con lógica sólida y ejemplos reales. Deja al espectador reconsiderando algo que creía inamovible.'
-  };
-  return tones[style]||'TONO: Emocional y directo. Voz auténtica de Guillermo.';
-}
-
 function buildGeneratePrompt(){
-  const t=getGenTopic();
-  if(!t||!t.trim()){notify('Elige o escribe un tema primero','warn');return;}
-  const style=v('gen-style');
-  const qty=v('gen-qty-sel')||'3';
-  const structure=v('gen-structure');
-  const hookId=v('gen-hook-select');
-  const hookObj=hookId?localHooks.find(h=>h.id===hookId):null;
-  const structInstr=buildStructureInstructions(structure,hookObj);
-  const styleTone=buildStyleTone(style);
+  const topic=v('gen-topic');const custom=v('gen-custom');const style=v('gen-style');const qty=v('gen-qty');const t=topic==='Otro'?custom:topic;
+  const hookId=v('gen-hook-select');const hookObj=hookId?localHooks.find(h=>h.id===hookId):null;
   const prompt=`Eres un experto en scripts virales para reels de Instagram, TikTok y Facebook.${buildVozCtx()}${buildKnowCtx()}
 
-${structInstr}
+ESTRUCTURA OBLIGATORIA:
+1. GANCHO${hookObj?` — USA ESTE EXACTO: "${hookObj.text}"`:' (genera uno original que detenga el scroll)'}
+2. DOLOR (el problema que el espectador reconoce en si mismo)
+3. EJEMPLO COTIDIANO (situacion concreta${localVoz.anecdotas?' — puedes usar las anecdotas del creador':''})
+4. FONDO DE POZO (momento de quiebre o toma de consciencia)
+5. CIMA DE LA MONTANA (el insight transformador)
+6. INSIGHT (ensenanza central con profundidad real)
+7. CTA (llamado a la accion claro y directo)
 
-${styleTone}
+IMPORTANTE: Suena exactamente como Guillermo, no como IA generica.
+REGLAS: Espanol latinoamericano neutro. Sin regionalismos. Tono emocional y directo. JSON puro, sin backticks.
 
-REGLAS ABSOLUTAS:
-- Suena exactamente como Guillermo, no como IA genérica
-- Español latinoamericano neutro. Sin regionalismos
-- Cada parte del script debe ser texto listo para hablar en cámara (no títulos, no descripciones)
-- Sin introducción, sin "hola", sin presentaciones
-- JSON puro, sin backticks, sin texto antes o después
-
-Crea ${qty} scripts distintos sobre: "${t}"
-Cada uno debe sonar diferente aunque use la misma estructura.
-
-{"scripts":[{"titulo":"","estilo":"${style}","estructura":"${structure}","gancho":"","dolor":"","ejemplo":"","fondo":"","cima":"","insight":"","cta":"","duracion_estimada":""}]}`;
+Crea ${qty} scripts sobre: "${t}". Estilo: ${style}.
+{"scripts":[{"titulo":"","estilo":"","gancho":"","dolor":"","ejemplo":"","fondo":"","cima":"","insight":"","cta":"","duracion_estimada":""}]}`;
   document.getElementById('gen-prompt-text').textContent=prompt;
   document.getElementById('gen-prompt-box').style.display='block';
   document.getElementById('gen-import-box').style.display='block';
 }
-
 function buildModelPrompt(){
-  const text=v('mod-text');if(!text.trim()){notify('Pega la transcripción primero','warn');return;}
-  const author=v('mod-author');
-  const t=getModTopic();
-  if(!t||!t.trim()){notify('Elige o escribe un tema','warn');return;}
-  const qty=v('mod-qty')||'2';
-  const prompt=`Eres un experto en análisis de estructuras narrativas virales y adaptación de contenido.${buildVozCtx()}${buildKnowCtx()}
+  const text=v('mod-text');if(!text.trim()){notify('Pega la transcripcion primero','warn');return;}
+  const author=v('mod-author');const topic=v('mod-topic');const custom=v('mod-custom');const t=topic==='Otro'?custom:topic;
+  const prompt=`Eres un experto en analisis y adaptacion de contenido viral.${buildVozCtx()}${buildKnowCtx()}
 
-TAREA 1 — DETECTAR FRAMEWORK
-Analiza este reel${author?' de @'+author:''}:
+TAREA 1 — Analiza este reel${author?' de '+author:''}:
 "${text}"
+Detecta: gancho, dolor, ejemplo, fondo de pozo, cima, insight, CTA, tecnicas virales, por que funciona.
 
-Identifica con precisión:
-- FRAMEWORK PRINCIPAL: ¿Es PAS, BAB, PASTOR, Secret Value, Curiosity Peak, AIDA, 5Cs, Clásica u otro?
-- ESTRUCTURA REAL: Describe cada beat/parte con su función narrativa
-- TÉCNICAS VIRALES: Qué hace exactamente para retener (giro, tensión, curiosity gap, etc.)
-- POR QUÉ FUNCIONA: La razón psicológica de su efectividad
+TAREA 2 — Crea 2 scripts para Guillermo replicando EXACTAMENTE la misma estructura con tema: "${t}".
+Suena como Guillermo, usa su voz y marco conceptual.
 
-TAREA 2 — ADAPTAR CON ESA ESTRUCTURA EXACTA
-Crea ${qty} scripts para Guillermo replicando EXACTAMENTE el mismo framework y técnicas detectadas.
-Tema: "${t}"
-Usa la voz, el marco conceptual y las anécdotas de Guillermo.
-Cada script debe sonar diferente entre sí aunque usen la misma estructura.
-
-REGLAS: Español latinoamericano neutro. Texto listo para hablar en cámara. JSON puro, sin backticks.
-
-{"framework_detectado":{"nombre":"","estructura_beats":[],"tecnicas_virales":[],"por_que_funciona":""},"scripts":[{"titulo":"","estilo":"","estructura":"","gancho":"","dolor":"","ejemplo":"","fondo":"","cima":"","insight":"","cta":"","duracion_estimada":""}]}`;
+REGLAS: Espanol latinoamericano neutro. Tono emocional. JSON puro, sin backticks.
+{"analisis":{"gancho":"","dolor":"","ejemplo":"","fondo":"","cima":"","insight":"","cta":"","tecnicas_virales":[],"por_que_funciona":""},"scripts":[{"titulo":"","estilo":"","gancho":"","dolor":"","ejemplo":"","fondo":"","cima":"","insight":"","cta":"","duracion_estimada":""}]}`;
   document.getElementById('mod-prompt-text').textContent=prompt;
   document.getElementById('mod-prompt-box').style.display='block';
   document.getElementById('mod-import-box').style.display='block';
@@ -1232,34 +892,13 @@ function copyPrompt(id,btn){navigator.clipboard.writeText(document.getElementByI
 
 // ============ IMPORT ============
 function importScripts(){
-  try{const data=JSON.parse(v('gen-import-text').replace(/```json|```/g,''));const t=getGenTopic();const cont=document.getElementById('gen-results');cont.innerHTML='';(data.scripts||[]).forEach((s,i)=>cont.appendChild(buildScriptCard(s,t,'Generado')));}catch{notify('Formato invalido. Pega el JSON completo.','error');}
+  try{const data=JSON.parse(v('gen-import-text').replace(/```json|```/g,''));const topic=v('gen-topic');const t=topic==='Otro'?v('gen-custom'):topic;const cont=document.getElementById('gen-results');cont.innerHTML='';(data.scripts||[]).forEach((s,i)=>cont.appendChild(buildScriptCard(s,t,'Generado')));}catch{notify('Formato invalido. Pega el JSON completo.','error');}
 }
 function importModelScripts(){
-  try{
-    const data=JSON.parse(v('mod-import-text').replace(/```json|```/g,''));
-    const author=v('mod-author');
-    const t=getModTopic();
-    const cont=document.getElementById('mod-results');cont.innerHTML='';
-    if(data.framework_detectado){
-      const fw=data.framework_detectado;
-      const d=document.createElement('div');d.className='card card-muted';
-      d.innerHTML=`<p style="font-weight:600;font-size:13px;margin-bottom:8px">🔍 Framework detectado: <span style="color:var(--indigo-light)">${fw.nombre||'—'}</span></p>`
-        +(fw.estructura_beats?.length?`<div class="mt8"><span class="section-label">Estructura por beats</span><div class="mt4">${fw.estructura_beats.map((b,i)=>`<div style="font-size:12px;color:var(--text2);padding:3px 0">${i+1}. ${b}</div>`).join('')}</div></div>`:'')
-        +(fw.tecnicas_virales?.length?`<div class="mt8"><span class="section-label">Técnicas virales</span><div class="flex gap4 mt4" style="flex-wrap:wrap">${fw.tecnicas_virales.map(tv=>`<span class="badge badge-indigo">${tv}</span>`).join('')}</div></div>`:'')
-        +(fw.por_que_funciona?`<div class="card card-muted mt8" style="padding:10px"><span class="section-label">Por qué funciona</span><p class="small mt4" style="line-height:1.5">${fw.por_que_funciona}</p></div>`:'');
-      cont.appendChild(d);
-      const badge=document.getElementById('mod-framework-badge');
-      if(badge&&fw.nombre){badge.style.display='block';document.getElementById('mod-fw-name').textContent=fw.nombre;document.getElementById('mod-fw-desc').textContent=fw.por_que_funciona||'';}
-    }
-    if(data.analisis&&!data.framework_detectado){
-      const a=data.analisis;const d=document.createElement('div');d.className='card card-muted';
-      d.innerHTML=`<p style="font-weight:600;font-size:13px;margin-bottom:8px">ADN narrativo detectado</p>`+bBlock('Gancho',a.gancho)+bBlock('Dolor',a.dolor)+bBlock('Ejemplo',a.ejemplo)+bBlock('Fondo',a.fondo)+bBlock('Cima',a.cima)+bBlock('Insight',a.insight)+bBlock('CTA',a.cta)+(a.tecnicas_virales?.length?`<div class="mt8"><span class="section-label">Técnicas virales</span><div class="mt4">${a.tecnicas_virales.map(tv=>`<span class="badge badge-indigo">${tv}</span>`).join('')}</div></div>`:'')+(a.por_que_funciona?`<div class="card card-muted mt8" style="padding:10px"><span class="section-label">Por qué funciona</span><p class="small mt4" style="line-height:1.5">${a.por_que_funciona}</p></div>`:'');
-      cont.appendChild(d);
-    }
-    (data.scripts||[]).forEach(s=>cont.appendChild(buildScriptCard(s,t,author?`Modelado de: @${author}`:'Modelado')));
-  }catch(e){notify('Formato inválido. Pega el JSON completo.','error');}
+  try{const data=JSON.parse(v('mod-import-text').replace(/```json|```/g,''));const author=v('mod-author');const topic=v('mod-topic');const t=topic==='Otro'?v('mod-custom'):topic;const cont=document.getElementById('mod-results');cont.innerHTML='';
+  if(data.analisis){const a=data.analisis;const d=document.createElement('div');d.className='card card-muted';d.innerHTML=`<p style="font-weight:600;font-size:13px;margin-bottom:8px">ADN narrativo detectado</p>${bBlock('Gancho',a.gancho)}${bBlock('Dolor',a.dolor)}${bBlock('Ejemplo',a.ejemplo)}${bBlock('Fondo',a.fondo)}${bBlock('Cima',a.cima)}${bBlock('Insight',a.insight)}${bBlock('CTA',a.cta)}${a.tecnicas_virales?.length?`<div class="mt8"><span class="section-label">Tecnicas virales</span><div class="mt4">${a.tecnicas_virales.map(tv=>`<span class="badge badge-indigo">${tv}</span>`).join('')}</div></div>`:''}${a.por_que_funciona?`<div class="card card-muted mt8" style="padding:10px"><span class="section-label">Por que funciona</span><p class="small mt4" style="line-height:1.5">${a.por_que_funciona}</p></div>`:''}`;cont.appendChild(d);}
+  (data.scripts||[]).forEach((s,i)=>cont.appendChild(buildScriptCard(s,t,author?`Modelado de: ${author}`:'Modelado')));}catch{notify('Formato invalido.','error');}
 }
-
 function importCombinedScripts(){
   try{const data=JSON.parse(v('comb-import-text').replace(/```json|```/g,''));const topic=v('comb-topic');const t=topic==='Otro'?v('comb-custom'):topic;const cont=document.getElementById('comb-results');cont.innerHTML='';
   (data.scripts||[]).forEach((s,i)=>{const card=buildScriptCard(s,t,'Combinado');if(s.nota_fusion){const n=document.createElement('div');n.style.cssText='margin-top:8px;padding:10px;background:rgba(168,85,247,.08);border:1px solid rgba(168,85,247,.2);border-radius:8px';n.innerHTML=`<span class="section-label" style="color:var(--accent)">Nota de fusion</span><p class="small mt4" style="line-height:1.5">${s.nota_fusion}</p>`;card.appendChild(n);}cont.appendChild(card);});}catch{notify('Formato invalido.','error');}
@@ -1331,10 +970,9 @@ function switchTab(name){
 }
 
 // ============ SELECT EVENTS ============
+document.getElementById('gen-topic').addEventListener('change',function(){document.getElementById('gen-custom-wrap').style.display=this.value==='Otro'?'block':'none';});
+document.getElementById('mod-topic').addEventListener('change',function(){document.getElementById('mod-custom-wrap').style.display=this.value==='Otro'?'block':'none';});
 document.getElementById('comb-topic').addEventListener('change',function(){document.getElementById('comb-custom-wrap').style.display=this.value==='Otro'?'block':'none';});
-// Init descriptions on load
-updateStructureDesc();
-updateStyleDesc();
 
 // ============ LANDING ANIMATION ============
 document.querySelectorAll('.feat-card').forEach((card,i)=>{
