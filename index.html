@@ -493,6 +493,15 @@ label{font-size:12px;color:var(--text2);display:block;margin-bottom:5px;margin-t
           </div>
         </div>
 
+        <label class="mt12">Duración objetivo</label>
+        <select id="gen-dur">
+          <option value="15">⚡ 15 segundos — gancho puro</option>
+          <option value="30" selected>🎯 30 segundos — formato estándar</option>
+          <option value="45">📖 45 segundos — con historia</option>
+          <option value="60">💡 60 segundos — educativo completo</option>
+          <option value="90">🔥 90 segundos — transformacional</option>
+        </select>
+
         <label class="mt12">Estructura narrativa</label>
         <select id="gen-structure" onchange="updateStructureDesc()">
           <option value="secret">🔐 Secret Value — el más viral (5% lo usa)</option>
@@ -586,9 +595,17 @@ label{font-size:12px;color:var(--text2);display:block;margin-bottom:5px;margin-t
           </div>
           <div><label style="margin-top:0">Cantidad de versiones</label><select id="mod-qty"><option value="2">2 versiones</option><option value="3">3 versiones</option><option value="4">4 versiones</option></select></div>
         </div>
+        <label class="mt12">Duración objetivo</label>
+        <select id="mod-dur">
+          <option value="15">⚡ 15 segundos</option>
+          <option value="30" selected>🎯 30 segundos</option>
+          <option value="45">📖 45 segundos</option>
+          <option value="60">💡 60 segundos</option>
+          <option value="90">🔥 90 segundos</option>
+        </select>
         <button class="btn btn-electric mt12" onclick="buildModelPrompt()">🔍 Detectar estructura y adaptar ↗</button>
         <div class="prompt-box" id="mod-prompt-box" style="display:none"><p class="small" style="color:var(--indigo-light);margin-bottom:8px;font-weight:600">Copia y pega en Claude:</p><pre id="mod-prompt-text"></pre><button class="copy-btn" onclick="copyPrompt('mod-prompt-text',this)">Copiar prompt</button></div>
-        <div class="import-box" id="mod-import-box" style="display:none"><p class="small" style="color:#34d399;margin-bottom:8px;font-weight:600">Pega la respuesta (JSON):</p><textarea id="mod-import-text" rows="4" placeholder='{"scripts":[]}'></textarea><button class="btn btn-primary btn-sm mt8" onclick="importModelScripts()">Importar</button></div>
+        <div class="import-box" id="mod-import-box" style="display:none"><p class="small" style="color:#34d399;margin-bottom:8px;font-weight:600">Pega la respuesta (JSON):</p><textarea id="mod-import-text" rows="4" placeholder='{"scripts":[]}'></textarea><button class="btn btn-primary btn-sm mt8" onclick="importModels()">Importar</button></div>
         <div id="mod-results"></div>
       </div>
 
@@ -603,6 +620,14 @@ label{font-size:12px;color:var(--text2);display:block;margin-bottom:5px;margin-t
         </div>
         <label>Tema del script fusionado</label>
         <input id="comb-topic-input" placeholder="Ej: por qué repites los mismos patrones, creencias en la venta..."/>
+        <label class="mt12">Duración objetivo</label>
+        <select id="comb-dur">
+          <option value="15">⚡ 15 segundos</option>
+          <option value="30" selected>🎯 30 segundos</option>
+          <option value="45">📖 45 segundos</option>
+          <option value="60">💡 60 segundos</option>
+          <option value="90">🔥 90 segundos</option>
+        </select>
         <button class="btn btn-electric mt12" onclick="buildCombinePrompt()">🧬 Fusionar con IA ↗</button>
         <div class="prompt-box" id="comb-prompt-box" style="display:none"><p class="small" style="color:var(--indigo-light);margin-bottom:8px;font-weight:600">Copia y pega en Claude:</p><pre id="comb-prompt-text"></pre><button class="copy-btn" onclick="copyPrompt('comb-prompt-text',this)">Copiar prompt</button></div>
         <div class="import-box" id="comb-import-box" style="display:none"><p class="small" style="color:#34d399;margin-bottom:8px;font-weight:600">Pega la respuesta (JSON):</p><textarea id="comb-import-text" rows="4" placeholder='{"scripts":[]}'></textarea><button class="btn btn-primary btn-sm mt8" onclick="importCombinedScripts()">Importar</button></div>
@@ -1428,6 +1453,7 @@ function buildGeneratePrompt(){
   const style=v('gen-style');
   const qty=v('gen-qty-sel')||'3';
   const structure=v('gen-structure');
+  const dur=v('gen-dur')||'30';
   const structInstr=buildStructureInstructions(structure,null);
   const styleTone=buildStyleTone(style);
   const prompt=`Eres el mejor generador de scripts virales para reels del mundo hispanohablante. Especialidad: consciencia, psicología y transformación personal.${buildVozCtx()}${buildKnowCtx()}
@@ -1437,10 +1463,12 @@ ${structInstr}
 
 ${styleTone}
 
+DURACIÓN OBJETIVO: ${dur} segundos. Calibra la cantidad de palabras y beats a ese tiempo exacto.
+
 Crea ${qty} scripts DISTINTOS sobre: "${t}"
 Cada uno con gancho diferente, ángulo diferente, entrada diferente al tema. Compiten entre sí.
 
-{"scripts":[{"titulo":"","estilo":"${style}","estructura":"${structure}","gancho":"","cuerpo_parte1":"","reenganche_1":"","cuerpo_parte2":"","reenganche_2":"","cierre_insight":"","cta":"","triggers_activados":[],"duracion_seg":""}]}`;
+{"scripts":[{"titulo":"","estilo":"${style}","estructura":"${structure}","gancho":"","cuerpo_parte1":"","reenganche_1":"","cuerpo_parte2":"","reenganche_2":"","cierre_insight":"","cta":"","triggers_activados":[],"duracion_seg":"${dur}"}]}`;
   document.getElementById('gen-prompt-text').textContent=prompt;
   document.getElementById('gen-prompt-box').style.display='block';
   document.getElementById('gen-import-box').style.display='block';
@@ -1563,6 +1591,7 @@ function buildModelPrompt(){
   const t=getModTopic();
   if(!t||!t.trim()){notify('Elige o escribe un tema','warn');return;}
   const qty=v('mod-qty')||'2';
+  const dur=v('mod-dur')||'30';
   const prompt=`Eres un experto en ingeniería inversa de contenido viral.${buildVozCtx()}${buildKnowCtx()}
 
 TAREA 1 — DISECCIÓN VIRAL
@@ -1579,9 +1608,10 @@ Extrae con precisión:
 TAREA 2 — REPLICAR CON VOZ DE GUILLERMO
 ${qty} scripts con el mismo framework, los mismos triggers y la misma ingeniería de retención.
 Tema: "${t}" — cada script con ángulo distinto.
+DURACIÓN OBJETIVO: ${dur} segundos cada uno. Calibra palabras y beats a ese tiempo.
 ${VIRAL_RULES}
 
-{"framework_detectado":{"nombre":"","gancho_triggers":[],"reenganches":[],"cta_signal":"","razon_viral":""},"scripts":[{"titulo":"","framework":"","gancho":"","cuerpo_parte1":"","reenganche_1":"","cuerpo_parte2":"","reenganche_2":"","cierre_insight":"","cta":"","triggers_activados":[],"duracion_seg":""}]}`;
+{"framework_detectado":{"nombre":"","gancho_triggers":[],"reenganches":[],"cta_signal":"","razon_viral":""},"scripts":[{"titulo":"","framework":"","gancho":"","cuerpo_parte1":"","reenganche_1":"","cuerpo_parte2":"","reenganche_2":"","cierre_insight":"","cta":"","triggers_activados":[],"duracion_seg":"${dur}"}]}`;
   document.getElementById('mod-prompt-text').textContent=prompt;
   document.getElementById('mod-prompt-box').style.display='block';
   document.getElementById('mod-import-box').style.display='block';
@@ -1592,6 +1622,7 @@ function buildCombinePrompt(){
   if(filled.length<2){notify('Selecciona al menos 2 scripts','warn');return;}
   const t=v('comb-topic-input');
   if(!t||!t.trim()){notify('Escribe el tema del script fusionado','warn');return;}
+  const dur=v('comb-dur')||'30';
   let details='';
   filled.forEach((slot,i)=>{
     details+=`\nSCRIPT ${i+1} — "${slot.script.titulo}"\n`;
@@ -1602,10 +1633,11 @@ function buildCombinePrompt(){
 TAREA: Extrae lo mejor de cada script y crea UN script nuevo, superior a todos.
 Mejor gancho + mejor re-enganche + mejor cierre. Algo que ninguno tiene por separado.
 Tema: "${t}"
+DURACIÓN OBJETIVO: ${dur} segundos. Calibra palabras y beats a ese tiempo exacto.
 ${details}
 ${VIRAL_RULES}
 
-{"scripts":[{"titulo":"","gancho":"","cuerpo_parte1":"","reenganche_1":"","cuerpo_parte2":"","reenganche_2":"","cierre_insight":"","cta":"","triggers_activados":[],"duracion_seg":"","nota_fusion":""}]}`;
+{"scripts":[{"titulo":"","gancho":"","cuerpo_parte1":"","reenganche_1":"","cuerpo_parte2":"","reenganche_2":"","cierre_insight":"","cta":"","triggers_activados":[],"duracion_seg":"${dur}","nota_fusion":""}]}`;
   document.getElementById('comb-prompt-text').textContent=prompt;
   document.getElementById('comb-prompt-box').style.display='block';
   document.getElementById('comb-import-box').style.display='block';
@@ -1646,12 +1678,34 @@ function bBlock(label,val){if(!val)return'';return`<div class="block"><span clas
 function buildScriptCard(s,tema,fuente){
   const div=document.createElement('div');div.className='card';
   const fc=fuente==='Combinado'?'badge-purple':fuente.startsWith('Modelado')?'badge-electric':'badge-gray';
-  const sd=JSON.stringify(s).replace(/'/g,"\\'").replace(/"/g,'&quot;');
-  div.innerHTML=`<div class="top-row"><div><p style="font-weight:500;font-size:14px">${s.titulo}</p><p class="small mt4">${s.estilo} · ${s.duracion_estimada}</p></div><div class="flex gap4"><button class="btn btn-xs" onclick='addHookFromScript("${(s.gancho||'').replace(/"/g,"'").replace(/\n/g,' ')}","${s.estilo}")'>+ Gancho</button><button class="btn btn-xs btn-primary" onclick='saveToLibrary(JSON.parse(decodeURIComponent("${encodeURIComponent(JSON.stringify(s))}")), "${tema}","${fuente}")'>Guardar</button></div></div>
-  <span class="badge ${fc}" style="margin-bottom:8px;margin-top:4px">${fuente}</span>
-  <div class="mt8">${bBlock('Gancho',s.gancho)}${bBlock('Dolor',s.dolor)}${bBlock('Ejemplo cotidiano',s.ejemplo)}${bBlock('Fondo de pozo',s.fondo)}${bBlock('Cima de la montana',s.cima)}${bBlock('Insight',s.insight)}${bBlock('CTA',s.cta)}</div>`;
+  const dur=s.duracion_seg?`${s.duracion_seg}s`:(s.duracion_estimada||'');
+  const triggers=(s.triggers_activados||[]).join(', ');
+  // campos nuevos + compatibilidad clásica
+  const bloques=[
+    {k:'gancho',l:'Gancho'},{k:'cuerpo_parte1',l:'Cuerpo parte 1'},
+    {k:'reenganche_1',l:'Reenganche 1'},{k:'cuerpo_parte2',l:'Cuerpo parte 2'},
+    {k:'reenganche_2',l:'Reenganche 2'},{k:'cierre_insight',l:'Cierre / Insight'},
+    {k:'dolor',l:'Dolor'},{k:'ejemplo',l:'Ejemplo cotidiano'},
+    {k:'fondo',l:'Fondo de pozo'},{k:'cima',l:'Cima'},
+    {k:'insight',l:'Insight'},{k:'cta',l:'CTA'}
+  ].filter(b=>s[b.k]&&s[b.k].trim());
+  const scriptHtml=bloques.length?bloques.map(b=>bBlock(b.l,s[b.k])).join(''):'<p class="small">Sin contenido.</p>';
+  const cardId='sc-'+Math.random().toString(36).slice(2,8);
+  div.innerHTML=`<div class="top-row"><div style="flex:1">
+    <p style="font-weight:500;font-size:14px">${s.titulo||'Script'}</p>
+    <p class="small mt4">${s.estilo||''} ${s.framework||''} ${dur?'· '+dur:''}</p>
+    ${triggers?`<p class="small mt4" style="color:var(--indigo-light)">Triggers: ${triggers}</p>`:''}
+    <span class="badge ${fc}" style="margin-top:6px">${fuente}</span>
+  </div>
+  <div class="flex gap4" style="flex-direction:column;margin-left:8px">
+    <button class="btn btn-xs btn-primary" onclick="toggleScCard('${cardId}',this)">Ver</button>
+    <button class="btn btn-xs" onclick='addHookFromScript("${(s.gancho||'').replace(/"/g,"'").replace(/\n/g,' ')}","${s.estilo||''}")'>+ Gancho</button>
+    <button class="btn btn-xs" onclick='saveToLibrary(JSON.parse(decodeURIComponent("${encodeURIComponent(JSON.stringify(s))}")), "${tema}","${fuente}")'>Guardar</button>
+  </div></div>
+  <div id="${cardId}" style="display:none;margin-top:12px;border-top:1px solid var(--border);padding-top:12px">${scriptHtml}</div>`;
   return div;
 }
+function toggleScCard(id,btn){const el=document.getElementById(id);if(!el)return;const v=el.style.display!=='none';el.style.display=v?'none':'block';btn.textContent=v?'Ver':'Cerrar';}
 async function addHookFromScript(text,style){
   if(!text)return;
   const data={user_id:currentUser.id,text,categoria:'Otro',estilo:style,notes:'Extraido de script'};
