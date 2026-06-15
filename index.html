@@ -358,9 +358,11 @@ label{font-size:12px;color:var(--text2);display:block;margin-bottom:5px;margin-t
         <div class="voz-block"><h4>Historia personal</h4><p class="desc">Los momentos que te formaron. Tu quiebre con la Bioneuroemocion. Lo que viviste que te llevo a este camino.</p><textarea id="voz-historia" rows="4" placeholder="Crecí en una familia donde el dolor emocional no se nombraba. A los 28 años tuve una crisis..."></textarea><div class="voz-saved" id="vs-historia"></div></div>
         <div class="voz-block"><h4>Como hablas — tu tono natural</h4><p class="desc">Describe como te expresas. Que palabras usas siempre. Que palabras evitas.</p><textarea id="voz-tono" rows="3" placeholder="Hablo directo, sin rodeos. Uso mucho la metafora. Evito 'simplemente' porque el proceso no es simple..."></textarea><div class="voz-saved" id="vs-tono"></div></div>
         <div class="voz-block"><h4>Frases y expresiones propias</h4><p class="desc">Las frases que dices siempre. Las metaforas que te salen natural. Una por linea.</p><textarea id="voz-frases" rows="4" placeholder="- El cuerpo no miente, la mente interpreta&#10;- Todo patron tiene un para que inconsciente&#10;- El arbol sangra por donde duele la raiz"></textarea><div class="voz-saved" id="vs-frases"></div></div>
+        <div class="voz-block" style="border-color:rgba(239,68,68,.25)"><h4>❌ Lo que NUNCA dirías</h4><p class="desc">Palabras, frases o estilos que suenan falsos en tu boca. La IA los evitará activamente.</p><textarea id="voz-nunca" rows="3" placeholder="- 'Simplemente' — nada es simple en el proceso&#10;- 'Es importante que...' — suena a maestro de escuela&#10;- Frases motivacionales vacías tipo 'tú puedes'&#10;- Tecnicismos sin explicar (conflicto biológico a secas)"></textarea><div class="voz-saved" id="vs-nunca"></div></div>
         <div class="voz-block"><h4>Arquetipos y creencias centrales</h4><p class="desc">Tu marco conceptual personal. Los principios que guian tu trabajo como los entendiste vos.</p><textarea id="voz-arquetipos" rows="4" placeholder="Creo que el conflicto biologico no es el enemigo, es el mensajero..."></textarea><div class="voz-saved" id="vs-arquetipos"></div></div>
         <div class="voz-block"><h4>Anecdotas que puedes usar en reels</h4><p class="desc">Momentos reales de tu vida o sesiones que ilustran un concepto. La IA los usa como ejemplos.</p><textarea id="voz-anecdotas" rows="4" placeholder="- Una vez atendí a alguien con 10 años de dolor de espalda. Su abuelo cargaba costales a los 12..."></textarea><div class="voz-saved" id="vs-anecdotas"></div></div>
         <div class="voz-block"><h4>Tu audiencia ideal</h4><p class="desc">A quien le hablas. Que siente, que busca, donde esta en su proceso.</p><textarea id="voz-audiencia" rows="3" placeholder="Personas de 30 a 50 anos que sienten que repiten los mismos patrones sin entender por que..."></textarea><div class="voz-saved" id="vs-audiencia"></div></div>
+        <div class="voz-block" style="border-color:rgba(99,102,241,.4)"><h4>⭐ Scripts de referencia — tu mejor voz</h4><p class="desc">Pega 1-3 reels tuyos que ya sonaron bien, que te gustaron, que sintiste que eras vos. La IA los usa como modelo de tono exacto. Separa cada uno con ---</p><textarea id="voz-referencia" rows="8" placeholder="--- Reel 1&#10;Lo que más te molesta de los demás es exactamente lo que no puedes ver en ti mismo...&#10;&#10;--- Reel 2&#10;Odié a mi padre durante años. Hasta que me vi en él..."></textarea><div class="voz-saved" id="vs-referencia"></div></div>
 
         <button class="btn btn-electric w100 mt16" onclick="saveVoz()">Guardar toda mi voz</button>
         <p class="small mt8" id="voz-status" style="color:#34d399;display:none">✓ Voz guardada. Todos tus scripts ahora suenan como vos.</p>
@@ -939,7 +941,7 @@ function loadVozFields(){
 }
 async function saveVoz(){
   if(!currentUser)return;
-  const data={historia:v('voz-historia'),tono:v('voz-tono'),frases:v('voz-frases'),arquetipos:v('voz-arquetipos'),anecdotas:v('voz-anecdotas'),audiencia:v('voz-audiencia'),updated_at:new Date().toISOString()};
+  const data={historia:v('voz-historia'),tono:v('voz-tono'),frases:v('voz-frases'),nunca:v('voz-nunca'),arquetipos:v('voz-arquetipos'),anecdotas:v('voz-anecdotas'),audiencia:v('voz-audiencia'),referencia:v('voz-referencia'),updated_at:new Date().toISOString()};
   try{
     if(localVoz.id){await sbFetch(`rs_voz?id=eq.${localVoz.id}`,{method:'PATCH',body:JSON.stringify(data)});}
     else{const rows=await sbFetch('rs_voz',{method:'POST',body:JSON.stringify({...data,user_id:currentUser.id})});if(rows&&rows.length)localVoz=rows[0];}
@@ -956,15 +958,18 @@ function updateVozIndicator(){
   if(warn)warn.style.display=hasVoz?'none':'block';
 }
 function buildVozCtx(){
-  if(!localVoz.historia&&!localVoz.tono)return'';
-  let c='\n\nVOZ Y PERSONALIDAD DEL CREADOR:\n';
-  if(localVoz.historia)c+=`Historia personal: ${localVoz.historia}\n`;
-  if(localVoz.tono)c+=`Tono y estilo: ${localVoz.tono}\n`;
-  if(localVoz.frases)c+=`Frases propias: ${localVoz.frases}\n`;
-  if(localVoz.arquetipos)c+=`Creencias: ${localVoz.arquetipos}\n`;
-  if(localVoz.anecdotas)c+=`Anecdotas disponibles: ${localVoz.anecdotas}\n`;
-  if(localVoz.audiencia)c+=`Audiencia ideal: ${localVoz.audiencia}\n`;
-  c+='\nUSA esta informacion. Los scripts deben sonar exactamente como Guillermo, no como una IA generica.\n';
+  if(!localVoz.historia&&!localVoz.tono&&!localVoz.referencia)return'';
+  let c='\n\n========================================\nVOZ Y PERSONALIDAD DEL CREADOR — LEE ESTO PRIMERO\n========================================\n';
+  c+='INSTRUCCIÓN CRÍTICA: Los scripts deben sonar EXACTAMENTE como Guillermo habla. No como una IA. No como un coach genérico. Como él. Si alguien que lo conoce lee el script, debe reconocerlo de inmediato.\n';
+  if(localVoz.historia)c+=`\nHISTORIA PERSONAL:\n${localVoz.historia}\n`;
+  if(localVoz.tono)c+=`\nTONO Y ESTILO NATURAL:\n${localVoz.tono}\n`;
+  if(localVoz.frases)c+=`\nFRASES PROPIAS (úsalas cuando encajen):\n${localVoz.frases}\n`;
+  if(localVoz.nunca)c+=`\nPROHIBIDO — NUNCA USES ESTO:\n${localVoz.nunca}\n`;
+  if(localVoz.arquetipos)c+=`\nMARCO CONCEPTUAL:\n${localVoz.arquetipos}\n`;
+  if(localVoz.anecdotas)c+=`\nANÉCDOTAS DISPONIBLES:\n${localVoz.anecdotas}\n`;
+  if(localVoz.audiencia)c+=`\nAUDIENCIA IDEAL:\n${localVoz.audiencia}\n`;
+  if(localVoz.referencia)c+=`\nSCRIPTS DE REFERENCIA — IMITA ESTE TONO EXACTO (no el contenido, el estilo):\n${localVoz.referencia}\n`;
+  c+='========================================\n';
   return c;
 }
 function buildKnowCtx(){
