@@ -1190,21 +1190,8 @@ function renderLibrary(){
       </div>
       ${r.funciono?`<p class="small mt4" style="color:var(--text2)">${r.funciono}</p>`:''}
     </div>`:`<span class="badge badge-warn mt4">Sin resultado</span>`;
-    const partes=[
-      {label:'Gancho',val:item.gancho},
-      {label:'Cuerpo parte 1',val:item.cuerpo_parte1},
-      {label:'Reenganche 1',val:item.reenganche_1},
-      {label:'Cuerpo parte 2',val:item.cuerpo_parte2},
-      {label:'Reenganche 2',val:item.reenganche_2},
-      {label:'Cierre / Insight',val:item.cierre_insight},
-      {label:'Dolor',val:item.dolor},
-      {label:'Ejemplo cotidiano',val:item.ejemplo},
-      {label:'Fondo de pozo',val:item.fondo},
-      {label:'Cima',val:item.cima},
-      {label:'Insight',val:item.insight},
-      {label:'CTA',val:item.cta}
-    ].filter(p=>p.val);
-    const scriptHtml=partes.length?partes.map(p=>`<div style="margin-bottom:10px"><span class="section-label">${p.label}</span><p style="font-size:13px;line-height:1.6;margin-top:4px;color:var(--text)">${p.val}</p></div>`).join(''):'<p class="small">Script sin partes guardadas.</p>';
+    const partes=getCampos(item);
+    const scriptHtml=partes.length?partes.map(p=>`<div style="margin-bottom:10px"><span class="section-label">${p.label}</span><p style="font-size:13px;line-height:1.6;margin-top:4px;color:var(--text)">${item[p.key]}</p></div>`).join(''):'<p class="small">Script sin partes guardadas.</p>';
     return`<div class="card">
       <div class="top-row"><div style="flex:1">
         <p style="font-weight:500;font-size:14px">${item.titulo}</p>
@@ -1482,6 +1469,18 @@ CTA — 3 señales del algoritmo en orden de importancia:
 Texto listo para hablar en cámara. Español latinoamericano neutro. Sin relleno. Máx 60 seg.
 JSON puro, sin backticks, sin texto antes o después.`;
 
+// JSON templates por estructura
+const STRUCT_JSON={
+  clasica: (style,dur)=>`{"scripts":[{"titulo":"","estilo":"${style}","estructura":"clasica","gancho":"","dolor":"","ejemplo":"","fondo":"","cima":"","insight":"","cta":"","triggers_activados":[],"duracion_seg":"${dur}"}]}`,
+  pas:     (style,dur)=>`{"scripts":[{"titulo":"","estilo":"${style}","estructura":"pas","gancho":"","agitar":"","solucion":"","cta":"","triggers_activados":[],"duracion_seg":"${dur}"}]}`,
+  bab:     (style,dur)=>`{"scripts":[{"titulo":"","estilo":"${style}","estructura":"bab","antes":"","puente":"","despues":"","cta":"","triggers_activados":[],"duracion_seg":"${dur}"}]}`,
+  pastor:  (style,dur)=>`{"scripts":[{"titulo":"","estilo":"${style}","estructura":"pastor","problema":"","amplificar":"","historia":"","transformacion":"","insight":"","cta":"","triggers_activados":[],"duracion_seg":"${dur}"}]}`,
+  secret:  (style,dur)=>`{"scripts":[{"titulo":"","estilo":"${style}","estructura":"secret","gancho_secreto":"","contexto":"","revelacion":"","aplicacion":"","cta":"","triggers_activados":[],"duracion_seg":"${dur}"}]}`,
+  curiosity:(style,dur)=>`{"scripts":[{"titulo":"","estilo":"${style}","estructura":"curiosity","pregunta":"","lee_la_mente":"","giro":"","insight":"","cta":"","triggers_activados":[],"duracion_seg":"${dur}"}]}`,
+  aida:    (style,dur)=>`{"scripts":[{"titulo":"","estilo":"${style}","estructura":"aida","atencion":"","interes":"","deseo":"","accion":"","triggers_activados":[],"duracion_seg":"${dur}"}]}`,
+  '5cs':   (style,dur)=>`{"scripts":[{"titulo":"","estilo":"${style}","estructura":"5cs","contexto":"","conflicto":"","climax":"","conclusion":"","cta":"","triggers_activados":[],"duracion_seg":"${dur}"}]}`,
+};
+
 function buildGeneratePrompt(){
   const t=getGenTopic();
   if(!t||!t.trim()){notify('Elige o escribe un tema primero','warn');return;}
@@ -1491,6 +1490,7 @@ function buildGeneratePrompt(){
   const dur=v('gen-dur')||'30';
   const structInstr=buildStructureInstructions(structure,null);
   const styleTone=buildStyleTone(style);
+  const jsonTemplate=(STRUCT_JSON[structure]||STRUCT_JSON.clasica)(style,dur);
   const prompt=`Eres el mejor generador de scripts virales para reels del mundo hispanohablante. Especialidad: consciencia, psicología y transformación personal.${buildVozCtx()}${buildKnowCtx()}
 ${VIRAL_RULES}
 
@@ -1502,11 +1502,49 @@ DURACIÓN OBJETIVO: ${dur} segundos. Calibra la cantidad de palabras y beats a e
 
 Crea ${qty} scripts DISTINTOS sobre: "${t}"
 Cada uno con gancho diferente, ángulo diferente, entrada diferente al tema. Compiten entre sí.
+IMPORTANTE: Responde SOLO con el JSON. Sin texto antes ni después. Sin backticks.
+Llena TODOS los campos del JSON con el contenido real del script.
 
-{"scripts":[{"titulo":"","estilo":"${style}","estructura":"${structure}","gancho":"","cuerpo_parte1":"","reenganche_1":"","cuerpo_parte2":"","reenganche_2":"","cierre_insight":"","cta":"","triggers_activados":[],"duracion_seg":"${dur}"}]}`;
+${jsonTemplate.replace('"scripts":[{','\"scripts\":[{').replace(/\}]\}$/,'},{...repite para cada script}]}')}`;
   document.getElementById('gen-prompt-text').textContent=prompt;
   document.getElementById('gen-prompt-box').style.display='block';
   document.getElementById('gen-import-box').style.display='block';
+}
+
+// ============ CAMPOS POR ESTRUCTURA ============
+const CAMPOS_POR_ESTRUCTURA={
+  clasica:  [{key:'gancho',label:'🎣 Gancho'},{key:'dolor',label:'😣 Dolor'},{key:'ejemplo',label:'📍 Ejemplo cotidiano'},{key:'fondo',label:'⬇️ Fondo de pozo'},{key:'cima',label:'⬆️ Cima'},{key:'insight',label:'💡 Insight'},{key:'cta',label:'📣 CTA'}],
+  pas:      [{key:'gancho',label:'🎣 Gancho / Problema'},{key:'agitar',label:'🔥 Agitar'},{key:'solucion',label:'✅ Solución'},{key:'cta',label:'📣 CTA'}],
+  bab:      [{key:'antes',label:'⬅️ Antes'},{key:'puente',label:'🌉 Puente'},{key:'despues',label:'➡️ Después'},{key:'cta',label:'📣 CTA'}],
+  pastor:   [{key:'problema',label:'🎯 Persona / Problema'},{key:'amplificar',label:'🔊 Amplificar'},{key:'historia',label:'📖 Historia / Solución'},{key:'transformacion',label:'✨ Transformación'},{key:'insight',label:'💡 Insight'},{key:'cta',label:'📣 CTA'}],
+  secret:   [{key:'gancho_secreto',label:'🔐 Gancho secreto'},{key:'contexto',label:'🌐 Contexto'},{key:'revelacion',label:'💥 Revelación'},{key:'aplicacion',label:'⚡ Aplicación'},{key:'cta',label:'📣 CTA'}],
+  curiosity:[{key:'pregunta',label:'❓ Pregunta / Afirmación'},{key:'lee_la_mente',label:'🧠 Lee la mente'},{key:'giro',label:'🌪 Giro'},{key:'insight',label:'💡 Insight'},{key:'cta',label:'📣 CTA'}],
+  aida:     [{key:'atencion',label:'👁 Atención'},{key:'interes',label:'🔍 Interés'},{key:'deseo',label:'💛 Deseo'},{key:'accion',label:'📣 Acción / CTA'}],
+  '5cs':    [{key:'contexto',label:'🗺 Contexto'},{key:'conflicto',label:'⚔️ Conflicto'},{key:'climax',label:'🔥 Clímax'},{key:'conclusion',label:'💡 Conclusión'},{key:'cta',label:'📣 CTA'}],
+};
+// fallback — muestra cualquier campo con contenido
+const CAMPOS_FALLBACK=[
+  {key:'gancho',label:'🎣 Gancho'},{key:'gancho_secreto',label:'🔐 Gancho secreto'},
+  {key:'pregunta',label:'❓ Pregunta'},{key:'atencion',label:'👁 Atención'},
+  {key:'antes',label:'⬅️ Antes'},{key:'problema',label:'🎯 Problema'},
+  {key:'contexto',label:'🗺 Contexto'},{key:'dolor',label:'😣 Dolor'},
+  {key:'agitar',label:'🔥 Agitar'},{key:'amplificar',label:'🔊 Amplificar'},
+  {key:'interes',label:'🔍 Interés'},{key:'ejemplo',label:'📍 Ejemplo'},
+  {key:'puente',label:'🌉 Puente'},{key:'historia',label:'📖 Historia'},
+  {key:'lee_la_mente',label:'🧠 Lee la mente'},{key:'cuerpo_parte1',label:'📝 Cuerpo 1'},
+  {key:'reenganche_1',label:'🔁 Reenganche 1'},{key:'fondo',label:'⬇️ Fondo de pozo'},
+  {key:'giro',label:'🌪 Giro'},{key:'climax',label:'🔥 Clímax'},
+  {key:'cuerpo_parte2',label:'📝 Cuerpo 2'},{key:'reenganche_2',label:'🔁 Reenganche 2'},
+  {key:'cima',label:'⬆️ Cima'},{key:'deseo',label:'💛 Deseo'},
+  {key:'transformacion',label:'✨ Transformación'},{key:'despues',label:'➡️ Después'},
+  {key:'revelacion',label:'💥 Revelación'},{key:'aplicacion',label:'⚡ Aplicación'},
+  {key:'insight',label:'💡 Insight'},{key:'conclusion',label:'💡 Conclusión'},
+  {key:'cierre_insight',label:'💡 Cierre'},{key:'solucion',label:'✅ Solución'},
+  {key:'cta',label:'📣 CTA'},{key:'accion',label:'📣 Acción'},
+];
+function getCampos(s){
+  const campos=CAMPOS_POR_ESTRUCTURA[s.estructura]||CAMPOS_FALLBACK;
+  return campos.filter(c=>s[c.key]&&String(s[c.key]).trim());
 }
 
 // ============ IMPORT SCRIPTS ============
@@ -1526,23 +1564,9 @@ function importScripts(){
   if(!scripts.length){notify('No se encontraron scripts en el JSON','warn');return;}
   const tema=getGenTopic()||'Sin tema';
   const container=document.getElementById('gen-results');
-  const CAMPOS=[
-    {key:'gancho',label:'🎣 Gancho'},
-    {key:'cuerpo_parte1',label:'📝 Cuerpo parte 1'},
-    {key:'reenganche_1',label:'🔁 Reenganche 1'},
-    {key:'cuerpo_parte2',label:'📝 Cuerpo parte 2'},
-    {key:'reenganche_2',label:'🔁 Reenganche 2'},
-    {key:'cierre_insight',label:'💡 Cierre / Insight'},
-    {key:'cta',label:'📣 CTA'},
-    // compatibilidad con estructura clásica vieja
-    {key:'dolor',label:'😣 Dolor'},
-    {key:'ejemplo',label:'📍 Ejemplo cotidiano'},
-    {key:'fondo',label:'⬇️ Fondo de pozo'},
-    {key:'cima',label:'⬆️ Cima'},
-    {key:'insight',label:'💡 Insight'},
-  ];
+  const CAMPOS=CAMPOS_FALLBACK; // importScripts usa fallback dinámico vía getCampos
   container.innerHTML=scripts.map((s,i)=>{
-    const partes=CAMPOS.filter(c=>s[c.key]&&s[c.key].trim());
+    const partes=getCampos(s);
     const triggers=(s.triggers_activados||[]).join(', ');
     const dur=s.duracion_seg?`${s.duracion_seg}s`:'';
     const scriptId=`gen-script-${i}`;
@@ -1730,15 +1754,8 @@ function buildScriptCard(s,tema,fuente,idx,store){
   const fc=fuente==='Combinado'?'badge-purple':fuente.startsWith('Modelado')?'badge-electric':'badge-gray';
   const dur=s.duracion_seg?`${s.duracion_seg}s`:(s.duracion_estimada||'');
   const triggers=(s.triggers_activados||[]).join(', ');
-  const bloques=[
-    {k:'gancho',l:'Gancho'},{k:'cuerpo_parte1',l:'Cuerpo parte 1'},
-    {k:'reenganche_1',l:'Reenganche 1'},{k:'cuerpo_parte2',l:'Cuerpo parte 2'},
-    {k:'reenganche_2',l:'Reenganche 2'},{k:'cierre_insight',l:'Cierre / Insight'},
-    {k:'dolor',l:'Dolor'},{k:'ejemplo',l:'Ejemplo cotidiano'},
-    {k:'fondo',l:'Fondo de pozo'},{k:'cima',l:'Cima'},
-    {k:'insight',l:'Insight'},{k:'cta',l:'CTA'}
-  ].filter(b=>s[b.k]&&s[b.k].trim());
-  const scriptHtml=bloques.length?bloques.map(b=>bBlock(b.l,s[b.k])).join(''):'<p class="small">Sin contenido.</p>';
+  const bloques=getCampos(s);
+  const scriptHtml=bloques.length?bloques.map(b=>bBlock(b.label,s[b.key])).join(''):'<p class="small">Sin contenido.</p>';
   const cardId='sc-'+Math.random().toString(36).slice(2,8);
   const saveBtn=idx!=null&&store
     ?`<button id="scbtn-${cardId}" class="btn btn-xs btn-primary" onclick="saveCardScript('${cardId}','${store}',${idx},'${fuente}')">Guardar</button>`
