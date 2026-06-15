@@ -1065,8 +1065,27 @@ label{font-size:12px;color:var(--text2);display:block;margin-bottom:5px;margin-t
         <span id="studio-rec-badge">● REC</span>
       </div>
       <div id="studio-title-display">—</div>
-      <div style="display:flex;gap:8px;align-items:center;">
-        <button class="st-btn st-btn-cam-toggle active" id="studio-cam-toggle-btn" onclick="studioToggleCam()">📹 Cámara</button>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+        <!-- Selector de cámara -->
+        <div style="display:flex;align-items:center;gap:6px;">
+          <span class="st-label">📹</span>
+          <select id="studio-cam-select" onchange="studioChangeCam()"
+            style="background:#1a1a2e;border:1px solid rgba(99,102,241,.3);color:#a5b4fc;
+                   border-radius:8px;padding:5px 8px;font-size:12px;font-family:'Space Grotesk',sans-serif;
+                   cursor:pointer;max-width:160px;">
+            <option>Cargando cámaras...</option>
+          </select>
+        </div>
+        <!-- Selector de micrófono -->
+        <div style="display:flex;align-items:center;gap:6px;">
+          <span class="st-label">🎤</span>
+          <select id="studio-mic-select" onchange="studioChangeCam()"
+            style="background:#1a1a2e;border:1px solid rgba(99,102,241,.3);color:#a5b4fc;
+                   border-radius:8px;padding:5px 8px;font-size:12px;font-family:'Space Grotesk',sans-serif;
+                   cursor:pointer;max-width:140px;">
+            <option>Cargando mics...</option>
+          </select>
+        </div>
         <button class="st-btn st-btn-mirror" id="studio-mirror-btn" onclick="studioToggleMirror()">⟺ Espejo</button>
       </div>
     </div>
@@ -1286,28 +1305,92 @@ function studioToggleMirror(){
 async function studioInitCam(){
   const video=document.getElementById('studio-cam-video');
   const noCam=document.getElementById('studio-no-cam');
+  // Primero pedir permiso con cualquier cámara para poder enumerar dispositivos
   try{
-    studioStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user'},audio:true});
+    // Solicitar permisos iniciales (necesario para que enumerateDevices devuelva labels)
+    const tempStream=await navigator.mediaDevices.getUserMedia({video:true,audio:true});
+    tempStream.getTracks().forEach(t=>t.stop());
+  }catch(e){
+    console.warn('Permiso denegado:',e);
+  }
+  await studioLoadDevices();
+  await studioStartStreamWithSelected();
+}
+
+async function studioLoadDevices(){
+  try{
+    const devices=await navigator.mediaDevices.enumerateDevices();
+    const cams=devices.filter(d=>d.kind==='videoinput');
+    const mics=devices.filter(d=>d.kind==='audioinput');
+
+    const camSel=document.getElementById('studio-cam-select');
+    const micSel=document.getElementById('studio-mic-select');
+
+    camSel.innerHTML=cams.map((d,i)=>`<option value="${d.deviceId}">${d.label||'Cámara '+(i+1)}</option>`).join('');
+    micSel.innerHTML=mics.map((d,i)=>`<option value="${d.deviceId}">${d.label||'Micrófono '+(i+1)}</option>`).join('');
+
+    // Preferir C922 o cualquier Logitech automáticamente si está disponible
+    const prefCam=cams.find(d=>/C922|C920|C930|C925|Logitech/i.test(d.label));
+    if(prefCam)camSel.value=prefCam.deviceId;
+
+    // Preferir el micrófono integrado del sistema (no de la webcam secundaria) o el primero disponible
+    const prefMic=mics.find(d=>!/DroidCam/i.test(d.label));
+    if(prefMic)micSel.value=prefMic.deviceId;
+
+  }catch(e){console.warn('Error enumerando dispositivos:',e);}
+}
+
+async function studioStartStreamWithSelected(){
+  const video=document.getElementById('studio-cam-video');
+  const noCam=document.getElementById('studio-no-cam');
+  const camSel=document.getElementById('studio-cam-select');
+  const micSel=document.getElementById('studio-mic-select');
+
+  // Detener stream anterior si existe
+  if(studioStream){studioStream.getTracks().forEach(t=>t.stop());studioStream=null;}
+
+  const camId=camSel.value;
+  const micId=micSel.value;
+
+  const videoConstraints=camId&&camId!=='Cargando cámaras...'
+    ?{deviceId:{exact:camId}}
+    :{facingMode:'user'};
+  const audioConstraints=micId&&micId!=='Cargando mics...'
+    ?{deviceId:{exact:micId}}
+    :true;
+
+  try{
+    studioStream=await navigator.mediaDevices.getUserMedia({
+      video:videoConstraints,
+      audio:audioConstraints
+    });
     video.srcObject=studioStream;
     video.style.display='block';
     noCam.classList.remove('show');
+    studioCamActive=true;
+    notify('✓ Cámara conectada: '+(camSel.options[camSel.selectedIndex]?.text||''),'ok');
   }catch(e){
     console.warn('Cam no disponible:',e);
     video.style.display='none';
     noCam.classList.add('show');
     studioCamActive=false;
-    document.getElementById('studio-cam-toggle-btn').classList.remove('active');
+    notify('Sin acceso a la cámara seleccionada','warn');
   }
 }
+
+async function studioChangeCam(){
+  // Si está grabando, no cambiar
+  if(studioRecording){notify('No se puede cambiar la cámara mientras grabás','warn');return;}
+  await studioStartStreamWithSelected();
+}
+
 function studioStopCam(){
   if(studioStream){studioStream.getTracks().forEach(t=>t.stop());studioStream=null;}
 }
 function studioToggleCam(){
   studioCamActive=!studioCamActive;
   const preview=document.getElementById('studio-cam-preview');
-  const btn=document.getElementById('studio-cam-toggle-btn');
   preview.style.display=studioCamActive?'':'none';
-  btn.classList.toggle('active',studioCamActive);
   if(studioCamActive&&!studioStream)studioInitCam();
 }
 
