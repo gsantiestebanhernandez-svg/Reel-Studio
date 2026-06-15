@@ -1336,14 +1336,14 @@ function updateStructureDesc(){
 
 // ============ COMBINACIONES RECOMENDADAS ============
 const COMBOS=[
-  {label:'🔥 Máximo Alcance',estructura:'secret',estilo:'verdad-incomoda',tag:'viral'},
-  {label:'💊 Verdad que duele',estructura:'curiosity',estilo:'verdad-incomoda',tag:'retención'},
-  {label:'🧬 Dato + Ciencia',estructura:'aida',estilo:'dato-que-cambia-todo',tag:'educativo'},
-  {label:'📖 Historia real',estructura:'5cs',estilo:'storytelling-personal',tag:'conexión'},
-  {label:'🌀 Reflexión profunda',estructura:'clasica',estilo:'reflexivo-filosofico',tag:'BNE'},
-  {label:'⚡ Conversión directa',estructura:'pastor',estilo:'emocional-sanador',tag:'ventas'},
-  {label:'🔄 Romper creencia',estructura:'bab',estilo:'contraintuitivo',tag:'disruptivo'},
-  {label:'💬 Íntimo + Rápido',estructura:'pas',estilo:'conversacional-intimo',tag:'30seg'},
+  {label:'🔥 Máximo Alcance',estructura:'secret',estilo:'verdad-incomoda',tag:'viral',dur:'30'},
+  {label:'💊 Verdad que duele',estructura:'curiosity',estilo:'verdad-incomoda',tag:'retención',dur:'45'},
+  {label:'🧬 Dato + Ciencia',estructura:'aida',estilo:'dato-que-cambia-todo',tag:'educativo',dur:'60'},
+  {label:'📖 Historia real',estructura:'5cs',estilo:'storytelling-personal',tag:'conexión',dur:'60'},
+  {label:'🌀 Reflexión profunda',estructura:'clasica',estilo:'reflexivo-filosofico',tag:'BNE',dur:'90'},
+  {label:'⚡ Conversión directa',estructura:'pastor',estilo:'emocional-sanador',tag:'ventas',dur:'60'},
+  {label:'🔄 Romper creencia',estructura:'bab',estilo:'contraintuitivo',tag:'disruptivo',dur:'45'},
+  {label:'💬 Íntimo + Rápido',estructura:'pas',estilo:'conversacional-intimo',tag:'30seg',dur:'30'},
 ];
 
 function renderComboPills(){
@@ -1366,11 +1366,12 @@ function applyCombo(i){
   const c=COMBOS[i];
   const structSel=document.getElementById('gen-structure');
   const styleSel=document.getElementById('gen-style');
+  const durSel=document.getElementById('gen-dur');
   if(structSel)structSel.value=c.estructura;
   if(styleSel)styleSel.value=c.estilo;
+  if(durSel&&c.dur)durSel.value=c.dur;
   updateStyleDesc();
   updateStructureDesc();
-  // flash visual feedback
   const pills=document.querySelectorAll('#combo-pills button');
   pills.forEach((p,idx)=>{
     p.style.background=idx===i?'rgba(99,102,241,.4)':'rgba(99,102,241,.1)';
