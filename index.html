@@ -1141,6 +1141,22 @@ function toggleLibScript(id){
   el.style.display=open?'block':'none';
   if(btn)btn.textContent=open?'Ocultar script':'Ver script';
 }
+function openInTeleprompter(id){
+  const item=localLibrary.find(i=>i.id===id);if(!item)return;
+  // Armar texto del script en orden según estructura
+  const CAMPOS_ORD=[
+    {k:'gancho'},{k:'gancho_secreto'},{k:'pregunta'},{k:'atencion'},{k:'antes'},{k:'problema'},
+    {k:'contexto'},{k:'dolor'},{k:'agitar'},{k:'amplificar'},{k:'interes'},{k:'ejemplo'},
+    {k:'cuerpo_parte1'},{k:'puente'},{k:'historia'},{k:'lee_la_mente'},{k:'reenganche_1'},
+    {k:'fondo'},{k:'giro'},{k:'climax'},{k:'cuerpo_parte2'},{k:'reenganche_2'},{k:'cima'},
+    {k:'deseo'},{k:'transformacion'},{k:'despues'},{k:'revelacion'},{k:'aplicacion'},
+    {k:'insight'},{k:'conclusion'},{k:'cierre_insight'},{k:'solucion'},{k:'cta'},{k:'accion'}
+  ];
+  const partes=CAMPOS_ORD.map(c=>item[c.k]).filter(Boolean);
+  const script=partes.join('\n\n');
+  localStorage.setItem('rs_teleprompter_script',script);
+  window.open('teleprompter.html','_blank');
+}
 function reutilizarScript(id){
   const item=localLibrary.find(i=>i.id===id);if(!item)return;
   saveToLibrary({titulo:item.titulo,estilo:item.estilo,gancho:item.gancho,dolor:item.dolor,ejemplo:item.ejemplo,fondo:item.fondo,cima:item.cima,insight:item.insight,cta:item.cta,duracion_estimada:item.duracion_estimada},item.tema||'','Reutilizado');
@@ -1212,6 +1228,7 @@ function renderLibrary(){
       </div>
       <div class="flex gap4 mt4" style="flex-direction:column;margin-left:8px">
         <button id="lib-toggle-${item.id}" class="btn btn-xs btn-primary" onclick="toggleLibScript('${item.id}')">Ver script</button>
+        <button class="btn btn-xs" onclick="openInTeleprompter('${item.id}')" title="Abrir en teleprompter">🎙</button>
         <button class="btn btn-xs" onclick="openResultadoModal('${item.id}')">Resultado</button>
         <button class="btn btn-xs" onclick="openMetricsModal('${item.id}')">Metricas</button>
         <button class="btn btn-xs btn-danger" onclick="deleteItem('${item.id}')">x</button>
