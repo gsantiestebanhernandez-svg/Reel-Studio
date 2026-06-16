@@ -2432,6 +2432,12 @@ function toggleGenScript(id){
   el.style.display=visible?'none':'block';
   if(btn)btn.textContent=visible?'Ver':'Cerrar';
 }
+function toggleScCard(id,btn){
+  const el=document.getElementById(id);if(!el)return;
+  const visible=el.style.display!=='none';
+  el.style.display=visible?'none':'block';
+  if(btn)btn.textContent=visible?'Ver':'Cerrar';
+}
 
 async function saveGenScript(i){
   const s=window._genScripts?.[i];if(!s){notify('Script no encontrado','error');return;}
