@@ -701,7 +701,11 @@ label{font-size:12px;color:var(--text2);display:block;margin-bottom:5px;margin-t
         </select>
         <div id="structure-desc" style="display:none;font-size:11.5px;color:var(--text2);margin-top:5px;line-height:1.5;padding:6px 8px;background:rgba(99,102,241,.08);border-radius:6px;border-left:2px solid var(--indigo-light)"></div>
 
-        <button class="btn btn-electric mt12" onclick="buildGeneratePrompt()">⚡ Generar prompt ↗</button>
+        <div class="flex gap8 mt12" style="flex-wrap:wrap">
+          <button class="btn btn-electric" onclick="generateWithAI()" id="btn-gen-ai">🤖 Generar con IA</button>
+          <button class="btn btn-ghost" onclick="buildGeneratePrompt()" style="font-size:12px">⚡ Ver prompt</button>
+        </div>
+        <div id="gen-ai-status" style="display:none;margin-top:10px;font-size:12px;color:var(--indigo-light);font-weight:600"></div>
         <div class="prompt-box" id="gen-prompt-box" style="display:none"><p class="small" style="color:var(--indigo-light);margin-bottom:8px;font-weight:600">Copia y pega en Claude:</p><pre id="gen-prompt-text"></pre><button class="copy-btn" onclick="copyPrompt('gen-prompt-text',this)">Copiar prompt</button></div>
         <div class="import-box" id="gen-import-box" style="display:none"><p class="small" style="color:#34d399;margin-bottom:8px;font-weight:600">Pega la respuesta de Claude (JSON):</p><textarea id="gen-import-text" rows="4" placeholder='{"scripts":[]}'></textarea><button class="btn btn-primary btn-sm mt8" onclick="importScripts()">Importar scripts</button></div>
         <div id="gen-results"></div>
@@ -2216,6 +2220,44 @@ ${jsonTemplate.replace('"scripts":[{','\"scripts\":[{').replace(/\}]\}$/,'},{...
   document.getElementById('gen-import-box').style.display='block';
 }
 
+
+// ============ GENERAR CON IA (GROQ via Worker) ============
+const GROQ_WORKER='https://anthropic-proxy.gsantiestebanhernandez.workers.dev';
+
+async function generateWithAI(){
+  const t=getGenTopic();
+  if(!t||!t.trim()){notify('Elige o escribe un tema primero','warn');return;}
+  const style=v('gen-style');
+  const qty=v('gen-qty-sel')||'3';
+  const structure=v('gen-structure');
+  const dur=v('gen-dur')||'30';
+  const structInstr=buildStructureInstructions(structure,null);
+  const styleTone=buildStyleTone(style);
+  const jsonTemplate=(STRUCT_JSON[structure]||STRUCT_JSON.clasica)(style,dur);
+  const userPrompt='Crea '+qty+' scripts DISTINTOS sobre: "'+t+'"\nCada uno con gancho diferente, ángulo diferente, entrada diferente al tema. Compiten entre sí.\nIMPORTANTE: Responde SOLO con el JSON. Sin texto antes ni después. Sin backticks.\nLlena TODOS los campos del JSON con el contenido real del script.\n\n'+jsonTemplate;
+  const systemPrompt='Eres el mejor generador de scripts virales para reels del mundo hispanohablante. Especialidad: consciencia, psicología y transformación personal.'+buildVozCtx()+buildKnowCtx()+'\n'+VIRAL_RULES+'\n\n'+structInstr+'\n\n'+styleTone+'\n\nDURACIÓN OBJETIVO: '+dur+' segundos. Calibra la cantidad de palabras y beats a ese tiempo exacto.';
+  const btn=document.getElementById('btn-gen-ai');
+  const status=document.getElementById('gen-ai-status');
+  btn.disabled=true;btn.textContent='⏳ Generando...';
+  status.style.display='block';status.textContent='Conectando con IA...';
+  try{
+    const res=await fetch(GROQ_WORKER,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'llama-3.3-70b-versatile',max_tokens:4000,messages:[{role:'system',content:systemPrompt},{role:'user',content:userPrompt}]})});
+    if(!res.ok){const err=await res.text();throw new Error('Worker error '+res.status+': '+err);}
+    const data=await res.json();
+    const raw=data.choices[0].message.content.trim();
+    status.textContent='Procesando respuesta...';
+    document.getElementById('gen-import-text').value=raw;
+    importScripts();
+    status.style.display='none';
+    notify('Scripts generados con IA ✓','success');
+  }catch(e){
+    console.error('generateWithAI error:',e);
+    status.style.display='none';
+    notify('Error al generar: '+e.message,'error');
+  }finally{
+    btn.disabled=false;btn.textContent='🤖 Generar con IA';
+  }
+}
 // ============ CAMPOS POR ESTRUCTURA ============
 const CAMPOS_POR_ESTRUCTURA={
   clasica:  [{key:'gancho',label:'🎣 Gancho'},{key:'dolor',label:'😣 Dolor'},{key:'ejemplo',label:'📍 Ejemplo cotidiano'},{key:'fondo',label:'⬇️ Fondo de pozo'},{key:'cima',label:'⬆️ Cima'},{key:'insight',label:'💡 Insight'},{key:'cta',label:'📣 CTA'}],
