@@ -793,7 +793,11 @@ label{font-size:12px;color:var(--text2);display:block;margin-bottom:5px;margin-t
           <option value="60">💡 60 segundos</option>
           <option value="90">🔥 90 segundos</option>
         </select>
-        <button class="btn btn-electric mt12" onclick="buildModelPrompt()">🔍 Detectar estructura y adaptar ↗</button>
+        <div class="flex gap8 mt12" style="flex-wrap:wrap">
+          <button class="btn btn-electric" onclick="modelarWithAI()" id="btn-mod-ai">🤖 Detectar y generar con IA</button>
+          <button class="btn btn-ghost" onclick="buildModelPrompt()" style="font-size:12px">🔍 Ver prompt</button>
+        </div>
+        <div id="mod-ai-status" style="display:none;margin-top:10px;font-size:12px;color:var(--indigo-light);font-weight:600"></div>
         <div class="prompt-box" id="mod-prompt-box" style="display:none"><p class="small" style="color:var(--indigo-light);margin-bottom:8px;font-weight:600">Copia y pega en Claude:</p><pre id="mod-prompt-text"></pre><button class="copy-btn" onclick="copyPrompt('mod-prompt-text',this)">Copiar prompt</button></div>
         <div class="import-box" id="mod-import-box" style="display:none"><p class="small" style="color:#34d399;margin-bottom:8px;font-weight:600">Pega la respuesta (JSON):</p><textarea id="mod-import-text" rows="4" placeholder='{"scripts":[]}'></textarea><button class="btn btn-primary btn-sm mt8" onclick="importModels()">Importar</button></div>
         <div id="mod-results"></div>
@@ -818,7 +822,11 @@ label{font-size:12px;color:var(--text2);display:block;margin-bottom:5px;margin-t
           <option value="60">💡 60 segundos</option>
           <option value="90">🔥 90 segundos</option>
         </select>
-        <button class="btn btn-electric mt12" onclick="buildCombinePrompt()">🧬 Fusionar con IA ↗</button>
+        <div class="flex gap8 mt12" style="flex-wrap:wrap">
+          <button class="btn btn-electric" onclick="combinarWithAI()" id="btn-comb-ai">🤖 Fusionar con IA</button>
+          <button class="btn btn-ghost" onclick="buildCombinePrompt()" style="font-size:12px">🧬 Ver prompt</button>
+        </div>
+        <div id="comb-ai-status" style="display:none;margin-top:10px;font-size:12px;color:var(--indigo-light);font-weight:600"></div>
         <div class="prompt-box" id="comb-prompt-box" style="display:none"><p class="small" style="color:var(--indigo-light);margin-bottom:8px;font-weight:600">Copia y pega en Claude:</p><pre id="comb-prompt-text"></pre><button class="copy-btn" onclick="copyPrompt('comb-prompt-text',this)">Copiar prompt</button></div>
         <div class="import-box" id="comb-import-box" style="display:none"><p class="small" style="color:#34d399;margin-bottom:8px;font-weight:600">Pega la respuesta (JSON):</p><textarea id="comb-import-text" rows="4" placeholder='{"scripts":[]}'></textarea><button class="btn btn-primary btn-sm mt8" onclick="importCombinedScripts()">Importar</button></div>
         <div id="comb-results"></div>
@@ -2258,6 +2266,75 @@ async function generateWithAI(){
     btn.disabled=false;btn.textContent='🤖 Generar con IA';
   }
 }
+
+// ============ MODELAR CON IA ============
+async function modelarWithAI(){
+  const text=v('mod-text');if(!text.trim()){notify('Pega la transcripción primero','warn');return;}
+  const t=getModTopic();if(!t||!t.trim()){notify('Elige o escribe un tema','warn');return;}
+  const author=v('mod-author');
+  const qty=v('mod-qty')||'2';
+  const dur=v('mod-dur')||'30';
+  const systemPrompt='Eres un experto en ingeniería inversa de contenido viral.'+buildVozCtx()+buildKnowCtx();
+  const userPrompt='TAREA 1 — DISECCIÓN VIRAL\nReel'+(author?' de @'+author:'')+': "'+text+'"\n\nExtrae con precisión:\n- FRAMEWORK: nombre exacto (PAS, BAB, PASTOR, Secret Value, Curiosity Peak, AIDA, 5Cs, otro)\n- GANCHO: qué triggers activa y cómo\n- RE-ENGANCHES: dónde y cómo resetea la atención\n- CTA: a qué señal apunta\n- RAZÓN VIRAL: por qué psicológicamente funciona\n\nTAREA 2 — REPLICAR CON VOZ DE GUILLERMO\n'+qty+' scripts con el mismo framework, los mismos triggers y la misma ingeniería de retención.\nTema: "'+t+'" — cada script con ángulo distinto.\nDURACIÓN OBJETIVO: '+dur+' segundos cada uno.\n'+VIRAL_RULES+'\n\nIMPORTANTE: Responde SOLO con el JSON. Sin texto antes ni después. Sin backticks.\n\n{"framework_detectado":{"nombre":"","gancho_triggers":[],"reenganches":[],"cta_signal":"","razon_viral":""},"scripts":[{"titulo":"","framework":"","gancho":"","cuerpo_parte1":"","reenganche_1":"","cuerpo_parte2":"","reenganche_2":"","cierre_insight":"","cta":"","triggers_activados":[],"duracion_seg":"'+dur+'"}]}';
+  const btn=document.getElementById('btn-mod-ai');
+  const status=document.getElementById('mod-ai-status');
+  btn.disabled=true;btn.textContent='⏳ Analizando...';
+  status.style.display='block';status.textContent='Detectando framework y generando scripts...';
+  try{
+    const res=await fetch(GROQ_WORKER,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'llama-3.3-70b-versatile',max_tokens:4000,messages:[{role:'system',content:systemPrompt},{role:'user',content:userPrompt}]})});
+    if(!res.ok){const err=await res.text();throw new Error('Worker error '+res.status+': '+err);}
+    const data=await res.json();
+    const raw=data.choices[0].message.content.trim();
+    status.textContent='Procesando respuesta...';
+    document.getElementById('mod-import-text').value=raw;
+    importModels();
+    status.style.display='none';
+    notify('Modelado con IA completado ✓','success');
+  }catch(e){
+    console.error('modelarWithAI error:',e);
+    status.style.display='none';
+    notify('Error: '+e.message,'error');
+  }finally{
+    btn.disabled=false;btn.textContent='🤖 Detectar y generar con IA';
+  }
+}
+
+// ============ COMBINAR CON IA ============
+async function combinarWithAI(){
+  const filled=slots.map((s,i)=>({script:s,parts:slotParts[i]})).filter(s=>s.script);
+  if(filled.length<2){notify('Selecciona al menos 2 scripts','warn');return;}
+  const t=v('comb-topic-input');if(!t||!t.trim()){notify('Escribe el tema del script fusionado','warn');return;}
+  const dur=v('comb-dur')||'30';
+  let details='';
+  filled.forEach((slot,i)=>{
+    details+='\nSCRIPT '+(i+1)+' — "'+slot.script.titulo+'"\n';
+    ['gancho','cuerpo_parte1','reenganche_1','cuerpo_parte2','reenganche_2','cierre_insight','dolor','ejemplo','fondo','cima','insight','cta'].forEach(p=>{if(slot.script[p])details+=p+': '+slot.script[p]+'\n';});
+  });
+  const systemPrompt='Eres el mejor editor de scripts virales del mundo hispanohablante.'+buildVozCtx()+buildKnowCtx();
+  const userPrompt='TAREA: Extrae lo mejor de cada script y crea UN script nuevo, superior a todos.\nMejor gancho + mejor re-enganche + mejor cierre. Algo que ninguno tiene por separado.\nTema: "'+t+'"\nDURACIÓN OBJETIVO: '+dur+' segundos. Calibra palabras y beats a ese tiempo exacto.\n'+details+'\n'+VIRAL_RULES+'\n\nIMPORTANTE: Responde SOLO con el JSON. Sin texto antes ni después. Sin backticks.\n\n{"scripts":[{"titulo":"","gancho":"","cuerpo_parte1":"","reenganche_1":"","cuerpo_parte2":"","reenganche_2":"","cierre_insight":"","cta":"","triggers_activados":[],"duracion_seg":"'+dur+'","nota_fusion":""}]}';
+  const btn=document.getElementById('btn-comb-ai');
+  const status=document.getElementById('comb-ai-status');
+  btn.disabled=true;btn.textContent='⏳ Fusionando...';
+  status.style.display='block';status.textContent='Combinando lo mejor de cada script...';
+  try{
+    const res=await fetch(GROQ_WORKER,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'llama-3.3-70b-versatile',max_tokens:4000,messages:[{role:'system',content:systemPrompt},{role:'user',content:userPrompt}]})});
+    if(!res.ok){const err=await res.text();throw new Error('Worker error '+res.status+': '+err);}
+    const data=await res.json();
+    const raw=data.choices[0].message.content.trim();
+    status.textContent='Procesando fusión...';
+    document.getElementById('comb-import-text').value=raw;
+    importCombinedScripts();
+    status.style.display='none';
+    notify('Scripts fusionados con IA ✓','success');
+  }catch(e){
+    console.error('combinarWithAI error:',e);
+    status.style.display='none';
+    notify('Error: '+e.message,'error');
+  }finally{
+    btn.disabled=false;btn.textContent='🤖 Fusionar con IA';
+  }
+}
+
 // ============ CAMPOS POR ESTRUCTURA ============
 const CAMPOS_POR_ESTRUCTURA={
   clasica:  [{key:'gancho',label:'🎣 Gancho'},{key:'dolor',label:'😣 Dolor'},{key:'ejemplo',label:'📍 Ejemplo cotidiano'},{key:'fondo',label:'⬇️ Fondo de pozo'},{key:'cima',label:'⬆️ Cima'},{key:'insight',label:'💡 Insight'},{key:'cta',label:'📣 CTA'}],
