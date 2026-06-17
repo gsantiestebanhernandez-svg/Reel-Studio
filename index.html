@@ -2253,7 +2253,42 @@ async function generateWithAI(){
     '5cs':'contexto, conflicto, climax, conclusion, cta'
   };
   const fields=fieldsMap[structure]||fieldsMap.clasica;
-  const userPrompt='Crea '+qty+' scripts DISTINTOS y COMPLETOS sobre: "'+t+'"\n\nEstructura a usar: '+structure+' ('+structInstr+')\nEstilo: '+style+'\nDuración: '+dur+' segundos\n\nREGLAS:\n- Cada script con gancho diferente, ángulo diferente\n- Escribe el texto COMPLETO de cada parte, listo para grabar\n- NO dejes campos vacíos\n- Sin intro ni explicaciones\n\n'+VIRAL_RULES+'\n\nResponde SOLO con este JSON (sin backticks, sin texto extra):\n{"scripts":[{"titulo":"Título real del script","estilo":"'+style+'","estructura":"'+structure+'",'+fields.split(', ').map(f=>'"'+f+'":"texto real de '+f+' aquí"').join(',')+',"triggers_activados":["trigger1","trigger2"],"duracion_seg":"'+dur+'"}]}';
+  const FIELD_EXAMPLES={
+    gancho:'¿Sabes por qué sigues atrayendo exactamente a las personas que te hacen daño?',
+    dolor:'Cada vez que intentas cambiar algo, terminas exactamente en el mismo punto.',
+    ejemplo:'Tu jefe te grita, llegas a casa y discutes con tu pareja. Mismo patrón, diferente escenario.',
+    fondo:'Toqué fondo cuando entendí que yo era el denominador común de todos mis conflictos.',
+    cima:'Hoy puedo ver el patrón desde afuera y elegir diferente. Eso lo cambia todo.',
+    insight:'Lo que más te molesta de los demás es lo que más niegas de ti mismo.',
+    cta:'Comenta ESPEJO si esto te resonó y te explico el siguiente paso.',
+    agitar:'Y lo seguirás repitiendo hasta que lo veas. Año tras año. Relación tras relación.',
+    solucion:'La solución no está en cambiar a los demás. Está en integrar lo que niegas de ti.',
+    antes:'Antes culpaba a todo el mundo de lo que me pasaba. Cambié tres trabajos, dos ciudades.',
+    despues:'Hoy asumo responsabilidad total y mis relaciones son completamente distintas.',
+    puente:'El puente entre esos dos mundos fue una sola pregunta: ¿qué dice esto de mí?',
+    problema:'El problema no es lo que te pasa. Es lo que no quieres ver de ti mismo en lo que te pasa.',
+    amplificar:'Cada vez que lo evitas, lo refuerzas. Y el patrón se vuelve más pesado.',
+    historia:'Una clienta mía repitió el mismo conflicto con cuatro parejas distintas. El patrón era uno solo: ella.',
+    transformacion:'Cuando integró su sombra, sus relaciones cambiaron sin esfuerzo externo.',
+    gancho_secreto:'Hay algo que nadie te dice sobre por qué repites los mismos patrones una y otra vez.',
+    revelacion:'Tu inconsciente está eligiendo por ti. Y lo seguirá haciendo hasta que lo traigas a la luz.',
+    aplicacion:'Observa tu próxima reacción exagerada. Ahí está exactamente lo que tienes que sanar.',
+    pregunta:'¿Por qué atraes siempre al mismo tipo de persona aunque cambies de ciudad, de trabajo, de pareja?',
+    lee_la_mente:'Probablemente crees que es mala suerte. O que los demás son el problema.',
+    giro:'Pero la bioneuroemoción lo explica diferente: tu cerebro repite lo conocido aunque te lastime.',
+    atencion:'Llevas años repitiendo el mismo patrón y no sabes por qué. Esto lo explica todo.',
+    interes:'No es falta de voluntad ni mala suerte. Es programación inconsciente que puedes cambiar.',
+    deseo:'Imagina poder ver el patrón desde afuera, entender de dónde viene y elegir distinto.',
+    accion:'Comenta PATRÓN y te cuento el primer paso concreto.',
+    contexto:'En bioneuroemoción existe un concepto que lo explica todo: la proyección de la sombra.',
+    conflicto:'El problema es que nadie nos enseña a verla en nosotros mismos. Solo la vemos en los demás.',
+    climax:'Hasta que el dolor se vuelve tan grande que no queda otra opción que mirar hacia adentro.',
+    conclusion:'Tu mundo exterior es siempre un reflejo exacto de tu mundo interior. Sin excepciones.',
+    oferta:'Si quieres entender qué patrón estás repitiendo, escríbeme SESIÓN.',
+    contexto_secret:'Llevamos años creyendo que el problema está afuera.',
+  };
+  const exFields=fields.split(', ').map(f=>'"'+f+'":"'+(FIELD_EXAMPLES[f]||'contenido del '+f)+'\"').join(',');
+  const userPrompt='Crea '+qty+' scripts DISTINTOS y COMPLETOS sobre: "'+t+'"\n\nEstructura: '+structure+'\nEstilo de voz: '+style+'\nDuración objetivo: '+dur+' segundos\n\nREGLAS ABSOLUTAS:\n1. Texto COMPLETO de cada parte — listo para grabar sin editar\n2. Cada script con ángulo completamente distinto del tema\n3. Longitud de cada campo calibrada para sumar aprox '+dur+' segundos al hablar\n4. NUNCA copies los textos de ejemplo del JSON — son solo referencia de formato\n5. NO escribas placeholders, instrucciones ni meta-texto dentro del JSON\n\n'+VIRAL_RULES+'\n\nResponde SOLO con este JSON (sin backticks, sin texto extra):\n{"scripts":[{"titulo":"título creativo real","estilo":"'+style+'","estructura":"'+structure+'",'+exFields+',"triggers_activados":["OPEN LOOP","PATTERN INTERRUPT"],"duracion_seg":"'+dur+'"}]}';
   const systemPrompt='Eres el mejor generador de scripts virales para reels del mundo hispanohablante. Especialidad: consciencia, psicología y transformación personal.'+buildVozCtx()+buildKnowCtx()+'\n'+VIRAL_RULES+'\n\n'+structInstr+'\n\n'+styleTone+'\n\nDURACIÓN OBJETIVO: '+dur+' segundos. Calibra la cantidad de palabras y beats a ese tiempo exacto.';
   const btn=document.getElementById('btn-gen-ai');
   const status=document.getElementById('gen-ai-status');
@@ -2512,7 +2547,7 @@ Tema: "${t}" — cada script con ángulo distinto.
 DURACIÓN OBJETIVO: ${dur} segundos cada uno. Calibra palabras y beats a ese tiempo.
 ${VIRAL_RULES}
 
-{"framework_detectado":{"nombre":"","gancho_triggers":[],"reenganches":[],"cta_signal":"","razon_viral":""},"scripts":[{"titulo":"","framework":"","gancho":"","cuerpo_parte1":"","reenganche_1":"","cuerpo_parte2":"","reenganche_2":"","cierre_insight":"","cta":"","triggers_activados":[],"duracion_seg":"${dur}"}]}`;
+IMPORTANTE: Responde SOLO con JSON. Sin backticks. Sin texto extra. Escribe el contenido REAL en cada campo del script — texto listo para grabar.\n\n{"framework_detectado":{"nombre":"PAS","gancho_triggers":["OPEN LOOP","PATTERN INTERRUPT"],"reenganches":["segundo 8: pregunta retórica"],"cta_signal":"comentarios","razon_viral":"toca dolor universal y ofrece alivio cognitivo"},"scripts":[{"titulo":"título real del script","estructura":"framework detectado","gancho":"texto completo del gancho","cuerpo_parte1":"desarrollo completo parte 1","reenganche_1":"texto del reenganche","cuerpo_parte2":"desarrollo parte 2","cierre_insight":"insight final poderoso","cta":"llamada a acción concreta","triggers_activados":["OPEN LOOP"],"duracion_seg":"${dur}"}]}`;
   document.getElementById('mod-prompt-text').textContent=prompt;
   document.getElementById('mod-prompt-box').style.display='block';
   document.getElementById('mod-import-box').style.display='block';
@@ -2538,7 +2573,7 @@ DURACIÓN OBJETIVO: ${dur} segundos. Calibra palabras y beats a ese tiempo exact
 ${details}
 ${VIRAL_RULES}
 
-{"scripts":[{"titulo":"","gancho":"","cuerpo_parte1":"","reenganche_1":"","cuerpo_parte2":"","reenganche_2":"","cierre_insight":"","cta":"","triggers_activados":[],"duracion_seg":"${dur}","nota_fusion":""}]}`;
+IMPORTANTE: Responde SOLO con JSON. Sin backticks. Sin texto extra. Escribe el contenido REAL en cada campo — texto listo para grabar.\n\n{"scripts":[{"titulo":"título real del script fusionado","gancho":"texto completo del gancho","cuerpo_parte1":"desarrollo parte 1","reenganche_1":"texto del reenganche","cuerpo_parte2":"desarrollo parte 2","reenganche_2":"segundo reenganche","cierre_insight":"insight final","cta":"llamada a acción concreta","triggers_activados":["OPEN LOOP","FOMO"],"duracion_seg":"${dur}","nota_fusion":"por qué este script es superior a los anteriores"}]}`;
   document.getElementById('comb-prompt-text').textContent=prompt;
   document.getElementById('comb-prompt-box').style.display='block';
   document.getElementById('comb-import-box').style.display='block';
@@ -2547,30 +2582,38 @@ ${VIRAL_RULES}
 function copyPrompt(id,btn){navigator.clipboard.writeText(document.getElementById(id).textContent).then(()=>{btn.textContent='Copiado!';setTimeout(()=>btn.textContent='Copiar prompt',2000);});}
 
 async function importModels(){
-  try{const data=JSON.parse(v('mod-import-text').replace(/```json|```/g,''));
+  try{
+    const raw=v('mod-import-text').replace(/^```(?:json)?\s*/i,'').replace(/\s*```$/,'').trim();
+    const data=JSON.parse(raw);
     const author=v('mod-author');
     const t=getModTopic();
     const cont=document.getElementById('mod-results');cont.innerHTML='';
-    if(data.framework_detectado){
-      const fw=data.framework_detectado;
+    // Renderizar análisis del framework — acepta cualquier combinación de campos
+    const fw=data.framework_detectado||data.analisis;
+    if(fw){
       const d=document.createElement('div');d.className='card card-muted';
-      d.innerHTML=`<p style="font-weight:600;font-size:13px;margin-bottom:8px">🔍 Framework detectado: <span style="color:var(--indigo-light)">${fw.nombre||'—'}</span></p>`
-        +(fw.estructura_beats?.length?`<div class="mt8"><span class="section-label">Estructura por beats</span><div class="mt4">${fw.estructura_beats.map((b,i)=>`<div style="font-size:12px;color:var(--text2);padding:3px 0">${i+1}. ${b}</div>`).join('')}</div></div>`:'')
-        +(fw.tecnicas_virales?.length?`<div class="mt8"><span class="section-label">Técnicas virales</span><div class="flex gap4 mt4" style="flex-wrap:wrap">${fw.tecnicas_virales.map(tv=>`<span class="badge badge-indigo">${tv}</span>`).join('')}</div></div>`:'')
-        +(fw.por_que_funciona?`<div class="card card-muted mt8" style="padding:10px"><span class="section-label">Por qué funciona</span><p class="small mt4" style="line-height:1.5">${fw.por_que_funciona}</p></div>`:'');
+      let html=`<p style="font-weight:600;font-size:13px;margin-bottom:8px">🔍 Framework detectado: <span style="color:var(--indigo-light)">${fw.nombre||'—'}</span></p>`;
+      // Triggers/técnicas — acepta gancho_triggers O tecnicas_virales
+      const triggers=[...(fw.gancho_triggers||[]),(fw.tecnicas_virales||[])].flat().filter(Boolean);
+      if(triggers.length) html+=`<div class="mt8"><span class="section-label">Triggers detectados</span><div class="flex gap4 mt4" style="flex-wrap:wrap">${triggers.map(t=>`<span class="badge badge-indigo">${t}</span>`).join('')}</div></div>`;
+      // Reenganches — acepta reenganches O estructura_beats
+      const beats=[...(fw.reenganches||[]),(fw.estructura_beats||[])].flat().filter(Boolean);
+      if(beats.length) html+=`<div class="mt8"><span class="section-label">Re-enganches</span><div class="mt4">${beats.map((b,i)=>`<div style="font-size:12px;color:var(--text2);padding:3px 0">${i+1}. ${b}</div>`).join('')}</div></div>`;
+      // CTA signal
+      if(fw.cta_signal) html+=`<div class="mt8"><span class="section-label">Señal CTA</span><p class="small mt4">${fw.cta_signal}</p></div>`;
+      // Razón viral — acepta razon_viral O por_que_funciona
+      const razon=fw.razon_viral||fw.por_que_funciona;
+      if(razon) html+=`<div class="card card-muted mt8" style="padding:10px"><span class="section-label">Por qué funciona</span><p class="small mt4" style="line-height:1.5">${razon}</p></div>`;
+      d.innerHTML=html;
       cont.appendChild(d);
       const badge=document.getElementById('mod-framework-badge');
-      if(badge&&fw.nombre){badge.style.display='block';document.getElementById('mod-fw-name').textContent=fw.nombre;document.getElementById('mod-fw-desc').textContent=fw.por_que_funciona||'';}
-    }
-    if(data.analisis&&!data.framework_detectado){
-      const a=data.analisis;const d=document.createElement('div');d.className='card card-muted';
-      d.innerHTML=`<p style="font-weight:600;font-size:13px;margin-bottom:8px">ADN narrativo detectado</p>`+bBlock('Gancho',a.gancho)+bBlock('Dolor',a.dolor)+bBlock('Ejemplo',a.ejemplo)+bBlock('Fondo',a.fondo)+bBlock('Cima',a.cima)+bBlock('Insight',a.insight)+bBlock('CTA',a.cta)+(a.tecnicas_virales?.length?`<div class="mt8"><span class="section-label">Técnicas virales</span><div class="mt4">${a.tecnicas_virales.map(tv=>`<span class="badge badge-indigo">${tv}</span>`).join('')}</div></div>`:'')+(a.por_que_funciona?`<div class="card card-muted mt8" style="padding:10px"><span class="section-label">Por qué funciona</span><p class="small mt4" style="line-height:1.5">${a.por_que_funciona}</p></div>`:'');
-      cont.appendChild(d);
+      if(badge&&fw.nombre){badge.style.display='block';document.getElementById('mod-fw-name').textContent=fw.nombre;document.getElementById('mod-fw-desc').textContent=razon||'';}
     }
     const fuente=author?`Modelado de: @${author}`:'Modelado';
     const scripts=data.scripts||[];
     window._modScripts=scripts.map(s=>({...s,tema:t}));
     scripts.forEach((s,i)=>cont.appendChild(buildScriptCard(s,t,fuente,i,'_modScripts')));
+    if(!scripts.length&&!fw) notify('No se encontró contenido en el JSON','warn');
   }catch(e){console.error(e);notify('Formato inválido. Pega el JSON completo.','error');}
 }
 
