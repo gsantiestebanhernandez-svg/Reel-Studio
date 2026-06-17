@@ -2297,8 +2297,16 @@ async function generateWithAI(){
   try{
     const res=await fetch(GROQ_WORKER,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'llama-3.3-70b-versatile',max_tokens:4000,messages:[{role:'system',content:systemPrompt},{role:'user',content:userPrompt}]})});
     if(!res.ok){const err=await res.text();throw new Error('Worker error '+res.status+': '+err);}
-    const data=await res.json();
-    const raw=data.choices[0].message.content.trim();
+    const text=await res.text();
+    let raw='';
+    try{
+      const data=JSON.parse(text);
+      raw=data.choices[0].message.content.trim();
+    }catch(parseErr){
+      status.style.display='none';
+      notify('Respuesta inválida del Worker: '+text.slice(0,120),'error');
+      return;
+    }
     status.textContent='Procesando respuesta...';
     document.getElementById('gen-import-text').value=raw;
     importScripts();
@@ -2306,8 +2314,9 @@ async function generateWithAI(){
     notify('Scripts generados con IA ✓','success');
   }catch(e){
     console.error('generateWithAI error:',e);
-    status.style.display='none';
-    notify('Error al generar: '+e.message,'error');
+    status.textContent='❌ '+e.message;
+    setTimeout(()=>status.style.display='none',6000);
+    notify('Error: '+e.message,'error');
   }finally{
     btn.disabled=false;btn.textContent='🤖 Generar con IA';
   }
@@ -2329,8 +2338,16 @@ async function modelarWithAI(){
   try{
     const res=await fetch(GROQ_WORKER,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'llama-3.3-70b-versatile',max_tokens:4000,messages:[{role:'system',content:systemPrompt},{role:'user',content:userPrompt}]})});
     if(!res.ok){const err=await res.text();throw new Error('Worker error '+res.status+': '+err);}
-    const data=await res.json();
-    const raw=data.choices[0].message.content.trim();
+    const text2=await res.text();
+    let raw='';
+    try{
+      const data=JSON.parse(text2);
+      raw=data.choices[0].message.content.trim();
+    }catch(parseErr){
+      status.style.display='none';
+      notify('Respuesta inválida del Worker: '+text2.slice(0,120),'error');
+      return;
+    }
     status.textContent='Procesando respuesta...';
     document.getElementById('mod-import-text').value=raw;
     importModels();
@@ -2338,7 +2355,8 @@ async function modelarWithAI(){
     notify('Modelado con IA completado ✓','success');
   }catch(e){
     console.error('modelarWithAI error:',e);
-    status.style.display='none';
+    status.textContent='❌ '+e.message;
+    setTimeout(()=>status.style.display='none',6000);
     notify('Error: '+e.message,'error');
   }finally{
     btn.disabled=false;btn.textContent='🤖 Detectar y generar con IA';
@@ -2365,8 +2383,16 @@ async function combinarWithAI(){
   try{
     const res=await fetch(GROQ_WORKER,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'llama-3.3-70b-versatile',max_tokens:4000,messages:[{role:'system',content:systemPrompt},{role:'user',content:userPrompt}]})});
     if(!res.ok){const err=await res.text();throw new Error('Worker error '+res.status+': '+err);}
-    const data=await res.json();
-    const raw=data.choices[0].message.content.trim();
+    const text3=await res.text();
+    let raw='';
+    try{
+      const data=JSON.parse(text3);
+      raw=data.choices[0].message.content.trim();
+    }catch(parseErr){
+      status.style.display='none';
+      notify('Respuesta inválida del Worker: '+text3.slice(0,120),'error');
+      return;
+    }
     status.textContent='Procesando fusión...';
     document.getElementById('comb-import-text').value=raw;
     importCombinedScripts();
@@ -2374,7 +2400,8 @@ async function combinarWithAI(){
     notify('Scripts fusionados con IA ✓','success');
   }catch(e){
     console.error('combinarWithAI error:',e);
-    status.style.display='none';
+    status.textContent='❌ '+e.message;
+    setTimeout(()=>status.style.display='none',6000);
     notify('Error: '+e.message,'error');
   }finally{
     btn.disabled=false;btn.textContent='🤖 Fusionar con IA';
