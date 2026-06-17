@@ -2231,6 +2231,37 @@ ${jsonTemplate.replace('"scripts":[{','\"scripts\":[{').replace(/\}]\}$/,'},{...
 
 // ============ GENERAR CON IA (GROQ via Worker) ============
 const GROQ_WORKER='https://anthropic-proxy.gsantiestebanhernandez.workers.dev';
+const GROQ_MODELS=['llama3-70b-8192','llama-3.1-8b-instant','gemma2-9b-it','mistral-saba-24b','llama3-8b-8192'];
+
+async function groqFetch(messages,statusEl){
+  for(let i=0;i<GROQ_MODELS.length;i++){
+    const model=GROQ_MODELS[i];
+    if(statusEl) statusEl.textContent='Conectando con IA ('+model+')...';
+    try{
+      const res=await fetch(GROQ_WORKER,{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({model,max_tokens:4000,messages})});
+      const text=await res.text();
+      const data=JSON.parse(text);
+      if(data.error){
+        const msg=data.error.message||'';
+        if(msg.includes('Rate limit')||msg.includes('rate_limit')){
+          console.warn('Rate limit en '+model+', probando siguiente...');
+          continue;
+        }
+        throw new Error(data.error.message||JSON.stringify(data.error));
+      }
+      if(!data.choices||!data.choices[0]) throw new Error('Sin respuesta: '+text.slice(0,100));
+      return data.choices[0].message.content.trim();
+    }catch(e){
+      if(e.message.includes('Rate limit')||e.message.includes('rate_limit')){
+        console.warn('Rate limit en '+model+', probando siguiente...');
+        continue;
+      }
+      throw e;
+    }
+  }
+  throw new Error('Todos los modelos están con rate limit. Espera unos minutos e intenta de nuevo.');
+}
 
 async function generateWithAI(){
   const t=getGenTopic();
@@ -2295,19 +2326,7 @@ async function generateWithAI(){
   btn.disabled=true;btn.textContent='⏳ Generando...';
   status.style.display='block';status.textContent='Conectando con IA...';
   try{
-    const res=await fetch(GROQ_WORKER,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'llama3-70b-8192',max_tokens:4000,messages:[{role:'system',content:systemPrompt},{role:'user',content:userPrompt}]})});
-    if(!res.ok){const err=await res.text();throw new Error('Worker error '+res.status+': '+err);}
-    const text=await res.text();
-    let raw='';
-    try{
-      const data=JSON.parse(text);
-      if(!data.choices||!data.choices[0]){status.style.display='none';notify('Worker error: '+JSON.stringify(data).slice(0,200),'error');return;}
-      raw=data.choices[0].message.content.trim();
-    }catch(parseErr){
-      status.style.display='none';
-      notify('Respuesta inválida del Worker: '+text.slice(0,120),'error');
-      return;
-    }
+    const raw=await groqFetch([{role:'system',content:systemPrompt},{role:'user',content:userPrompt}],status);
     status.textContent='Procesando respuesta...';
     document.getElementById('gen-import-text').value=raw;
     importScripts();
@@ -2337,19 +2356,7 @@ async function modelarWithAI(){
   btn.disabled=true;btn.textContent='⏳ Analizando...';
   status.style.display='block';status.textContent='Detectando framework y generando scripts...';
   try{
-    const res=await fetch(GROQ_WORKER,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'llama3-70b-8192',max_tokens:4000,messages:[{role:'system',content:systemPrompt},{role:'user',content:userPrompt}]})});
-    if(!res.ok){const err=await res.text();throw new Error('Worker error '+res.status+': '+err);}
-    const text2=await res.text();
-    let raw='';
-    try{
-      const data=JSON.parse(text2);
-      if(!data.choices||!data.choices[0]){status.style.display='none';notify('Worker error: '+JSON.stringify(data).slice(0,200),'error');return;}
-      raw=data.choices[0].message.content.trim();
-    }catch(parseErr){
-      status.style.display='none';
-      notify('Respuesta inválida del Worker: '+text2.slice(0,120),'error');
-      return;
-    }
+    const raw=await groqFetch([{role:'system',content:systemPrompt},{role:'user',content:userPrompt}],status);
     status.textContent='Procesando respuesta...';
     document.getElementById('mod-import-text').value=raw;
     importModels();
@@ -2383,19 +2390,7 @@ async function combinarWithAI(){
   btn.disabled=true;btn.textContent='⏳ Fusionando...';
   status.style.display='block';status.textContent='Combinando lo mejor de cada script...';
   try{
-    const res=await fetch(GROQ_WORKER,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'llama3-70b-8192',max_tokens:4000,messages:[{role:'system',content:systemPrompt},{role:'user',content:userPrompt}]})});
-    if(!res.ok){const err=await res.text();throw new Error('Worker error '+res.status+': '+err);}
-    const text3=await res.text();
-    let raw='';
-    try{
-      const data=JSON.parse(text3);
-      if(!data.choices||!data.choices[0]){status.style.display='none';notify('Worker error: '+JSON.stringify(data).slice(0,200),'error');return;}
-      raw=data.choices[0].message.content.trim();
-    }catch(parseErr){
-      status.style.display='none';
-      notify('Respuesta inválida del Worker: '+text3.slice(0,120),'error');
-      return;
-    }
+    const raw=await groqFetch([{role:'system',content:systemPrompt},{role:'user',content:userPrompt}],status);
     status.textContent='Procesando fusión...';
     document.getElementById('comb-import-text').value=raw;
     importCombinedScripts();
