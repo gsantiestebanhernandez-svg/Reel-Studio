@@ -2238,7 +2238,7 @@ async function groqFetch(messages,statusEl){
     const res=await fetch(GROQ_WORKER,{
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({max_tokens:4000,temperature:0.85,messages})
+      body:JSON.stringify({max_tokens:8000,temperature:0.85,messages})
     });
     const text=await res.text();
     let data;
