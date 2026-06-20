@@ -2319,8 +2319,31 @@ async function generateWithAI(){
     contexto_secret:'Llevamos años creyendo que el problema está afuera.',
   };
   const exFields=fields.split(', ').map(f=>'"'+f+'":"'+(FIELD_EXAMPLES[f]||'contenido del '+f)+'\"').join(',');
-  const userPrompt='Crea '+qty+' scripts DISTINTOS y COMPLETOS sobre: "'+t+'"\n\nEstructura: '+structure+'\nEstilo de voz: '+style+'\nDuración objetivo: '+dur+' segundos\n\nREGLAS ABSOLUTAS:\n1. Texto COMPLETO de cada parte — listo para grabar sin editar\n2. Cada script con ángulo completamente distinto del tema\n3. Longitud de cada campo calibrada para sumar aprox '+dur+' segundos al hablar\n4. NUNCA copies los textos de ejemplo del JSON — son solo referencia de formato\n5. NO escribas placeholders, instrucciones ni meta-texto dentro del JSON\n\n'+VIRAL_RULES+'\n\nResponde SOLO con este JSON (sin backticks, sin texto extra):\n{"scripts":[{"titulo":"título creativo real","estilo":"'+style+'","estructura":"'+structure+'",'+exFields+',"triggers_activados":["OPEN LOOP","PATTERN INTERRUPT"],"duracion_seg":"'+dur+'"}]}';
-  const systemPrompt='Eres el mejor generador de scripts virales para reels del mundo hispanohablante. Especialidad: consciencia, psicología y transformación personal.'+buildVozCtx()+buildKnowCtx()+'\n'+VIRAL_RULES+'\n\n'+structInstr+'\n\n'+styleTone+'\n\nDURACIÓN OBJETIVO: '+dur+' segundos. Calibra la cantidad de palabras y beats a ese tiempo exacto.';
+  const userPrompt='Crea '+qty+' scripts DISTINTOS y COMPLETOS sobre: "'+t+'"\n\nEstructura: '+structure+'\nEstilo de voz: '+style+'\nDuración objetivo: '+dur+' segundos (aprox '+(parseInt(dur)*2.2).toFixed(0)+' palabras totales en el script)\n\n'+
+'VOZ DE GUILLERMO — REGLAS QUE NO SE NEGOCIAN:\n'+
+'✅ Frases cortas. Una idea por frase. Punto seguido, no coma.\n'+
+'✅ Primera persona. Anécdota real, detalle concreto, imagen clara.\n'+
+'✅ Ritmo pausado. El silencio es parte del guion.\n'+
+'✅ Sin entusiasmo forzado. Como pensar en voz alta.\n'+
+'✅ El espectador no conoce términos técnicos — habla como un amigo en un café.\n'+
+'\n❌ PALABRAS PROHIBIDAS — si aparece cualquiera, el script está MAL:\n'+
+'PROHIBIDO: patrón → usar: "lo que repites", "lo mismo de siempre"\n'+
+'PROHIBIDO: conciencia/consciencia → usar: "cuando lo ves", "cuando te das cuenta"\n'+
+'PROHIBIDO: sanar/sanación → ELIMINAR\n'+
+'PROHIBIDO: mereces/eres suficiente/el mundo te debe → ELIMINAR\n'+
+'PROHIBIDO: trauma → usar: "lo que viviste", "lo que te pasó de niño"\n'+
+'PROHIBIDO: sombra → usar: "lo que no quieres ver de ti"\n'+
+'PROHIBIDO: inconsciente → usar: "sin saberlo", "sin darte cuenta"\n'+
+'PROHIBIDO: bioneuroemoción/BNE → no mencionar en el script\n'+
+'PROHIBIDO: herencia/heredado/programación → usar: "lo que aprendiste de pequeño"\n'+
+'PROHIBIDO: rol → ELIMINAR\n'+
+'PROHIBIDO: lealtad familiar → usar: "lo que aprendiste en tu familia"\n'+
+'PROHIBIDO: saludos al inicio (Hola, Bienvenidos) → ELIMINAR\n'+
+'PROHIBIDO: frases motivacionales vacías (tú puedes, mereces lo mejor) → ELIMINAR\n'+
+'\nCALIBRACIÓN: '+dur+' segundos = aprox '+(parseInt(dur)*2.2).toFixed(0)+' palabras totales. Respeta esto. Si el reel dura 60 seg y el script tiene 200 palabras, está bien. Si tiene 400, está mal.\n'+
+'\nFORMATO: Cada campo del JSON es texto listo para grabar. Sin instrucciones. Sin placeholders. Sin meta-texto.\n\n'+
+VIRAL_RULES+'\n\nResponde SOLO con el JSON. Sin backticks. Sin texto antes ni después.\n{"scripts":[{"titulo":"título concreto y específico","estilo":"'+style+'","estructura":"'+structure+'",'+exFields+',"triggers_activados":["OPEN LOOP","PATTERN INTERRUPT"],"duracion_seg":"'+dur+'"}]}';
+  const systemPrompt='Eres el mejor generador de scripts virales para reels del mundo hispanohablante. Especialidad: consciencia, psicología y transformación personal.'+buildVozCtx()+buildKnowCtx()+'\n'+VIRAL_RULES+'\n\n'+structInstr+'\n\n'+styleTone+'\n\nDURACIÓN OBJETIVO: '+dur+' segundos. Calibra la cantidad de palabras y beats a ese tiempo exacto.\n\nCRÍTICO: El espectador no conoce la terminología de psicología ni bioneuroemoción. Usa el lenguaje cotidiano que usa una persona normal cuando describe sus problemas. "Lo que repito siempre", "sin entender por qué", "me di cuenta de que era yo". Eso es la voz de Guillermo. No hay palabras técnicas en sus scripts — solo experiencias concretas que la gente reconoce de inmediato.';
   const btn=document.getElementById('btn-gen-ai');
   const status=document.getElementById('gen-ai-status');
   btn.disabled=true;btn.textContent='⏳ Generando...';
