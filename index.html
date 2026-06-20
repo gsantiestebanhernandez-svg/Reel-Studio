@@ -2188,14 +2188,14 @@ JSON puro, sin backticks, sin texto antes o después.`;
 
 // JSON templates por estructura
 const STRUCT_JSON={
-  clasica: (style,dur)=>`{"scripts":[{"titulo":"","estilo":"${style}","estructura":"clasica","gancho":"","dolor":"","ejemplo":"","fondo":"","cima":"","insight":"","cta":"","triggers_activados":[],"duracion_seg":"${dur}"}]}`,
-  pas:     (style,dur)=>`{"scripts":[{"titulo":"","estilo":"${style}","estructura":"pas","gancho":"","agitar":"","solucion":"","cta":"","triggers_activados":[],"duracion_seg":"${dur}"}]}`,
-  bab:     (style,dur)=>`{"scripts":[{"titulo":"","estilo":"${style}","estructura":"bab","antes":"","puente":"","despues":"","cta":"","triggers_activados":[],"duracion_seg":"${dur}"}]}`,
-  pastor:  (style,dur)=>`{"scripts":[{"titulo":"","estilo":"${style}","estructura":"pastor","problema":"","amplificar":"","historia":"","transformacion":"","insight":"","cta":"","triggers_activados":[],"duracion_seg":"${dur}"}]}`,
-  secret:  (style,dur)=>`{"scripts":[{"titulo":"","estilo":"${style}","estructura":"secret","gancho_secreto":"","contexto":"","revelacion":"","aplicacion":"","cta":"","triggers_activados":[],"duracion_seg":"${dur}"}]}`,
-  curiosity:(style,dur)=>`{"scripts":[{"titulo":"","estilo":"${style}","estructura":"curiosity","pregunta":"","lee_la_mente":"","giro":"","insight":"","cta":"","triggers_activados":[],"duracion_seg":"${dur}"}]}`,
-  aida:    (style,dur)=>`{"scripts":[{"titulo":"","estilo":"${style}","estructura":"aida","atencion":"","interes":"","deseo":"","accion":"","triggers_activados":[],"duracion_seg":"${dur}"}]}`,
-  '5cs':   (style,dur)=>`{"scripts":[{"titulo":"","estilo":"${style}","estructura":"5cs","contexto":"","conflicto":"","climax":"","conclusion":"","cta":"","triggers_activados":[],"duracion_seg":"${dur}"}]}`,
+  clasica: (style,dur)=>`{"scripts":[{"titulo":"[ESCRIBE TÍTULO REAL]","estilo":"${style}","estructura":"clasica","gancho":"[TEXTO COMPLETO DEL GANCHO — listo para grabar]","dolor":"[TEXTO COMPLETO DEL DOLOR — listo para grabar]","ejemplo":"[TEXTO COMPLETO DEL EJEMPLO — listo para grabar]","fondo":"[TEXTO COMPLETO DEL FONDO DE POZO — listo para grabar]","cima":"[TEXTO COMPLETO DE LA CIMA — listo para grabar]","insight":"[TEXTO COMPLETO DEL INSIGHT — listo para grabar]","cta":"[TEXTO COMPLETO DEL CTA — listo para grabar]","triggers_activados":["OPEN LOOP","PATTERN INTERRUPT"],"duracion_seg":"${dur}"}]}`,
+  pas:     (style,dur)=>`{"scripts":[{"titulo":"[ESCRIBE TÍTULO REAL]","estilo":"${style}","estructura":"pas","gancho":"[TEXTO COMPLETO DEL GANCHO — listo para grabar]","agitar":"[TEXTO COMPLETO DE AGITAR — listo para grabar]","solucion":"[TEXTO COMPLETO DE LA SOLUCIÓN — listo para grabar]","cta":"[TEXTO COMPLETO DEL CTA — listo para grabar]","triggers_activados":["OPEN LOOP","PATTERN INTERRUPT"],"duracion_seg":"${dur}"}]}`,
+  bab:     (style,dur)=>`{"scripts":[{"titulo":"[ESCRIBE TÍTULO REAL]","estilo":"${style}","estructura":"bab","antes":"[TEXTO COMPLETO DEL ANTES — listo para grabar]","puente":"[TEXTO COMPLETO DEL PUENTE — listo para grabar]","despues":"[TEXTO COMPLETO DEL DESPUÉS — listo para grabar]","cta":"[TEXTO COMPLETO DEL CTA — listo para grabar]","triggers_activados":["OPEN LOOP","PATTERN INTERRUPT"],"duracion_seg":"${dur}"}]}`,
+  pastor:  (style,dur)=>`{"scripts":[{"titulo":"[ESCRIBE TÍTULO REAL]","estilo":"${style}","estructura":"pastor","problema":"[TEXTO COMPLETO DEL PROBLEMA — listo para grabar]","amplificar":"[TEXTO COMPLETO DE AMPLIFICAR — listo para grabar]","historia":"[TEXTO COMPLETO DE LA HISTORIA — listo para grabar]","transformacion":"[TEXTO COMPLETO DE LA TRANSFORMACIÓN — listo para grabar]","insight":"[TEXTO COMPLETO DEL INSIGHT — listo para grabar]","cta":"[TEXTO COMPLETO DEL CTA — listo para grabar]","triggers_activados":["OPEN LOOP","PATTERN INTERRUPT"],"duracion_seg":"${dur}"}]}`,
+  secret:  (style,dur)=>`{"scripts":[{"titulo":"[ESCRIBE TÍTULO REAL]","estilo":"${style}","estructura":"secret","gancho_secreto":"[TEXTO COMPLETO DEL GANCHO SECRETO — listo para grabar]","contexto":"[TEXTO COMPLETO DEL CONTEXTO — listo para grabar]","revelacion":"[TEXTO COMPLETO DE LA REVELACIÓN — listo para grabar]","aplicacion":"[TEXTO COMPLETO DE LA APLICACIÓN — listo para grabar]","cta":"[TEXTO COMPLETO DEL CTA — listo para grabar]","triggers_activados":["OPEN LOOP","PATTERN INTERRUPT"],"duracion_seg":"${dur}"}]}`,
+  curiosity:(style,dur)=>`{"scripts":[{"titulo":"[ESCRIBE TÍTULO REAL]","estilo":"${style}","estructura":"curiosity","pregunta":"[TEXTO COMPLETO DE LA PREGUNTA — listo para grabar]","lee_la_mente":"[TEXTO COMPLETO DE LEE LA MENTE — listo para grabar]","giro":"[TEXTO COMPLETO DEL GIRO — listo para grabar]","insight":"[TEXTO COMPLETO DEL INSIGHT — listo para grabar]","cta":"[TEXTO COMPLETO DEL CTA — listo para grabar]","triggers_activados":["OPEN LOOP","PATTERN INTERRUPT"],"duracion_seg":"${dur}"}]}`,
+  aida:    (style,dur)=>`{"scripts":[{"titulo":"[ESCRIBE TÍTULO REAL]","estilo":"${style}","estructura":"aida","atencion":"[TEXTO COMPLETO DE ATENCIÓN — listo para grabar]","interes":"[TEXTO COMPLETO DE INTERÉS — listo para grabar]","deseo":"[TEXTO COMPLETO DE DESEO — listo para grabar]","accion":"[TEXTO COMPLETO DE ACCIÓN/CTA — listo para grabar]","triggers_activados":["OPEN LOOP","PATTERN INTERRUPT"],"duracion_seg":"${dur}"}]}`,
+  '5cs':   (style,dur)=>`{"scripts":[{"titulo":"[ESCRIBE TÍTULO REAL]","estilo":"${style}","estructura":"5cs","contexto":"[TEXTO COMPLETO DEL CONTEXTO — listo para grabar]","conflicto":"[TEXTO COMPLETO DEL CONFLICTO — listo para grabar]","climax":"[TEXTO COMPLETO DEL CLÍMAX — listo para grabar]","conclusion":"[TEXTO COMPLETO DE LA CONCLUSIÓN — listo para grabar]","cta":"[TEXTO COMPLETO DEL CTA — listo para grabar]","triggers_activados":["OPEN LOOP","PATTERN INTERRUPT"],"duracion_seg":"${dur}"}]}`,
 };
 
 function buildGeneratePrompt(){
@@ -2231,36 +2231,35 @@ ${jsonTemplate.replace('"scripts":[{','\"scripts\":[{').replace(/\}]\}$/,'},{...
 
 // ============ GENERAR CON IA (GROQ via Worker) ============
 const GROQ_WORKER='https://anthropic-proxy.gsantiestebanhernandez.workers.dev';
-const GROQ_MODELS=['llama3-70b-8192','llama-3.1-8b-instant','gemma2-9b-it','mistral-saba-24b','llama3-8b-8192'];
 
 async function groqFetch(messages,statusEl){
-  for(let i=0;i<GROQ_MODELS.length;i++){
-    const model=GROQ_MODELS[i];
-    if(statusEl) statusEl.textContent='Conectando con IA ('+model+')...';
-    try{
-      const res=await fetch(GROQ_WORKER,{method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({model,max_tokens:4000,messages})});
-      const text=await res.text();
-      const data=JSON.parse(text);
-      if(data.error){
-        const msg=data.error.message||'';
-        if(msg.includes('Rate limit')||msg.includes('rate_limit')){
-          console.warn('Rate limit en '+model+', probando siguiente...');
-          continue;
-        }
-        throw new Error(data.error.message||JSON.stringify(data.error));
-      }
-      if(!data.choices||!data.choices[0]) throw new Error('Sin respuesta: '+text.slice(0,100));
-      return data.choices[0].message.content.trim();
-    }catch(e){
-      if(e.message.includes('Rate limit')||e.message.includes('rate_limit')){
-        console.warn('Rate limit en '+model+', probando siguiente...');
-        continue;
-      }
-      throw e;
+  if(statusEl) statusEl.textContent='Conectando con Cerebras...';
+  try{
+    const res=await fetch(GROQ_WORKER,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({max_tokens:4000,temperature:0.85,messages})
+    });
+    const text=await res.text();
+    let data;
+    try{data=JSON.parse(text);}
+    catch(e){throw new Error('Respuesta inválida del servidor: '+text.slice(0,200));}
+    // Log provider used
+    console.log('Provider usado:', data._provider||'desconocido');
+    if(data.error){
+      throw new Error(data.error.message||JSON.stringify(data.error));
     }
+    if(!data.choices||!data.choices[0]){
+      throw new Error('Sin respuesta válida. Raw: '+text.slice(0,200));
+    }
+    const content=data.choices[0].message?.content;
+    if(!content){throw new Error('Contenido vacío en la respuesta');}
+    if(statusEl) statusEl.textContent='Respuesta recibida de '+(data._provider==='cerebras'?'Cerebras ⚡':'Groq 🔄')+'...';
+    return content.trim();
+  }catch(e){
+    console.error('groqFetch error:', e);
+    throw new Error('Error al generar: '+e.message);
   }
-  throw new Error('Todos los modelos están con rate limit. Espera unos minutos e intenta de nuevo.');
 }
 
 async function generateWithAI(){
@@ -2351,7 +2350,10 @@ VIRAL_RULES+'\n\nResponde SOLO con el JSON. Sin backticks. Sin texto antes ni de
   try{
     const raw=await groqFetch([{role:'system',content:systemPrompt},{role:'user',content:userPrompt}],status);
     status.textContent='Procesando respuesta...';
-    document.getElementById('gen-import-text').value=raw;
+    // Clean and validate the response
+    const cleanRaw=raw.replace(/^```(?:json)?\s*/i,'').replace(/\s*```$/,'').trim();
+    console.log('RAW response from AI:', cleanRaw.substring(0, 500));
+    document.getElementById('gen-import-text').value=cleanRaw;
     importScripts();
     status.style.display='none';
     notify('Scripts generados con IA ✓','success');
@@ -2462,7 +2464,17 @@ const CAMPOS_FALLBACK=[
 ];
 function getCampos(s){
   const campos=CAMPOS_POR_ESTRUCTURA[s.estructura]||CAMPOS_FALLBACK;
-  return campos.filter(c=>s[c.key]&&String(s[c.key]).trim());
+  return campos.filter(c=>{
+    const val=s[c.key];
+    if(!val)return false;
+    const str=String(val).trim();
+    if(!str)return false;
+    // Filter out unfilled placeholders from the template
+    if(str.startsWith('[TEXTO COMPLETO'))return false;
+    if(str.startsWith('[ESCRIBE'))return false;
+    if(str==='[object Object]')return false;
+    return true;
+  });
 }
 
 // ============ IMPORT SCRIPTS ============
@@ -2519,7 +2531,15 @@ function importScripts(){
 
   // guardar scripts en memoria para poder salvarlos
   window._genScripts=scripts.map(s=>({...s,tema}));
-  notify(`${scripts.length} script${scripts.length>1?'s':''} importado${scripts.length>1?'s':''}`)
+  // Debug: log what the AI returned
+  console.log('Scripts recibidos de IA:', JSON.stringify(scripts, null, 2));
+  // Check if scripts have content
+  const emptyScripts=scripts.filter(s=>getCampos(s).length===0);
+  if(emptyScripts.length>0){
+    notify('⚠️ La IA devolvió '+emptyScripts.length+' script(s) sin contenido. Revisa la consola (F12) para ver el JSON.','warn');
+  } else {
+    notify(`${scripts.length} script${scripts.length>1?'s':''} importado${scripts.length>1?'s':''}`);
+  }
   container.scrollIntoView({behavior:'smooth',block:'start'});
 }
 
