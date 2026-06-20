@@ -2272,6 +2272,20 @@ async function generateWithAI(){
   const structInstr=buildStructureInstructions(structure,null);
   const styleTone=buildStyleTone(style);
   const jsonTemplate=(STRUCT_JSON[structure]||STRUCT_JSON.clasica)(style,dur);
+  const vozCtx=buildVozCtx();
+  const refStart=vozCtx.indexOf('SCRIPTS DE REFERENCIA');
+  const refBlock=refStart>-1?vozCtx.slice(refStart):'';
+  const vozBase=refStart>-1?vozCtx.slice(0,refStart):vozCtx;
+  const systemPrompt=
+'TU ÚNICA MISIÓN: escribir exactamente como Guillermo habla en sus scripts de referencia. No como una IA. No como un coach. Como él.\n\n'+
+(refBlock?'=== ASÍ HABLA GUILLERMO — IMITA ESTE TONO EXACTO ===\n'+refBlock+'\n=== FIN DE REFERENCIA ===\n\n':'')+
+'REGLAS QUE NO SE NEGOCIAN:\n'+
+'1. ESCENA PRIMERO, INSIGHT DESPUÉS. Nunca al revés. La persona se tiene que ver reflejada antes de entender nada.\n'+
+'2. PALABRAS PROHIBIDAS — si aparece alguna, el script está mal: sombra, proyección, inconsciente, patrón, integrar, conflicto biológico, transgeneracional, epigenética, arquetipo, programación, despertar, consciencia, vibración, energía, sanar, tóxico, ciclo, reflejo, trauma.\n'+
+'3. REEMPLAZOS OBLIGATORIOS: "sombra"→"lo que más te molesta de los demás" | "patrón"→"siempre terminas en el mismo lugar" | "inconsciente"→"sin darte cuenta" | "sanar"→"que deje de repetirse" | "integrar"→"dejar de pelear con esa parte" | "tóxico"→eliminar\n'+
+'4. FRASES CORTAS. Una idea. Punto. Silencio implícito.\n'+
+'5. LONGITUD REAL: '+dur+' segundos = '+(parseInt(dur)*2.2).toFixed(0)+' palabras totales. Distribuye entre todos los campos.\n\n'+
+vozBase+buildKnowCtx()+'\n'+structInstr+'\n\n'+styleTone;
   const fieldsMap={
     clasica:'gancho, dolor, ejemplo, fondo, cima, insight, cta',
     pas:'gancho, agitar, solucion, cta',
@@ -2284,65 +2298,59 @@ async function generateWithAI(){
   };
   const fields=fieldsMap[structure]||fieldsMap.clasica;
   const FIELD_EXAMPLES={
-    gancho:'¿Sabes por qué sigues atrayendo exactamente a las personas que te hacen daño?',
-    dolor:'Cada vez que intentas cambiar algo, terminas exactamente en el mismo punto.',
-    ejemplo:'Tu jefe te grita, llegas a casa y discutes con tu pareja. Mismo patrón, diferente escenario.',
-    fondo:'Toqué fondo cuando entendí que yo era el denominador común de todos mis conflictos.',
-    cima:'Hoy puedo ver el patrón desde afuera y elegir diferente. Eso lo cambia todo.',
-    insight:'Lo que más te molesta de los demás es lo que más niegas de ti mismo.',
-    cta:'Comenta ESPEJO si esto te resonó y te explico el siguiente paso.',
-    agitar:'Y lo seguirás repitiendo hasta que lo veas. Año tras año. Relación tras relación.',
-    solucion:'La solución no está en cambiar a los demás. Está en integrar lo que niegas de ti.',
-    antes:'Antes culpaba a todo el mundo de lo que me pasaba. Cambié tres trabajos, dos ciudades.',
-    despues:'Hoy asumo responsabilidad total y mis relaciones son completamente distintas.',
-    puente:'El puente entre esos dos mundos fue una sola pregunta: ¿qué dice esto de mí?',
-    problema:'El problema no es lo que te pasa. Es lo que no quieres ver de ti mismo en lo que te pasa.',
-    amplificar:'Cada vez que lo evitas, lo refuerzas. Y el patrón se vuelve más pesado.',
-    historia:'Una clienta mía repitió el mismo conflicto con cuatro parejas distintas. El patrón era uno solo: ella.',
-    transformacion:'Cuando integró su sombra, sus relaciones cambiaron sin esfuerzo externo.',
-    gancho_secreto:'Hay algo que nadie te dice sobre por qué repites los mismos patrones una y otra vez.',
-    revelacion:'Tu inconsciente está eligiendo por ti. Y lo seguirá haciendo hasta que lo traigas a la luz.',
-    aplicacion:'Observa tu próxima reacción exagerada. Ahí está exactamente lo que tienes que sanar.',
-    pregunta:'¿Por qué atraes siempre al mismo tipo de persona aunque cambies de ciudad, de trabajo, de pareja?',
-    lee_la_mente:'Probablemente crees que es mala suerte. O que los demás son el problema.',
-    giro:'Pero la bioneuroemoción lo explica diferente: tu cerebro repite lo conocido aunque te lastime.',
-    atencion:'Llevas años repitiendo el mismo patrón y no sabes por qué. Esto lo explica todo.',
-    interes:'No es falta de voluntad ni mala suerte. Es programación inconsciente que puedes cambiar.',
-    deseo:'Imagina poder ver el patrón desde afuera, entender de dónde viene y elegir distinto.',
-    accion:'Comenta PATRÓN y te cuento el primer paso concreto.',
-    contexto:'En bioneuroemoción existe un concepto que lo explica todo: la proyección de la sombra.',
-    conflicto:'El problema es que nadie nos enseña a verla en nosotros mismos. Solo la vemos en los demás.',
+    gancho:'¿Cuántas veces terminaste en el mismo lugar aunque todo parecía diferente?',
+    dolor:'Cambias de trabajo. De ciudad. De pareja. Y el mismo problema aparece de nuevo.',
+    ejemplo:'Tu jefe te dice algo y vos explotás más de lo normal. No es él. Es algo tuyo que se activó.',
+    fondo:'Llegué a un punto donde no podía seguir culpando a los demás. Era yo el denominador común.',
+    cima:'El día que vi eso, algo cambió. No el mundo. Yo.',
+    insight:'Lo que más te molesta de alguien suele ser algo que vos también hacés y no querés ver.',
+    cta:'Guarda esto. Mándale a alguien que lo necesita.',
+    agitar:'Y lo seguís haciendo. Año tras año. Persona tras persona. El mismo dolor.',
+    solucion:'Cuando dejás de pelear con eso y lo empezás a ver... deja de repetirse solo.',
+    antes:'Antes le echaba la culpa a todos. Cambié tres trabajos, dos ciudades. Mismo resultado.',
+    despues:'Hoy me hago cargo de lo mío. Y mis relaciones son completamente distintas.',
+    puente:'La pregunta que lo cambió todo fue una sola: ¿qué dice esto de mí?',
+    problema:'El problema no es lo que te pasa. Es lo que no querés ver de vos en lo que te pasa.',
+    amplificar:'Cada vez que lo evitás, se hace más grande. Hasta que ya no podés ignorarlo.',
+    historia:'Atendí a alguien que repitió el mismo conflicto con cuatro personas distintas. El punto en común era ella.',
+    transformacion:'Cuando dejó de pelear con esa parte suya, sus relaciones cambiaron solas.',
+    gancho_secreto:'Hay algo que casi nadie te dice sobre por qué siempre terminás en el mismo lugar.',
+    revelacion:'Lo que viviste de chico se convirtió en tu mapa. Y ese mapa te lleva siempre ahí, aunque no quieras.',
+    aplicacion:'La próxima vez que reacciones más de la cuenta ante algo pequeño — para. Eso te está mostrando algo tuyo.',
+    pregunta:'¿Por qué siempre atraés al mismo tipo de persona aunque cambiés todo lo demás?',
+    lee_la_mente:'Probablemente creés que es mala suerte. O que los demás son el problema.',
+    giro:'Pero lo que viviste de chico sigue manejando tus reacciones de adulto. Sin que lo sepas.',
+    atencion:'Llevás años terminando en el mismo lugar y no entendés por qué. Esto lo explica.',
+    interes:'No es falta de voluntad. Es algo que aprendiste de chico y nunca revisaste.',
+    deseo:'Imaginate poder ver de dónde viene eso... y elegir diferente por primera vez.',
+    accion:'Comentá QUIERO VER y te cuento el primer paso.',
+    contexto:'Hay algo que aprendemos de chicos para sobrevivir. Y de adultos seguimos haciéndolo aunque ya no lo necesitemos.',
+    conflicto:'El problema es que nadie nos enseña a verlo en nosotros. Solo lo vemos en los demás.',
     climax:'Hasta que el dolor se vuelve tan grande que no queda otra opción que mirar hacia adentro.',
-    conclusion:'Tu mundo exterior es siempre un reflejo exacto de tu mundo interior. Sin excepciones.',
-    oferta:'Si quieres entender qué patrón estás repitiendo, escríbeme SESIÓN.',
-    contexto_secret:'Llevamos años creyendo que el problema está afuera.',
+    conclusion:'Lo que te rodea afuera suele ser un reflejo de lo que no estás viendo adentro.',
+    oferta:'Si querés entender qué es lo que se repite en tu vida, escribime.',
+    contexto_secret:'Llevamos años creyendo que el problema siempre está afuera.',
   };
-  const exFields=fields.split(', ').map(f=>'"'+f+'":"'+(FIELD_EXAMPLES[f]||'contenido del '+f)+'\"').join(',');
-  const userPrompt='Crea '+qty+' scripts DISTINTOS y COMPLETOS sobre: "'+t+'"\n\nEstructura: '+structure+'\nEstilo de voz: '+style+'\nDuración objetivo: '+dur+' segundos (aprox '+(parseInt(dur)*2.2).toFixed(0)+' palabras totales en el script)\n\n'+
-'VOZ DE GUILLERMO — REGLAS QUE NO SE NEGOCIAN:\n'+
-'✅ Frases cortas. Una idea por frase. Punto seguido, no coma.\n'+
-'✅ Primera persona. Anécdota real, detalle concreto, imagen clara.\n'+
-'✅ Ritmo pausado. El silencio es parte del guion.\n'+
-'✅ Sin entusiasmo forzado. Como pensar en voz alta.\n'+
-'✅ El espectador no conoce términos técnicos — habla como un amigo en un café.\n'+
-'\n❌ PALABRAS PROHIBIDAS — si aparece cualquiera, el script está MAL:\n'+
-'PROHIBIDO: patrón → usar: "lo que repites", "lo mismo de siempre"\n'+
-'PROHIBIDO: conciencia/consciencia → usar: "cuando lo ves", "cuando te das cuenta"\n'+
-'PROHIBIDO: sanar/sanación → ELIMINAR\n'+
-'PROHIBIDO: mereces/eres suficiente/el mundo te debe → ELIMINAR\n'+
-'PROHIBIDO: trauma → usar: "lo que viviste", "lo que te pasó de niño"\n'+
-'PROHIBIDO: sombra → usar: "lo que no quieres ver de ti"\n'+
-'PROHIBIDO: inconsciente → usar: "sin saberlo", "sin darte cuenta"\n'+
-'PROHIBIDO: bioneuroemoción/BNE → no mencionar en el script\n'+
-'PROHIBIDO: herencia/heredado/programación → usar: "lo que aprendiste de pequeño"\n'+
-'PROHIBIDO: rol → ELIMINAR\n'+
-'PROHIBIDO: lealtad familiar → usar: "lo que aprendiste en tu familia"\n'+
-'PROHIBIDO: saludos al inicio (Hola, Bienvenidos) → ELIMINAR\n'+
-'PROHIBIDO: frases motivacionales vacías (tú puedes, mereces lo mejor) → ELIMINAR\n'+
-'\nCALIBRACIÓN: '+dur+' segundos = aprox '+(parseInt(dur)*2.2).toFixed(0)+' palabras totales. Respeta esto. Si el reel dura 60 seg y el script tiene 200 palabras, está bien. Si tiene 400, está mal.\n'+
-'\nFORMATO: Cada campo del JSON es texto listo para grabar. Sin instrucciones. Sin placeholders. Sin meta-texto.\n\n'+
-VIRAL_RULES+'\n\nResponde SOLO con el JSON. Sin backticks. Sin texto antes ni después.\n{"scripts":[{"titulo":"título concreto y específico","estilo":"'+style+'","estructura":"'+structure+'",'+exFields+',"triggers_activados":["OPEN LOOP","PATTERN INTERRUPT"],"duracion_seg":"'+dur+'"}]}';
-  const systemPrompt='Eres el mejor generador de scripts virales para reels del mundo hispanohablante. Especialidad: consciencia, psicología y transformación personal.'+buildVozCtx()+buildKnowCtx()+'\n'+VIRAL_RULES+'\n\n'+structInstr+'\n\n'+styleTone+'\n\nDURACIÓN OBJETIVO: '+dur+' segundos. Calibra la cantidad de palabras y beats a ese tiempo exacto.\n\nCRÍTICO: El espectador no conoce la terminología de psicología ni bioneuroemoción. Usa el lenguaje cotidiano que usa una persona normal cuando describe sus problemas. "Lo que repito siempre", "sin entender por qué", "me di cuenta de que era yo". Eso es la voz de Guillermo. No hay palabras técnicas en sus scripts — solo experiencias concretas que la gente reconoce de inmediato.';
+  const exFields=fields.split(', ').map(f=>'"'+f+'":"'+(FIELD_EXAMPLES[f]||'escena cotidiana concreta sobre el tema')+'\"').join(',');
+  const userPrompt='Crea '+qty+' scripts DISTINTOS sobre: "'+t+'"\n\n'+
+'DURACIÓN: '+dur+' seg = EXACTAMENTE '+(parseInt(dur)*2.2).toFixed(0)+' palabras en total por script. Cada campo debe tener el texto proporcional. Un script de 30 seg tiene ~66 palabras en total distribuidas entre todos los campos. Un script de 60 seg tiene ~132 palabras. RESPETA ESTO.\n\n'+
+'ESTRUCTURA: '+structure+'\n'+
+'ESTILO: '+style+'\n\n'+
+'REGLAS DE VOZ — OBLIGATORIAS:\n'+
+'- Frases cortas. Una idea por frase. Punto seguido.\n'+
+'- Primera persona. Anécdota real. Detalle concreto.\n'+
+'- Sin tecnicismos. Habla como en un café.\n\n'+
+'PALABRAS PROHIBIDAS (reemplaza así):\n'+
+'patrón→"lo que repites" | conciencia→"cuando lo ves" | sanar→eliminar | sombra→"lo que no quieres ver de ti" | inconsciente→"sin darte cuenta" | trauma→"lo que viviste" | herencia→"lo que aprendiste de pequeño" | BNE/bioneuroemoción→no mencionar | rol→eliminar | mereces/eres suficiente→eliminar\n\n'+
+'EJEMPLO DE LONGITUD CORRECTA para 30 seg:\n'+
+'gancho_secreto: "¿Por qué sigues atrayendo exactamente a las personas que te hacen daño? Te lo cuento."\n'+
+'revelacion: "Tu cerebro repite lo conocido. Lo que viviste de niño se convirtió en tu mapa. Y ese mapa te lleva siempre al mismo lugar. No porque seas tonto. Sino porque es lo que aprendiste."\n'+
+'aplicacion: "La próxima vez que reacciones exagerado ante algo pequeño... para. Esa reacción te está mostrando algo tuyo, no del otro."\n'+
+'cta: "Guarda esto. Mándale a alguien que lo necesita."\n\n'+
+'IMPORTANTE: Cada campo debe tener PÁRRAFOS COMPLETOS con ese nivel de detalle. No frases de 5 palabras.\n\n'+
+VIRAL_RULES+'\n\n'+
+'Responde SOLO con JSON. Sin backticks. Sin texto extra.\n'+
+jsonTemplate.replace('"scripts":[{"titulo":""','"scripts":[{"titulo":"título específico y concreto"');
   const btn=document.getElementById('btn-gen-ai');
   const status=document.getElementById('gen-ai-status');
   btn.disabled=true;btn.textContent='⏳ Generando...';
