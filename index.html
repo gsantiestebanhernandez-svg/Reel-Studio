@@ -2689,7 +2689,6 @@ async function saveCardScript(cardId,store,idx,fuente){
     if(btn){btn.textContent='✓ Guardado';btn.disabled=true;btn.style.opacity='.5';}
   }catch(e){console.error('saveCardScript:',e);notify('Error: '+e.message,'error');}
 }
-}
 async function addHookFromScript(text,style){
   if(!text)return;
   const data={user_id:currentUser.id,text,categoria:'Otro',estilo:style,notes:'Extraido de script'};
