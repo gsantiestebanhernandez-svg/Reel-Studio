@@ -2512,28 +2512,15 @@ function toggleScCard(id,btn){
 
 async function saveGenScript(i){
   const s=window._genScripts?.[i];if(!s){notify('Script no encontrado','error');return;}
-  const data={
-    user_id:currentUser.id,
-    titulo:s.titulo||`Script ${i+1}`,
-    estilo:s.estilo||'',
-    estructura:s.estructura||'',
-    tema:s.tema||'',
-    fuente:'Generado',
-    gancho:s.gancho||'',
-    cuerpo_parte1:s.cuerpo_parte1||'',
-    reenganche_1:s.reenganche_1||'',
-    cuerpo_parte2:s.cuerpo_parte2||'',
-    reenganche_2:s.reenganche_2||'',
-    cierre_insight:s.cierre_insight||'',
-    cta:s.cta||'',
-    dolor:s.dolor||'',
-    ejemplo:s.ejemplo||'',
-    fondo:s.fondo||'',
-    cima:s.cima||'',
-    insight:s.insight||'',
-    triggers_activados:s.triggers_activados||[],
-    duracion_seg:s.duracion_seg||''
-  };
+  const FIXED=['gancho','gancho_secreto','pregunta','atencion','antes','problema','contexto',
+    'dolor','agitar','amplificar','interes','ejemplo','cuerpo_parte1','puente','historia',
+    'lee_la_mente','reenganche_1','fondo','giro','climax','cuerpo_parte2','reenganche_2',
+    'cima','deseo','transformacion','despues','revelacion','aplicacion','insight','conclusion',
+    'cierre_insight','solucion','cta','accion','oferta','conflicto'];
+  const data={user_id:currentUser.id,titulo:s.titulo||`Script ${i+1}`,estilo:s.estilo||'',
+    estructura:s.estructura||'',tema:s.tema||'',fuente:'Generado',
+    triggers_activados:s.triggers_activados||[],duracion_seg:s.duracion_seg||''};
+  FIXED.forEach(k=>{if(s[k]!==undefined&&s[k]!=='')data[k]=s[k];});
   try{
     const rows=await sbFetch('rs_library',{method:'POST',body:JSON.stringify(data)});
     if(rows&&rows.length)localLibrary.unshift(rows[0]);
@@ -2685,14 +2672,15 @@ function buildScriptCard(s,tema,fuente,idx,store){
 }
 async function saveCardScript(cardId,store,idx,fuente){
   const s=window[store]?.[idx];if(!s){notify('Script no encontrado','error');return;}
-  const data={
-    user_id:currentUser.id,titulo:s.titulo||`Script ${idx+1}`,estilo:s.estilo||'',
+  const FIXED=['gancho','gancho_secreto','pregunta','atencion','antes','problema','contexto',
+    'dolor','agitar','amplificar','interes','ejemplo','cuerpo_parte1','puente','historia',
+    'lee_la_mente','reenganche_1','fondo','giro','climax','cuerpo_parte2','reenganche_2',
+    'cima','deseo','transformacion','despues','revelacion','aplicacion','insight','conclusion',
+    'cierre_insight','solucion','cta','accion','oferta','conflicto'];
+  const data={user_id:currentUser.id,titulo:s.titulo||`Script ${idx+1}`,estilo:s.estilo||'',
     estructura:s.estructura||s.framework||'',tema:s.tema||'',fuente,
-    gancho:s.gancho||'',cuerpo_parte1:s.cuerpo_parte1||'',reenganche_1:s.reenganche_1||'',
-    cuerpo_parte2:s.cuerpo_parte2||'',reenganche_2:s.reenganche_2||'',cierre_insight:s.cierre_insight||'',
-    cta:s.cta||'',dolor:s.dolor||'',ejemplo:s.ejemplo||'',fondo:s.fondo||'',cima:s.cima||'',
-    insight:s.insight||'',triggers_activados:s.triggers_activados||[],duracion_seg:s.duracion_seg||''
-  };
+    triggers_activados:s.triggers_activados||[],duracion_seg:s.duracion_seg||''};
+  FIXED.forEach(k=>{if(s[k]!==undefined&&s[k]!=='')data[k]=s[k];});
   try{
     const rows=await sbFetch('rs_library',{method:'POST',body:JSON.stringify(data)});
     if(rows&&rows.length)localLibrary.unshift(rows[0]);
@@ -2700,6 +2688,7 @@ async function saveCardScript(cardId,store,idx,fuente){
     const btn=document.getElementById('scbtn-'+cardId);
     if(btn){btn.textContent='✓ Guardado';btn.disabled=true;btn.style.opacity='.5';}
   }catch(e){console.error('saveCardScript:',e);notify('Error: '+e.message,'error');}
+}
 }
 async function addHookFromScript(text,style){
   if(!text)return;
