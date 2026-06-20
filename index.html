@@ -2466,9 +2466,13 @@ function importScripts(){
     const dur=s.duracion_seg?`${s.duracion_seg}s`:'';
     const scriptId=`gen-script-${i}`;
     const contenido=partes.map(c=>`
-      <div style="margin-bottom:10px">
-        <span class="section-label">${c.label}</span>
-        <p style="font-size:13px;line-height:1.7;margin-top:4px;color:var(--text)">${s[c.key]}</p>
+      <div style="margin-bottom:12px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+          <span class="section-label">${c.label}</span>
+          <button class="btn btn-xs" onclick="toggleGenEdit('gen-edit-${i}-${c.key}','gen-view-${i}-${c.key}',this)" style="font-size:10px;padding:2px 8px">✏️ Editar</button>
+        </div>
+        <p id="gen-view-${i}-${c.key}" style="font-size:13px;line-height:1.7;color:var(--text)">${s[c.key]}</p>
+        <textarea id="gen-edit-${i}-${c.key}" style="display:none;width:100%;font-size:13px;line-height:1.7;min-height:80px;margin-top:4px" oninput="updateGenScript(${i},'${c.key}',this.value)">${s[c.key]}</textarea>
       </div>`).join('');
     return`<div class="card" style="margin-top:12px">
       <div class="top-row">
@@ -2517,6 +2521,7 @@ async function saveGenScript(i){
     'lee_la_mente','reenganche_1','fondo','giro','climax','cuerpo_parte2','reenganche_2',
     'cima','deseo','transformacion','despues','revelacion','aplicacion','insight','conclusion',
     'cierre_insight','solucion','cta','accion','oferta','conflicto'];
+  // s already has inline edits merged via updateGenScript
   const data={user_id:currentUser.id,titulo:s.titulo||`Script ${i+1}`,estilo:s.estilo||'',
     estructura:s.estructura||'',tema:s.tema||'',fuente:'Generado',
     triggers_activados:s.triggers_activados||[],duracion_seg:s.duracion_seg||''};
@@ -2644,15 +2649,27 @@ function importCombinedScripts(){
     notify(`${scripts.length} script${scripts.length>1?'s':''} importado${scripts.length>1?'s':''}`);
   }catch(e){console.error(e);notify('Formato inválido — revisa el JSON','error');}
 }
-function bBlock(label,val){if(!val)return'';return`<div class="block"><span class="section-label">${label}</span><p>${val}</p></div>`;}
+function bBlock(label,val,cardId,key){
+  if(!val)return'';
+  const eid='edit-'+cardId+'-'+key;
+  const vid='view-'+cardId+'-'+key;
+  return`<div style="margin-bottom:12px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+      <span class="section-label">${label}</span>
+      <button class="btn btn-xs" onclick="toggleCardEdit('${eid}','${vid}',this)" style="font-size:10px;padding:2px 8px">✏️ Editar</button>
+    </div>
+    <p id="${vid}" style="font-size:13px;line-height:1.7;color:var(--text)">${val}</p>
+    <textarea id="${eid}" data-cardid="${cardId}" data-key="${key}" style="display:none;width:100%;font-size:13px;line-height:1.7;min-height:80px;margin-top:4px" oninput="updateCardField('${cardId}','${key}',this.value)">${val}</textarea>
+  </div>`;
+}
 function buildScriptCard(s,tema,fuente,idx,store){
   const div=document.createElement('div');div.className='card';
   const fc=fuente==='Combinado'?'badge-purple':fuente.startsWith('Modelado')?'badge-electric':'badge-gray';
   const dur=s.duracion_seg?`${s.duracion_seg}s`:(s.duracion_estimada||'');
   const triggers=(s.triggers_activados||[]).join(', ');
   const bloques=getCampos(s);
-  const scriptHtml=bloques.length?bloques.map(b=>bBlock(b.label,s[b.key])).join(''):'<p class="small">Sin contenido.</p>';
   const cardId='sc-'+Math.random().toString(36).slice(2,8);
+  const scriptHtml=bloques.length?bloques.map(b=>bBlock(b.label,s[b.key],cardId,b.key)).join(''):'<p class="small">Sin contenido.</p>';
   const saveBtn=idx!=null&&store
     ?`<button id="scbtn-${cardId}" class="btn btn-xs btn-primary" onclick="saveCardScript('${cardId}','${store}',${idx},'${fuente}')">Guardar</button>`
     :`<button class="btn btn-xs btn-primary" onclick="saveToLibrary(${JSON.stringify(JSON.stringify(s))},'${tema}','${fuente}')">Guardar</button>`;
@@ -2668,19 +2685,25 @@ function buildScriptCard(s,tema,fuente,idx,store){
     ${saveBtn}
   </div></div>
   <div id="${cardId}" style="display:none;margin-top:12px;border-top:1px solid var(--border);padding-top:12px">${scriptHtml}</div>`;
+  // store reference for edits
+  div.dataset.cardid=cardId;
+  if(idx!=null&&store)window['_cardData_'+cardId]={store,idx,s:{...s}};
   return div;
 }
 async function saveCardScript(cardId,store,idx,fuente){
   const s=window[store]?.[idx];if(!s){notify('Script no encontrado','error');return;}
+  // merge any inline edits made by the user
+  const editRef=window['_cardData_'+cardId];
+  const sEdited=editRef?{...s,...editRef.s}:s;
   const FIXED=['gancho','gancho_secreto','pregunta','atencion','antes','problema','contexto',
     'dolor','agitar','amplificar','interes','ejemplo','cuerpo_parte1','puente','historia',
     'lee_la_mente','reenganche_1','fondo','giro','climax','cuerpo_parte2','reenganche_2',
     'cima','deseo','transformacion','despues','revelacion','aplicacion','insight','conclusion',
     'cierre_insight','solucion','cta','accion','oferta','conflicto'];
-  const data={user_id:currentUser.id,titulo:s.titulo||`Script ${idx+1}`,estilo:s.estilo||'',
-    estructura:s.estructura||s.framework||'',tema:s.tema||'',fuente,
-    triggers_activados:s.triggers_activados||[],duracion_seg:s.duracion_seg||''};
-  FIXED.forEach(k=>{if(s[k]!==undefined&&s[k]!=='')data[k]=s[k];});
+  const data={user_id:currentUser.id,titulo:sEdited.titulo||`Script ${idx+1}`,estilo:sEdited.estilo||'',
+    estructura:sEdited.estructura||sEdited.framework||'',tema:sEdited.tema||'',fuente,
+    triggers_activados:sEdited.triggers_activados||[],duracion_seg:sEdited.duracion_seg||''};
+  FIXED.forEach(k=>{if(sEdited[k]!==undefined&&sEdited[k]!=='')data[k]=sEdited[k];});
   try{
     const rows=await sbFetch('rs_library',{method:'POST',body:JSON.stringify(data)});
     if(rows&&rows.length)localLibrary.unshift(rows[0]);
@@ -2689,6 +2712,39 @@ async function saveCardScript(cardId,store,idx,fuente){
     if(btn){btn.textContent='✓ Guardado';btn.disabled=true;btn.style.opacity='.5';}
   }catch(e){console.error('saveCardScript:',e);notify('Error: '+e.message,'error');}
 }
+// ============ INLINE EDIT HELPERS ============
+function toggleGenEdit(editId,viewId,btn){
+  const ed=document.getElementById(editId);
+  const vw=document.getElementById(viewId);
+  if(!ed||!vw)return;
+  const editing=ed.style.display!=='none';
+  ed.style.display=editing?'none':'block';
+  vw.style.display=editing?'block':'none';
+  btn.textContent=editing?'✏️ Editar':'✓ Listo';
+  btn.style.color=editing?'':'#34d399';
+}
+function updateGenScript(i,key,val){
+  if(window._genScripts&&window._genScripts[i])window._genScripts[i][key]=val;
+}
+function toggleCardEdit(editId,viewId,btn){
+  const ed=document.getElementById(editId);
+  const vw=document.getElementById(viewId);
+  if(!ed||!vw)return;
+  const editing=ed.style.display!=='none';
+  ed.style.display=editing?'none':'block';
+  vw.style.display=editing?'block':'none';
+  btn.textContent=editing?'✏️ Editar':'✓ Listo';
+  btn.style.color=editing?'':'#34d399';
+}
+function updateCardField(cardId,key,val){
+  const ref=window['_cardData_'+cardId];
+  if(ref&&ref.s)ref.s[key]=val;
+  // also update the store
+  if(ref&&ref.store&&window[ref.store]&&window[ref.store][ref.idx]){
+    window[ref.store][ref.idx][key]=val;
+  }
+}
+
 async function addHookFromScript(text,style){
   if(!text)return;
   const data={user_id:currentUser.id,text,categoria:'Otro',estilo:style,notes:'Extraido de script'};
