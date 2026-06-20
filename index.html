@@ -2349,7 +2349,7 @@ vozBase+buildKnowCtx()+'\n'+structInstr+'\n\n'+styleTone;
 'cta: "Guarda esto. Mándale a alguien que lo necesita."\n\n'+
 'IMPORTANTE: Cada campo debe tener PÁRRAFOS COMPLETOS con ese nivel de detalle. No frases de 5 palabras.\n\n'+
 VIRAL_RULES+'\n\n'+
-'Responde SOLO con JSON. Sin backticks. Sin texto extra.\n'+
+'CTA OBLIGATORIO — usa EXACTAMENTE una de estas fórmulas sin cambiarla:\n'+'Opción A: "Guarda esto si lo sentiste. Mándaselo a alguien que lo necesita."\n'+'Opción B: "Guarda esto. ¿A quién le mandarías esto ahora mismo?"\n'+'Opción C: "Guarda esto antes de seguir scrolleando."\n'+'NO inventes CTAs. NO agregues palabras. Copia una de las tres opciones tal cual.\n\n'+'Responde SOLO con JSON. Sin backticks. Sin texto extra.\n'+
 jsonTemplate.replace('"scripts":[{"titulo":""','"scripts":[{"titulo":"título específico y concreto"');
   const btn=document.getElementById('btn-gen-ai');
   const status=document.getElementById('gen-ai-status');
@@ -2513,7 +2513,7 @@ function importScripts(){
   container.innerHTML=scripts.map((s,i)=>{
     const partes=getCampos(s);
     const triggers=(s.triggers_activados||[]).join(', ');
-    const dur=s.duracion_seg?`${s.duracion_seg}s`:'';
+    const dur=s.duracion_seg?`${parseInt(s.duracion_seg)||s.duracion_seg}s`:'';
     const scriptId=`gen-script-${i}`;
     const contenido=partes.map(c=>`
       <div style="margin-bottom:12px">
