@@ -1628,7 +1628,7 @@ async function loadAllData(){
 
 // ============ VOZ ============
 function loadVozFields(){
-  ['historia','tono','frases','arquetipos','anecdotas','audiencia'].forEach(k=>{
+  ['historia','tono','frases','nunca','arquetipos','anecdotas','audiencia','referencia'].forEach(k=>{
     if(localVoz[k]){const inp=document.getElementById('voz-'+k);if(inp)inp.value=localVoz[k];}
     const sv=document.getElementById('vs-'+k);if(sv)sv.style.display='none';
   });
