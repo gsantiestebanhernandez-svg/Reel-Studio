@@ -2361,6 +2361,13 @@ jsonTemplate.replace('"scripts":[{"titulo":""','"scripts":[{"titulo":"título es
     // Clean and validate the response
     const cleanRaw=raw.replace(/^```(?:json)?\s*/i,'').replace(/\s*```$/,'').trim();
     console.log('RAW response from AI:', cleanRaw.substring(0, 500));
+    // Validate JSON before attempting to import — prevents SyntaxError crash
+    let parsedCheck;
+    try{parsedCheck=JSON.parse(cleanRaw);}catch(jsonErr){
+      console.error('JSON inválido recibido de IA:',cleanRaw.substring(0,300));
+      throw new Error('La IA no devolvió JSON válido. Intentá de nuevo.');
+    }
+    if(!parsedCheck.scripts||!parsedCheck.scripts.length){throw new Error('La IA no incluyó scripts en la respuesta. Intentá de nuevo.');}
     document.getElementById('gen-import-text').value=cleanRaw;
     importScripts();
     status.style.display='none';
