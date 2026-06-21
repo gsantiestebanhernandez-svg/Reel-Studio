@@ -1,4 +1,4 @@
-<!-- v2025.06.21.005 -->
+<!-- v2025.06.21.006 -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -2277,14 +2277,17 @@ async function generateWithAI(){
   const refBlock=refStart>-1?vozCtx.slice(refStart):'';
   const vozBase=refStart>-1?vozCtx.slice(0,refStart):vozCtx;
   const systemPrompt=
-'TU ÚNICA MISIÓN: escribir exactamente como Guillermo habla en sus scripts de referencia. No como una IA. No como un coach. Como él.\n\n'+
+'TU ÚNICA MISIÓN: escribir scripts que suenen EXACTAMENTE como Guillermo. No inventar historias. No usar ejemplos genéricos. Usar SOLO los episodios reales de su vida que están en HISTORIA PERSONAL.\n\n'+
 (refBlock?'=== ASÍ HABLA GUILLERMO — IMITA ESTE TONO EXACTO ===\n'+refBlock+'\n=== FIN DE REFERENCIA ===\n\n':'')+
+'REGLA NÚMERO 1 — SIN EXCEPCIONES:\n'+
+'PROHIBIDO inventar anécdotas, escenas o situaciones que no estén en la HISTORIA PERSONAL de Guillermo. Si el tema no conecta con ningún episodio real de su vida, construye el script desde la EMOCIÓN UNIVERSAL del tema — pero en primera persona, como si él lo vivió. Nunca menciones lugares, personas o situaciones que él no haya descrito.\n\n'+
 'REGLAS QUE NO SE NEGOCIAN:\n'+
 '1. ESCENA PRIMERO, INSIGHT DESPUÉS. Nunca al revés. La persona se tiene que ver reflejada antes de entender nada.\n'+
 '2. PALABRAS PROHIBIDAS — si aparece alguna, el script está mal: sombra, proyección, inconsciente, patrón, integrar, conflicto biológico, transgeneracional, epigenética, arquetipo, programación, despertar, consciencia, vibración, energía, sanar, tóxico, ciclo, reflejo, trauma.\n'+
 '3. REEMPLAZOS OBLIGATORIOS: "sombra"→"lo que más te molesta de los demás" | "patrón"→"siempre terminas en el mismo lugar" | "inconsciente"→"sin darte cuenta" | "sanar"→"que deje de repetirse" | "integrar"→"dejar de pelear con esa parte" | "tóxico"→eliminar\n'+
 '4. FRASES CORTAS. Una idea. Punto. Silencio implícito.\n'+
-'5. LONGITUD REAL: '+dur+' segundos = '+(parseInt(dur)*2.2).toFixed(0)+' palabras totales. Distribuye entre todos los campos.\n\n'+
+'5. LONGITUD REAL: '+dur+' segundos = '+(parseInt(dur)*2.2).toFixed(0)+' palabras totales. Distribuye entre todos los campos.\n'+
+'6. ANCLAJE EN HISTORIA REAL: Cada script debe anclarse en AL MENOS UN episodio concreto de la historia de Guillermo. Si no hay episodio directo, usa la emoción que él sí vivió (escasez, abandono, caos familiar, reinvención, Brasil, Susana, BNE).\n\n'+
 vozBase+buildKnowCtx()+'\n'+structInstr+'\n\n'+styleTone;
   const fieldsMap={
     clasica:'gancho, dolor, ejemplo, fondo, cima, insight, cta',
@@ -2298,38 +2301,38 @@ vozBase+buildKnowCtx()+'\n'+structInstr+'\n\n'+styleTone;
   };
   const fields=fieldsMap[structure]||fieldsMap.clasica;
   const FIELD_EXAMPLES={
-    gancho:'¿Cuántas veces terminaste en el mismo lugar aunque todo parecía diferente?',
-    dolor:'Cambias de trabajo. De ciudad. De pareja. Y el mismo problema aparece de nuevo.',
-    ejemplo:'Tu jefe te dice algo y vos explotás más de lo normal. No es él. Es algo tuyo que se activó.',
-    fondo:'Llegué a un punto donde no podía seguir culpando a los demás. Era yo el denominador común.',
-    cima:'El día que vi eso, algo cambió. No el mundo. Yo.',
-    insight:'Lo que más te molesta de alguien suele ser algo que vos también hacés y no querés ver.',
+    gancho:'De los 7 que éramos en esa casa, yo era el único que no gritaba. Y tardé 30 años en entender por qué.',
+    dolor:'Me fui de Cuba. Cambié de país. Empecé de cero en Brasil. Y el mismo miedo me siguió hasta acá.',
+    ejemplo:'Había un momento en que Susana me decía algo y yo me cerraba. No era ella. Era el niño que aprendió que hablar era peligroso.',
+    fondo:'Hubo un momento en Brasil donde me pregunté si realmente había cambiado algo o si solo había cambiado el escenario.',
+    cima:'El día que entendí que mi reacción no era por lo que ella dijo sino por lo que yo cargaba — algo se movió.',
+    insight:'Lo que más me costaba ver en los demás era exactamente lo que no quería ver en mí.',
     cta:'Guarda esto. Mándale a alguien que lo necesita.',
-    agitar:'Y lo seguís haciendo. Año tras año. Persona tras persona. El mismo dolor.',
-    solucion:'Cuando dejás de pelear con eso y lo empezás a ver... deja de repetirse solo.',
-    antes:'Antes le echaba la culpa a todos. Cambié tres trabajos, dos ciudades. Mismo resultado.',
-    despues:'Hoy me hago cargo de lo mío. Y mis relaciones son completamente distintas.',
-    puente:'La pregunta que lo cambió todo fue una sola: ¿qué dice esto de mí?',
-    problema:'El problema no es lo que te pasa. Es lo que no querés ver de vos en lo que te pasa.',
-    amplificar:'Cada vez que lo evitás, se hace más grande. Hasta que ya no podés ignorarlo.',
-    historia:'Atendí a alguien que repitió el mismo conflicto con cuatro personas distintas. El punto en común era ella.',
-    transformacion:'Cuando dejó de pelear con esa parte suya, sus relaciones cambiaron solas.',
-    gancho_secreto:'Hay algo que casi nadie te dice sobre por qué siempre terminás en el mismo lugar.',
-    revelacion:'Lo que viviste de chico se convirtió en tu mapa. Y ese mapa te lleva siempre ahí, aunque no quieras.',
-    aplicacion:'La próxima vez que reacciones más de la cuenta ante algo pequeño — para. Eso te está mostrando algo tuyo.',
-    pregunta:'¿Por qué siempre atraés al mismo tipo de persona aunque cambiés todo lo demás?',
-    lee_la_mente:'Probablemente creés que es mala suerte. O que los demás son el problema.',
-    giro:'Pero lo que viviste de chico sigue manejando tus reacciones de adulto. Sin que lo sepas.',
-    atencion:'Llevás años terminando en el mismo lugar y no entendés por qué. Esto lo explica.',
-    interes:'No es falta de voluntad. Es algo que aprendiste de chico y nunca revisaste.',
-    deseo:'Imaginate poder ver de dónde viene eso... y elegir diferente por primera vez.',
+    agitar:'Y seguí. Año tras año. País tras país. La misma tensión apareciendo con otra cara.',
+    solucion:'Cuando dejé de pelear con esa parte mía y la empecé a ver — dejó de controlarme.',
+    antes:'Antes culpaba al país, al sistema, a mi familia. Me fui de Cuba y el problema me siguió.',
+    despues:'Hoy cuando algo me activa, lo primero que me pregunto es: ¿qué dice esto de mí?',
+    puente:'La BNE me dio una pregunta que lo cambió todo: ¿para qué aprendí esto?',
+    problema:'No era Cuba el problema. No era mi familia. Era lo que yo había aprendido para sobrevivir ahí.',
+    amplificar:'Y lo peor es que eso que aprendiste de chico para protegerte, de adulto te destruye las relaciones.',
+    historia:'Yo crecí en una casa donde el silencio era la única salida. Y de adulto me quedaba callado cuando más necesitaba hablar.',
+    transformacion:'Cuando dejé de ver a mi padre como el villano y empecé a verlo como alguien que tampoco supo — algo se soltó.',
+    gancho_secreto:'Hay algo que me tomó 30 años entender sobre por qué repetía lo mismo aunque todo cambiara.',
+    revelacion:'Lo que viviste en esa casa de chico se convirtió en tu manual de supervivencia. Y lo seguís usando aunque ya no estés ahí.',
+    aplicacion:'La próxima vez que reacciones más de lo normal ante algo pequeño — para. Eso no es del presente. Es de antes.',
+    pregunta:'¿Por qué me fui de Cuba, empecé de cero en Brasil, y el mismo conflicto me encontró acá?',
+    lee_la_mente:'Probablemente pensás que es mala suerte. O que la gente que te rodea siempre falla.',
+    giro:'Pero lo que aprendiste para sobrevivir en esa casa sigue tomando decisiones por vos hoy.',
+    atencion:'Me tomó llegar a Brasil para darme cuenta de que el problema no era el lugar. Era yo.',
+    interes:'No es que seas difícil. Es que aprendiste a relacionarte en un ambiente donde el conflicto era lo normal.',
+    deseo:'Imaginate poder ver de dónde viene esa reacción... y elegir diferente por primera vez.',
     accion:'Comentá QUIERO VER y te cuento el primer paso.',
-    contexto:'Hay algo que aprendemos de chicos para sobrevivir. Y de adultos seguimos haciéndolo aunque ya no lo necesitemos.',
-    conflicto:'El problema es que nadie nos enseña a verlo en nosotros. Solo lo vemos en los demás.',
-    climax:'Hasta que el dolor se vuelve tan grande que no queda otra opción que mirar hacia adentro.',
-    conclusion:'Lo que te rodea afuera suele ser un reflejo de lo que no estás viendo adentro.',
+    contexto:'Crecí en una casa donde éramos 7 y el único idioma que existía era el del conflicto.',
+    conflicto:'Nadie me enseñó a ver eso en mí. Solo lo veía en los demás — y me molestaba muchísimo.',
+    climax:'Hasta que el dolor en mi relación con Susana fue tan grande que no pude seguir mirando para otro lado.',
+    conclusion:'Lo que viviste afuera de chico vive adentro de adulto. Hasta que lo ves.',
     oferta:'Si querés entender qué es lo que se repite en tu vida, escribime.',
-    contexto_secret:'Llevamos años creyendo que el problema siempre está afuera.',
+    contexto_secret:'Durante años creí que el problema era Cuba, mi familia, las circunstancias.',
   };
   const exFields=fields.split(', ').map(f=>'"'+f+'":"'+(FIELD_EXAMPLES[f]||'escena cotidiana concreta sobre el tema')+'\"').join(',');
   const userPrompt='Crea '+qty+' scripts DISTINTOS sobre: "'+t+'"\n\n'+
