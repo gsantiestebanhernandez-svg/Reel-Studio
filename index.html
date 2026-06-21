@@ -1,4 +1,4 @@
-<!-- v2025.06.21.001 -->
+<!-- v2025.06.21.002 -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -2586,7 +2586,11 @@ async function saveGenScript(i){
     'lee_la_mente','reenganche_1','fondo','giro','climax','cuerpo_parte2','reenganche_2',
     'cima','deseo','transformacion','despues','revelacion','aplicacion','insight','conclusion',
     'cierre_insight','solucion','cta','accion','oferta','conflicto'];
-  // s already has inline edits merged via updateGenScript
+  // Sync any edits from DOM textareas into _genScripts before saving
+  FIXED.forEach(k=>{
+    const ta=document.getElementById('gen-edit-'+i+'-'+k);
+    if(ta)s[k]=ta.value;
+  });
   const data={user_id:currentUser.id,titulo:s.titulo||`Script ${i+1}`,estilo:s.estilo||'',
     estructura:s.estructura||'',tema:s.tema||'',fuente:'Generado',
     triggers_activados:s.triggers_activados||[],duracion_seg:s.duracion_seg||''};
@@ -2757,8 +2761,14 @@ function buildScriptCard(s,tema,fuente,idx,store){
 }
 async function saveCardScript(cardId,store,idx,fuente){
   const s=window[store]?.[idx];if(!s){notify('Script no encontrado','error');return;}
-  // merge any inline edits made by the user
+  // Sync DOM textareas into editRef before merging
   const editRef=window['_cardData_'+cardId];
+  if(editRef&&editRef.s){
+    document.querySelectorAll(`[id^="edit-${cardId}-"]`).forEach(ta=>{
+      const key=ta.id.replace('edit-'+cardId+'-','');
+      editRef.s[key]=ta.value;
+    });
+  }
   const sEdited=editRef?{...s,...editRef.s}:s;
   const FIXED=['gancho','gancho_secreto','pregunta','atencion','antes','problema','contexto',
     'dolor','agitar','amplificar','interes','ejemplo','cuerpo_parte1','puente','historia',
