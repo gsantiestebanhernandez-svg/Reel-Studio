@@ -1,4 +1,4 @@
-<!-- v2025.06.21.002 -->
+<!-- v2025.06.21.003 -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -2793,6 +2793,13 @@ function toggleGenEdit(editId,viewId,btn){
   const vw=document.getElementById(viewId);
   if(!ed||!vw)return;
   const editing=ed.style.display!=='none';
+  if(editing){
+    // Cerrar modo edición: actualizar la <p> con el nuevo valor
+    vw.textContent=ed.value;
+  } else {
+    // Abrir modo edición: sincronizar textarea con el texto actual de la <p>
+    ed.value=vw.textContent;
+  }
   ed.style.display=editing?'none':'block';
   vw.style.display=editing?'block':'none';
   btn.textContent=editing?'✏️ Editar':'✓ Listo';
@@ -2806,6 +2813,11 @@ function toggleCardEdit(editId,viewId,btn){
   const vw=document.getElementById(viewId);
   if(!ed||!vw)return;
   const editing=ed.style.display!=='none';
+  if(editing){
+    vw.textContent=ed.value;
+  } else {
+    ed.value=vw.textContent;
+  }
   ed.style.display=editing?'none':'block';
   vw.style.display=editing?'block':'none';
   btn.textContent=editing?'✏️ Editar':'✓ Listo';
