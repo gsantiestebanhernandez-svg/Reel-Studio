@@ -1,4 +1,4 @@
-<!-- v2025.06.21.004 -->
+<!-- v2025.06.21.005 -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -2528,8 +2528,8 @@ function importScripts(){
           <span class="section-label">${c.label}</span>
           <button class="btn btn-xs btn-edit-toggle" data-edit="gen-edit-${i}-${c.key}" data-view="gen-view-${i}-${c.key}" style="font-size:10px;padding:2px 8px">✏️ Editar</button>
         </div>
-        <p id="gen-view-${i}-${c.key}" style="font-size:13px;line-height:1.7;color:var(--text)">${escHtml(s[c.key])}</p>
-        <textarea id="gen-edit-${i}-${c.key}" style="display:none;width:100%;font-size:13px;line-height:1.7;min-height:80px;margin-top:4px" oninput="updateGenScript(${i},'${c.key}',this.value)">${escHtml(s[c.key])}</textarea>
+        <p id="gen-view-${i}-${c.key}" style="font-size:13px;line-height:1.7;color:var(--text)"></p>
+        <textarea id="gen-edit-${i}-${c.key}" style="display:none;width:100%;font-size:13px;line-height:1.7;min-height:80px;margin-top:4px" oninput="updateGenScript(${i},'${c.key}',this.value)"></textarea>
       </div>`).join('');
     return`<div class="card" style="margin-top:12px">
       <div class="top-row">
@@ -2551,6 +2551,15 @@ function importScripts(){
     </div>`;
   }).join('');
 
+  // Poblar <p> y textarea con textContent (seguro, sin entidades HTML)
+  scripts.forEach((s,i)=>{
+    getCampos(s).forEach(c=>{
+      const vw=document.getElementById('gen-view-'+i+'-'+c.key);
+      const ed=document.getElementById('gen-edit-'+i+'-'+c.key);
+      if(vw)vw.textContent=s[c.key]||'';
+      if(ed)ed.value=s[c.key]||'';
+    });
+  });
   // guardar scripts en memoria para poder salvarlos
   window._genScripts=scripts.map(s=>({...s,tema}));
   // Debug: log what the AI returned
@@ -2727,8 +2736,8 @@ function bBlock(label,val,cardId,key){
       <span class="section-label">${label}</span>
       <button class="btn btn-xs btn-edit-toggle" data-edit="${eid}" data-view="${vid}" style="font-size:10px;padding:2px 8px">✏️ Editar</button>
     </div>
-    <p id="${vid}" style="font-size:13px;line-height:1.7;color:var(--text)">${escHtml(val)}</p>
-    <textarea id="${eid}" data-cardid="${cardId}" data-key="${key}" style="display:none;width:100%;font-size:13px;line-height:1.7;min-height:80px;margin-top:4px" oninput="updateCardField('${cardId}','${key}',this.value)">${escHtml(val)}</textarea>
+    <p id="${vid}" style="font-size:13px;line-height:1.7;color:var(--text)"></p>
+    <textarea id="${eid}" data-cardid="${cardId}" data-key="${key}" style="display:none;width:100%;font-size:13px;line-height:1.7;min-height:80px;margin-top:4px" oninput="updateCardField('${cardId}','${key}',this.value)"></textarea>
   </div>`;
 }
 function buildScriptCard(s,tema,fuente,idx,store){
@@ -2806,7 +2815,8 @@ function doToggleEdit(editId,viewId,btn){
       if(window._genScripts&&window._genScripts[idx])window._genScripts[idx][key]=ed.value;
     }
   } else {
-    ed.value=vw.textContent;
+    // Al abrir: si el textarea está vacío, sincronizar desde la <p>
+    if(!ed.value)ed.value=vw.textContent;
   }
   ed.style.display=editing?'none':'block';
   vw.style.display=editing?'block':'none';
