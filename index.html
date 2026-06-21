@@ -1,4 +1,4 @@
-<!-- v2025.06.21.006 -->
+<!-- v2025.06.21.007 -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -2287,7 +2287,9 @@ async function generateWithAI(){
 '3. REEMPLAZOS OBLIGATORIOS: "sombra"→"lo que más te molesta de los demás" | "patrón"→"siempre terminas en el mismo lugar" | "inconsciente"→"sin darte cuenta" | "sanar"→"que deje de repetirse" | "integrar"→"dejar de pelear con esa parte" | "tóxico"→eliminar\n'+
 '4. FRASES CORTAS. Una idea. Punto. Silencio implícito.\n'+
 '5. LONGITUD REAL: '+dur+' segundos = '+(parseInt(dur)*2.2).toFixed(0)+' palabras totales. Distribuye entre todos los campos.\n'+
-'6. ANCLAJE EN HISTORIA REAL: Cada script debe anclarse en AL MENOS UN episodio concreto de la historia de Guillermo. Si no hay episodio directo, usa la emoción que él sí vivió (escasez, abandono, caos familiar, reinvención, Brasil, Susana, BNE).\n\n'+
+'6. ANCLAJE EN HISTORIA REAL: Cada script debe anclarse en AL MENOS UN episodio concreto de la historia de Guillermo. Si no hay episodio directo, usa la emoción que él sí vivió (escasez, abandono, caos familiar, reinvención, Brasil, Susana, BNE).\n'+
+'7. FLUIDEZ NARRATIVA OBLIGATORIA: Los campos NO son casillas independientes. Son partes de UNA sola historia que avanza. Cada campo debe conectar con el anterior como si fuera la frase siguiente de un monólogo. El espectador no debe sentir cortes — debe sentir que Guillermo le está hablando directamente, de corrido. Lee el script completo antes de entregarlo y asegúrate de que fluye como una conversación real, no como una lista.\n'+
+'8. TRANSICIONES NATURALES: Evita empezar cada campo con sujeto+verbo genérico. Usa conectores emocionales: "Y ahí fue cuando...", "Lo que nadie me dijo fue...", "Hoy lo veo diferente:", "Eso me lo enseñó...". Que cada parte lleve naturalmente a la siguiente.\n\n'+
 vozBase+buildKnowCtx()+'\n'+structInstr+'\n\n'+styleTone;
   const fieldsMap={
     clasica:'gancho, dolor, ejemplo, fondo, cima, insight, cta',
@@ -2342,7 +2344,9 @@ vozBase+buildKnowCtx()+'\n'+structInstr+'\n\n'+styleTone;
 'REGLAS DE VOZ — OBLIGATORIAS:\n'+
 '- Frases cortas. Una idea por frase. Punto seguido.\n'+
 '- Primera persona. Anécdota real. Detalle concreto.\n'+
-'- Sin tecnicismos. Habla como en un café.\n\n'+
+'- Sin tecnicismos. Habla como en un café.\n'+
+'- Los campos juntos deben leerse como UN monólogo continuo. No como secciones separadas.\n'+
+'- Si el gancho habla de un momento específico, el resto del script debe crecer desde ese mismo momento.\n\n'+
 'PALABRAS PROHIBIDAS (reemplaza así):\n'+
 'patrón→"lo que repites" | conciencia→"cuando lo ves" | sanar→eliminar | sombra→"lo que no quieres ver de ti" | inconsciente→"sin darte cuenta" | trauma→"lo que viviste" | herencia→"lo que aprendiste de pequeño" | BNE/bioneuroemoción→no mencionar | rol→eliminar | mereces/eres suficiente→eliminar\n\n'+
 'EJEMPLO DE LONGITUD CORRECTA para 30 seg:\n'+
