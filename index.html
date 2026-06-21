@@ -1,4 +1,4 @@
-<!-- v2025.06.21.003 -->
+<!-- v2025.06.21.004 -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -2526,7 +2526,7 @@ function importScripts(){
       <div style="margin-bottom:12px">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
           <span class="section-label">${c.label}</span>
-          <button class="btn btn-xs" onclick="toggleGenEdit('gen-edit-${i}-${c.key}','gen-view-${i}-${c.key}',this)" style="font-size:10px;padding:2px 8px">✏️ Editar</button>
+          <button class="btn btn-xs btn-edit-toggle" data-edit="gen-edit-${i}-${c.key}" data-view="gen-view-${i}-${c.key}" style="font-size:10px;padding:2px 8px">✏️ Editar</button>
         </div>
         <p id="gen-view-${i}-${c.key}" style="font-size:13px;line-height:1.7;color:var(--text)">${escHtml(s[c.key])}</p>
         <textarea id="gen-edit-${i}-${c.key}" style="display:none;width:100%;font-size:13px;line-height:1.7;min-height:80px;margin-top:4px" oninput="updateGenScript(${i},'${c.key}',this.value)">${escHtml(s[c.key])}</textarea>
@@ -2725,7 +2725,7 @@ function bBlock(label,val,cardId,key){
   return`<div style="margin-bottom:12px">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
       <span class="section-label">${label}</span>
-      <button class="btn btn-xs" onclick="toggleCardEdit('${eid}','${vid}',this)" style="font-size:10px;padding:2px 8px">✏️ Editar</button>
+      <button class="btn btn-xs btn-edit-toggle" data-edit="${eid}" data-view="${vid}" style="font-size:10px;padding:2px 8px">✏️ Editar</button>
     </div>
     <p id="${vid}" style="font-size:13px;line-height:1.7;color:var(--text)">${escHtml(val)}</p>
     <textarea id="${eid}" data-cardid="${cardId}" data-key="${key}" style="display:none;width:100%;font-size:13px;line-height:1.7;min-height:80px;margin-top:4px" oninput="updateCardField('${cardId}','${key}',this.value)">${escHtml(val)}</textarea>
@@ -2789,15 +2789,23 @@ async function saveCardScript(cardId,store,idx,fuente){
 }
 // ============ INLINE EDIT HELPERS ============
 function toggleGenEdit(editId,viewId,btn){
+  doToggleEdit(editId,viewId,btn);
+}
+function doToggleEdit(editId,viewId,btn){
   const ed=document.getElementById(editId);
   const vw=document.getElementById(viewId);
-  if(!ed||!vw)return;
+  if(!ed||!vw){console.warn('toggleEdit: no encontró',editId,viewId);return;}
   const editing=ed.style.display!=='none';
   if(editing){
-    // Cerrar modo edición: actualizar la <p> con el nuevo valor
     vw.textContent=ed.value;
+    // sync to _genScripts if aplica
+    const parts=editId.split('-');
+    if(parts[0]==='gen'&&parts[1]==='edit'){
+      const idx=parseInt(parts[2]);
+      const key=parts.slice(3).join('-');
+      if(window._genScripts&&window._genScripts[idx])window._genScripts[idx][key]=ed.value;
+    }
   } else {
-    // Abrir modo edición: sincronizar textarea con el texto actual de la <p>
     ed.value=vw.textContent;
   }
   ed.style.display=editing?'none':'block';
@@ -2805,23 +2813,19 @@ function toggleGenEdit(editId,viewId,btn){
   btn.textContent=editing?'✏️ Editar':'✓ Listo';
   btn.style.color=editing?'':'#34d399';
 }
+// Event delegation para botones .btn-edit-toggle (evita problemas de onclick en innerHTML)
+document.addEventListener('click',function(e){
+  const btn=e.target.closest('.btn-edit-toggle');
+  if(!btn)return;
+  const editId=btn.dataset.edit;
+  const viewId=btn.dataset.view;
+  if(editId&&viewId)doToggleEdit(editId,viewId,btn);
+});
 function updateGenScript(i,key,val){
   if(window._genScripts&&window._genScripts[i])window._genScripts[i][key]=val;
 }
 function toggleCardEdit(editId,viewId,btn){
-  const ed=document.getElementById(editId);
-  const vw=document.getElementById(viewId);
-  if(!ed||!vw)return;
-  const editing=ed.style.display!=='none';
-  if(editing){
-    vw.textContent=ed.value;
-  } else {
-    ed.value=vw.textContent;
-  }
-  ed.style.display=editing?'none':'block';
-  vw.style.display=editing?'block':'none';
-  btn.textContent=editing?'✏️ Editar':'✓ Listo';
-  btn.style.color=editing?'':'#34d399';
+  doToggleEdit(editId,viewId,btn);
 }
 function updateCardField(cardId,key,val){
   const ref=window['_cardData_'+cardId];
