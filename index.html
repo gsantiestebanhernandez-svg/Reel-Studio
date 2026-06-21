@@ -1,4 +1,4 @@
-<!-- v2025.06.14.001 -->
+<!-- v2025.06.21.001 -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -2492,6 +2492,13 @@ function getCampos(s){
   });
 }
 
+
+// ============ HTML ESCAPE HELPER ============
+function escHtml(str){
+  if(!str)return'';
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
 // ============ IMPORT SCRIPTS ============
 function importScripts(){
   const raw=document.getElementById('gen-import-text').value.trim();
@@ -2521,8 +2528,8 @@ function importScripts(){
           <span class="section-label">${c.label}</span>
           <button class="btn btn-xs" onclick="toggleGenEdit('gen-edit-${i}-${c.key}','gen-view-${i}-${c.key}',this)" style="font-size:10px;padding:2px 8px">✏️ Editar</button>
         </div>
-        <p id="gen-view-${i}-${c.key}" style="font-size:13px;line-height:1.7;color:var(--text)">${s[c.key]}</p>
-        <textarea id="gen-edit-${i}-${c.key}" style="display:none;width:100%;font-size:13px;line-height:1.7;min-height:80px;margin-top:4px" oninput="updateGenScript(${i},'${c.key}',this.value)">${s[c.key]}</textarea>
+        <p id="gen-view-${i}-${c.key}" style="font-size:13px;line-height:1.7;color:var(--text)">${escHtml(s[c.key])}</p>
+        <textarea id="gen-edit-${i}-${c.key}" style="display:none;width:100%;font-size:13px;line-height:1.7;min-height:80px;margin-top:4px" oninput="updateGenScript(${i},'${c.key}',this.value)">${escHtml(s[c.key])}</textarea>
       </div>`).join('');
     return`<div class="card" style="margin-top:12px">
       <div class="top-row">
@@ -2716,8 +2723,8 @@ function bBlock(label,val,cardId,key){
       <span class="section-label">${label}</span>
       <button class="btn btn-xs" onclick="toggleCardEdit('${eid}','${vid}',this)" style="font-size:10px;padding:2px 8px">✏️ Editar</button>
     </div>
-    <p id="${vid}" style="font-size:13px;line-height:1.7;color:var(--text)">${val}</p>
-    <textarea id="${eid}" data-cardid="${cardId}" data-key="${key}" style="display:none;width:100%;font-size:13px;line-height:1.7;min-height:80px;margin-top:4px" oninput="updateCardField('${cardId}','${key}',this.value)">${val}</textarea>
+    <p id="${vid}" style="font-size:13px;line-height:1.7;color:var(--text)">${escHtml(val)}</p>
+    <textarea id="${eid}" data-cardid="${cardId}" data-key="${key}" style="display:none;width:100%;font-size:13px;line-height:1.7;min-height:80px;margin-top:4px" oninput="updateCardField('${cardId}','${key}',this.value)">${escHtml(val)}</textarea>
   </div>`;
 }
 function buildScriptCard(s,tema,fuente,idx,store){
