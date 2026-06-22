@@ -2815,13 +2815,15 @@ function bBlock(label,val,cardId,key){
   if(!val)return'';
   const eid='edit-'+cardId+'-'+key;
   const vid='view-'+cardId+'-'+key;
+  const safeVal=String(val).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const safeValAttr=String(val).replace(/"/g,'&quot;').replace(/'/g,'&#39;');
   return`<div style="margin-bottom:12px">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
       <span class="section-label">${label}</span>
       <button class="btn btn-xs btn-edit-toggle" data-edit="${eid}" data-view="${vid}" style="font-size:10px;padding:2px 8px">✏️ Editar</button>
     </div>
-    <p id="${vid}" style="font-size:13px;line-height:1.7;color:var(--text)"></p>
-    <textarea id="${eid}" data-cardid="${cardId}" data-key="${key}" style="display:none;width:100%;font-size:13px;line-height:1.7;min-height:80px;margin-top:4px" oninput="updateCardField('${cardId}','${key}',this.value)"></textarea>
+    <p id="${vid}" style="font-size:13px;line-height:1.7;color:var(--text)">${safeVal}</p>
+    <textarea id="${eid}" data-cardid="${cardId}" data-key="${key}" style="display:none;width:100%;font-size:13px;line-height:1.7;min-height:80px;margin-top:4px" oninput="updateCardField('${cardId}','${key}',this.value)">${safeValAttr}</textarea>
   </div>`;
 }
 function buildScriptCard(s,tema,fuente,idx,store){
