@@ -1484,27 +1484,60 @@ function studioStartCountdown(){
   },1000);
 }
 
+let studioCanvasLoop=null;
+let studioCanvasStream=null;
+
 function studioStartRecord(){
   if(!studioStream){
     notify('Sin acceso a cámara/micrófono para grabar','warn');return;
   }
   studioChunks=[];
   studioRecordedBlob=null;
-  // Ocultar resultado anterior
   studioHideResult();
   document.getElementById('studio-dl-btn2').classList.remove('visible');
 
-  // Capturar pantalla del teleprompter + stream de cámara/audio
-  // Usamos solo el stream de cámara (incluye audio), grabamos solo la voz+video
+  // --- Canvas intermediario para forzar el aspecto del formato ---
+  const formatSel=document.getElementById('studio-format-select');
+  const fmt=formatSel?formatSel.value:'9:16';
+  const dims={'9:16':{w:1080,h:1920},'1:1':{w:1080,h:1080},'16:9':{w:1920,h:1080}}[fmt]||{w:1080,h:1920};
+
+  const canvas=document.createElement('canvas');
+  canvas.width=dims.w;
+  canvas.height=dims.h;
+  const ctx=canvas.getContext('2d');
+  const camVideo=document.getElementById('studio-cam-video');
+
+  function drawFrame(){
+    const vw=camVideo.videoWidth||1280;
+    const vh=camVideo.videoHeight||720;
+    const cw=dims.w, ch=dims.h;
+    const camAspect=vw/vh;
+    const canAspect=cw/ch;
+    let sx,sy,sw,sh;
+    if(camAspect>canAspect){
+      sh=vh; sw=vh*canAspect; sx=(vw-sw)/2; sy=0;
+    }else{
+      sw=vw; sh=vw/canAspect; sx=0; sy=(vh-sh)/2;
+    }
+    ctx.drawImage(camVideo,sx,sy,sw,sh,0,0,cw,ch);
+    studioCanvasLoop=requestAnimationFrame(drawFrame);
+  }
+  drawFrame();
+
+  const canvasStream=canvas.captureStream(30);
+  const audioTracks=studioStream.getAudioTracks();
+  audioTracks.forEach(t=>canvasStream.addTrack(t));
+  studioCanvasStream=canvasStream;
+
   try{
     const mimeType=MediaRecorder.isTypeSupported('video/webm;codecs=vp9,opus')
       ?'video/webm;codecs=vp9,opus'
       :MediaRecorder.isTypeSupported('video/webm')
       ?'video/webm'
       :'';
-    studioMediaRecorder=new MediaRecorder(studioStream,mimeType?{mimeType,videoBitsPerSecond:5000000}:{videoBitsPerSecond:5000000});
+    studioMediaRecorder=new MediaRecorder(canvasStream,mimeType?{mimeType,videoBitsPerSecond:6000000}:{videoBitsPerSecond:6000000});
   }catch(e){
-    studioMediaRecorder=new MediaRecorder(studioStream);
+    studioMediaRecorder=new MediaRecorder(canvasStream);
   }
 
   studioMediaRecorder.ondataavailable=e=>{if(e.data&&e.data.size>0)studioChunks.push(e.data);};
@@ -1546,6 +1579,9 @@ function studioStopRecord(){
   if(studioMediaRecorder&&studioMediaRecorder.state!=='inactive'){
     studioMediaRecorder.stop();
   }
+  // Cancelar canvas loop y liberar canvas stream
+  if(studioCanvasLoop){cancelAnimationFrame(studioCanvasLoop);studioCanvasLoop=null;}
+  if(studioCanvasStream){studioCanvasStream.getTracks().forEach(t=>t.stop());studioCanvasStream=null;}
   studioStopAll();
   notify('✓ Grabación finalizada','ok');
 }
