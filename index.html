@@ -2432,7 +2432,7 @@ async function modelarWithAI(){
   const qty=v('mod-qty')||'2';
   const dur=v('mod-dur')||'30';
   const systemPrompt='Eres un experto en ingeniería inversa de contenido viral.'+buildVozCtx()+buildKnowCtx();
-  const userPrompt='TAREA 1 — DISECCIÓN VIRAL\nReel'+(author?' de @'+author:'')+': "'+text+'"\n\nAnaliza y extrae:\n- FRAMEWORK REAL usado (PAS, BAB, PASTOR, Secret Value, Curiosity Peak, AIDA, 5Cs, clásico u otro)\n- CAMPOS REALES del script (los que realmente usa, no una lista predefinida)\n- GANCHO: qué trigger usa y cómo está construido\n- RE-ENGANCHES: en qué momento y cómo resetea atención\n- CTA: tipo y señal\n- RAZÓN VIRAL: por qué psicológicamente funciona\n\nTAREA 2 — REPLICAR CON VOZ DE GUILLERMO\n'+qty+' scripts COMPLETOS adaptando el mismo framework y estructura detectados.\nTema: "'+t+'" — cada uno con ángulo distinto.\nDuración: '+dur+' segundos cada uno.\n\n'+VIRAL_RULES+'\n\nIMPORTANTE: Usa los MISMOS campos que tiene el reel original, no una estructura predefinida. Si el reel tiene gancho+historia+cta, tus scripts tienen gancho+historia+cta. Si tiene problema+agitar+solución+cta, los tuyos también.\n\nResponde SOLO con JSON (sin backticks, sin texto extra):\n{"framework_detectado":{"nombre":"nombre real","gancho_triggers":["trigger real"],"reenganches":["momento real"],"cta_signal":"tipo real","razon_viral":"explicación real"},"scripts":[{"titulo":"título real","estructura":"nombre del framework detectado","[campo1]":"texto real","[campo2]":"texto real","...(mismos campos del reel original)":"...","triggers_activados":["trigger1"],"duracion_seg":"'+dur+'"}]}';
+  const userPrompt='TAREA 1 — DISECCIÓN VIRAL\nReel'+(author?' de @'+author:'')+': "'+text+'"\n\nAnaliza y extrae:\n- FRAMEWORK REAL usado (PAS, BAB, PASTOR, Secret Value, Curiosity Peak, AIDA, 5Cs, clásico u otro)\n- CAMPOS REALES del script (los que realmente usa)\n- GANCHO: qué trigger usa y cómo está construido\n- RE-ENGANCHES: en qué momento y cómo resetea atención\n- CTA: tipo y señal\n- RAZÓN VIRAL: por qué psicológicamente funciona\n\nTAREA 2 — REPLICAR CON VOZ DE GUILLERMO\n'+qty+' scripts COMPLETOS adaptando el mismo framework y estructura detectados.\nTema: "'+t+'" — cada uno con ángulo distinto.\nDuración: '+dur+' segundos cada uno.\n\n'+VIRAL_RULES+'\n\nREGLAS CRÍTICAS PARA LOS CAMPOS DEL JSON:\n1. NUNCA uses nombres de campo entre corchetes como [campo1] — son solo ejemplos de formato.\n2. Usa nombres de campo reales en español sin corchetes: gancho, problema, agitar, solucion, dolor, ejemplo, fondo, cima, insight, cta, historia, revelacion, contexto, transformacion, etc.\n3. Cada campo DEBE tener el texto completo listo para grabar. NUNCA vacío.\n4. Replica EXACTAMENTE los mismos campos del reel original.\nEjemplo PAS correcto: {"gancho":"texto listo para grabar","agitar":"texto listo para grabar","solucion":"texto listo para grabar","cta":"texto listo para grabar"}\nEjemplo clásico correcto: {"gancho":"texto","dolor":"texto","ejemplo":"texto","fondo":"texto","cima":"texto","insight":"texto","cta":"texto"}\n\nResponde SOLO con JSON puro (sin backticks, sin texto extra):\n{"framework_detectado":{"nombre":"nombre real del framework","gancho_triggers":["trigger real"],"reenganches":["momento real"],"cta_signal":"tipo real","razon_viral":"explicación psicológica real"},"scripts":[{"titulo":"título real y atractivo","estilo":"reflexivo","estructura":"nombre framework","gancho":"TEXTO COMPLETO listo para grabar","CAMPO_REAL_2":"TEXTO COMPLETO listo para grabar","CAMPO_REAL_3":"TEXTO COMPLETO listo para grabar","cta":"TEXTO COMPLETO listo para grabar","triggers_activados":["trigger1","trigger2"],"duracion_seg":"'+dur+'"}]}'
   const btn=document.getElementById('btn-mod-ai');
   const status=document.getElementById('mod-ai-status');
   btn.disabled=true;btn.textContent='⏳ Analizando...';
@@ -2520,18 +2520,39 @@ const CAMPOS_FALLBACK=[
   {key:'cta',label:'📣 CTA'},{key:'accion',label:'📣 Acción'},
 ];
 function getCampos(s){
-  const campos=CAMPOS_POR_ESTRUCTURA[s.estructura]||CAMPOS_FALLBACK;
-  return campos.filter(c=>{
-    const val=s[c.key];
+  const SKIP_KEYS=['titulo','estilo','estructura','framework','tema','fuente',
+    'triggers_activados','duracion_seg','duracion_estimada','nota_fusion',
+    'user_id','id','created_at','updated_at'];
+  const PLACEHOLDERS=['[TEXTO COMPLETO','[ESCRIBE','[AQUÍ','[campo','[object Object'];
+  function isReal(val){
     if(!val)return false;
     const str=String(val).trim();
     if(!str)return false;
-    // Filter out unfilled placeholders from the template
-    if(str.startsWith('[TEXTO COMPLETO'))return false;
-    if(str.startsWith('[ESCRIBE'))return false;
-    if(str==='[object Object]')return false;
+    if(PLACEHOLDERS.some(p=>str.startsWith(p)))return false;
+    if(str==='...')return false;
     return true;
+  }
+  // Primero intentar con estructura conocida
+  const estructuraCampos=CAMPOS_POR_ESTRUCTURA[s.estructura];
+  if(estructuraCampos){
+    const matched=estructuraCampos.filter(c=>isReal(s[c.key]));
+    // Si encontró al menos 2 campos conocidos, usar esa estructura
+    if(matched.length>=2)return matched;
+  }
+  // Fallback: mostrar TODOS los campos con contenido real del objeto
+  // Primero los del CAMPOS_FALLBACK que existan, luego los dinámicos
+  const fallbackKeys=new Set(CAMPOS_FALLBACK.map(c=>c.key));
+  const result=[];
+  // Agregar campos del fallback que existan en el script
+  CAMPOS_FALLBACK.forEach(c=>{if(isReal(s[c.key]))result.push(c);});
+  // Agregar campos dinámicos del script que no estén en fallback y no sean metadata
+  Object.keys(s).forEach(k=>{
+    if(!fallbackKeys.has(k)&&!SKIP_KEYS.includes(k)&&isReal(s[k])){
+      const label=k.charAt(0).toUpperCase()+k.slice(1).replace(/_/g,' ');
+      result.push({key:k,label:label});
+    }
   });
+  return result;
 }
 
 
@@ -2990,4 +3011,5 @@ document.querySelectorAll('.feat-card').forEach((card,i)=>{
 </script>
 </body>
 </html>
+
 
