@@ -1665,6 +1665,14 @@ function buildVozCtx(){
   if(localVoz.audiencia)c+=`\nAUDIENCIA IDEAL:\n${localVoz.audiencia}\n`;
   if(localVoz.referencia)c+=`\nSCRIPTS DE REFERENCIA — IMITA ESTE TONO EXACTO (no el contenido, el estilo):\n${localVoz.referencia}\n`;
   c+='========================================\n';
+  c+='⚠️ REGLA DE COHERENCIA NARRATIVA — CRÍTICA:\n';
+  c+='Cada script debe tener UNA sola voz durante todo el texto. Decide antes de escribir:\n';
+  c+='MODO A — PRIMERA PERSONA: Guillermo cuenta SU historia ("yo crecí", "mi papá", "cuando llegué a Brasil"). La audiencia se identifica escuchándolo a él.\n';
+  c+='MODO B — SEGUNDA PERSONA: Guillermo habla directamente al espectador de LA VIDA DEL ESPECTADOR ("tu papá", "tu relación", "lo que tú haces"). La historia personal de Guillermo es solo fuente interna de inspiración — no aparece en el texto.\n';
+  c+='NUNCA mezcles ambos modos en el mismo script. Es incoherente. El espectador se pierde.\n';
+  c+='Para CURIOSITY y VERDAD-INCOMODA → usa siempre MODO B (segunda persona).\n';
+  c+='Para STORYTELLING PERSONAL y 5Cs → usa siempre MODO A (primera persona).\n';
+  c+='========================================\n';
   return c;
 }
 function buildKnowCtx(){
@@ -2125,11 +2133,17 @@ function buildStructureInstructions(structure, hookObj){
 5. CTA — Invita a guardar / comentar / preguntar`,
 
     curiosity:`ESTRUCTURA — CURIOSITY PEAK (máxima retención):
-1. PREGUNTA/AFIRMACIÓN — ${H} / Algo que el espectador no puede ignorar
-2. LEE LA MENTE — "Sé lo que estás pensando..." Anticipa su objeción o creencia. Valídala brevemente
-3. GIRO — La información inesperada. Algo que contradice lo que creía. El momento de "espera, ¿qué?"
-4. INSIGHT — La explicación profunda del giro. Por qué esto es así desde la BNE
-5. CTA — Pregunta que invite a comentar o reflexionar`,
+
+⚠️ REGLA DE VOZ INAMOVIBLE: Este script tiene UNA sola voz — Guillermo hablándole DIRECTAMENTE al espectador. 
+- TODO el script está en segunda persona dirigido al espectador ("tú", "te", "tu vida")
+- La historia personal de Guillermo NO aparece en este formato — sirve como FUENTE INTERNA para entender la emoción, no para narrarse en el script
+- NUNCA mezcles "mi papá" con "tu papá" en el mismo script. Elige: o es la historia de Guillermo (primera persona) o es la realidad del espectador (segunda persona). En curiosity es SIEMPRE segunda persona.
+
+1. PREGUNTA/AFIRMACIÓN — ${H} / Una pregunta directa al espectador o afirmación sobre SU vida que no puede ignorar. Segunda persona.
+2. LEE LA MENTE — Anticipa lo que EL ESPECTADOR cree que es el problema. "Crees que el problema es X..." Segunda persona.
+3. GIRO — La información inesperada sobre LA VIDA DEL ESPECTADOR. Algo que contradice lo que él creía. El momento "espera, ¿qué?" — siempre hablando de SU realidad, no de la de Guillermo.
+4. INSIGHT — La explicación profunda del giro aplicada a la vida del espectador. Por qué esto pasa en SU historia.
+5. CTA — Pregunta que invite a guardar, comentar o reflexionar.`,
 
     aida:`ESTRUCTURA — AIDA (4 beats exactos):
 1. ATENCIÓN (0-2 seg) — ${H} / Golpe visual o verbal que rompe el scroll
