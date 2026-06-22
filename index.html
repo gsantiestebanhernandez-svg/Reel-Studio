@@ -2708,7 +2708,6 @@ ${VIRAL_RULES}
 IMPORTANTE: Responde SOLO con JSON. Sin backticks. Sin texto extra. Escribe el contenido REAL en cada campo del script — texto listo para grabar.\n\n{"framework_detectado":{"nombre":"PAS","gancho_triggers":["OPEN LOOP","PATTERN INTERRUPT"],"reenganches":["segundo 8: pregunta retórica"],"cta_signal":"comentarios","razon_viral":"toca dolor universal y ofrece alivio cognitivo"},"scripts":[{"titulo":"título real del script","estructura":"framework detectado","gancho":"texto completo del gancho","cuerpo_parte1":"desarrollo completo parte 1","reenganche_1":"texto del reenganche","cuerpo_parte2":"desarrollo parte 2","cierre_insight":"insight final poderoso","cta":"llamada a acción concreta","triggers_activados":["OPEN LOOP"],"duracion_seg":"${dur}"}]}`;
   document.getElementById('mod-prompt-text').textContent=prompt;
   document.getElementById('mod-prompt-box').style.display='block';
-        <div class="import-box" id="mod-import-box" style="margin-top:12px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><p class="small" style="color:#34d399;font-weight:600;margin:0">📋 Pega el JSON de Claude aquí:</p><button class="btn btn-xs btn-danger" onclick="clearModJson()">🗑 Borrar</button></div><textarea id="mod-import-text" rows="5" placeholder='{"scripts":[]}' style="width:100%;font-size:12px" onpaste="setTimeout(()=>autoImportMod(),100)"></textarea><button class="btn btn-primary btn-sm mt8" onclick="importModels()">Importar</button></div>
 }
 
 function buildCombinePrompt(){
