@@ -2277,20 +2277,34 @@ async function generateWithAI(){
   const refBlock=refStart>-1?vozCtx.slice(refStart):'';
   const vozBase=refStart>-1?vozCtx.slice(0,refStart):vozCtx;
   const systemPrompt=
-'TU ÚNICA MISIÓN: escribir scripts que suenen EXACTAMENTE como Guillermo. No inventar historias. No usar ejemplos genéricos. Usar SOLO los episodios reales de su vida que están en HISTORIA PERSONAL.\n\n'+
-(refBlock?'=== ASÍ HABLA GUILLERMO — IMITA ESTE TONO EXACTO ===\n'+refBlock+'\n=== FIN DE REFERENCIA ===\n\n':'')+
-'REGLA NÚMERO 1 — SIN EXCEPCIONES:\n'+
-'PROHIBIDO inventar anécdotas, escenas o situaciones que no estén en la HISTORIA PERSONAL de Guillermo. Si el tema no conecta con ningún episodio real de su vida, construye el script desde la EMOCIÓN UNIVERSAL del tema — pero en primera persona, como si él lo vivió. Nunca menciones lugares, personas o situaciones que él no haya descrito.\n\n'+
-'REGLAS QUE NO SE NEGOCIAN:\n'+
-'1. ESCENA PRIMERO, INSIGHT DESPUÉS. Nunca al revés. La persona se tiene que ver reflejada antes de entender nada.\n'+
-'2. PALABRAS PROHIBIDAS — si aparece alguna, el script está mal: sombra, proyección, inconsciente, patrón, integrar, conflicto biológico, transgeneracional, epigenética, arquetipo, programación, despertar, consciencia, vibración, energía, sanar, tóxico, ciclo, reflejo, trauma.\n'+
-'3. REEMPLAZOS OBLIGATORIOS: "sombra"→"lo que más te molesta de los demás" | "patrón"→"siempre terminas en el mismo lugar" | "inconsciente"→"sin darte cuenta" | "sanar"→"que deje de repetirse" | "integrar"→"dejar de pelear con esa parte" | "tóxico"→eliminar\n'+
-'4. FRASES CORTAS. Una idea. Punto. Silencio implícito.\n'+
-'5. LONGITUD REAL: '+dur+' segundos = '+(parseInt(dur)*2.2).toFixed(0)+' palabras totales. Distribuye entre todos los campos.\n'+
-'6. ANCLAJE EN HISTORIA REAL: Cada script debe anclarse en AL MENOS UN episodio concreto de la historia de Guillermo. Si no hay episodio directo, usa la emoción que él sí vivió (escasez, abandono, caos familiar, reinvención, Brasil, Susana, BNE).\n'+
-'7. FLUIDEZ NARRATIVA OBLIGATORIA: Los campos NO son casillas independientes. Son partes de UNA sola historia que avanza. Cada campo debe conectar con el anterior como si fuera la frase siguiente de un monólogo. El espectador no debe sentir cortes — debe sentir que Guillermo le está hablando directamente, de corrido. Lee el script completo antes de entregarlo y asegúrate de que fluye como una conversación real, no como una lista.\n'+
-'8. TRANSICIONES NATURALES: Evita empezar cada campo con sujeto+verbo genérico. Usa conectores emocionales: "Y ahí fue cuando...", "Lo que nadie me dijo fue...", "Hoy lo veo diferente:", "Eso me lo enseñó...". Que cada parte lleve naturalmente a la siguiente.\n\n'+
-vozBase+buildKnowCtx()+'\n'+structInstr+'\n\n'+styleTone;
+'Eres el ghostwriter personal de Guillermo. Tu única función es escribir EXACTAMENTE como él habla — no como una IA, no como un coach genérico, no como nadie más. Si alguien que conoce a Guillermo lee el script, debe reconocerlo de inmediato.\n\n'+
+'━━━ QUIÉN ES GUILLERMO — LEE TODO ESTO ANTES DE ESCRIBIR UNA SOLA PALABRA ━━━\n'+
+vozBase+
+'\n━━━ FIN DEL PERFIL ━━━\n\n'+
+(refBlock?
+'━━━ REFERENCIA MÁXIMA DE TONO — ESTOS SON SUS MEJORES REELS ━━━\n'+
+'INSTRUCCIÓN CRÍTICA: Analiza estos scripts línea por línea. Detecta su ritmo, la longitud de sus frases, cómo abre, cómo cierra, qué metáforas usa, qué emociones nombra y cómo las nombra. TODO lo que escribas debe sonar así.\n\n'+
+refBlock+
+'\n━━━ FIN DE REFERENCIA ━━━\n\n':'')+
+buildKnowCtx()+
+'\n━━━ PALABRAS QUE GUILLERMO NUNCA DIRÍA — PROHIBICIÓN ABSOLUTA ━━━\n'+
+'Si alguna de estas palabras o su equivalente aparece en el script, el script está MAL y debes reescribirlo:\n'+
+'sombra → usa "lo que más te molesta de los demás"\n'+
+'proyección → usa "ver en el otro lo que no quieres ver en ti"\n'+
+'inconsciente → usa "sin darte cuenta" o "automáticamente"\n'+
+'patrón → usa "lo que siempre terminas haciendo" o "lo que se repite"\n'+
+'integrar → usa "dejar de pelear con esa parte"\n'+
+'conflicto biológico, transgeneracional, epigenética, arquetipo, programación → ELIMINAR\n'+
+'despertar, consciencia, vibración, energía, sanar, tóxico, ciclo, reflejo, trauma → ELIMINAR o reemplazar con lenguaje cotidiano\n\n'+
+'━━━ REGLAS DE ESCRITURA INAMOVIBLES ━━━\n'+
+'1. ESCENA REAL PRIMERO, INSIGHT DESPUÉS. La persona se tiene que ver reflejada antes de entender nada.\n'+
+'2. FRASES CORTAS. Una idea por frase. Punto. Pausa implícita.\n'+
+'3. PRIMERA PERSONA. Anécdota real. Detalle concreto que lo ubica en tiempo y lugar.\n'+
+'4. LONGITUD: '+dur+' segundos = '+(parseInt(dur)*2.2).toFixed(0)+' palabras totales distribuidas.\n'+
+'5. FLUIDEZ TOTAL: Los campos son UN monólogo continuo. No secciones. No lista. Una voz que avanza.\n'+
+'6. ANCLAJE EN SU HISTORIA: Usa los episodios reales de su vida (Cuba, la casa con 7 personas, el tío controlador, llegar a Brasil, Susana, su hija, BNE). Si el tema no conecta directo, usa la emoción que él sí vivió.\n'+
+'7. TRANSICIONES NATURALES: "Y ahí fue cuando..." / "Lo que nadie me dijo fue..." / "Hoy lo veo diferente:" / "Eso me lo enseñó..."\n\n'+
+structInstr+'\n\n'+styleTone;
   const fieldsMap={
     clasica:'gancho, dolor, ejemplo, fondo, cima, insight, cta',
     pas:'gancho, agitar, solucion, cta',
@@ -2337,26 +2351,16 @@ vozBase+buildKnowCtx()+'\n'+structInstr+'\n\n'+styleTone;
     contexto_secret:'Durante años creí que el problema era Cuba, mi familia, las circunstancias.',
   };
   const exFields=fields.split(', ').map(f=>'"'+f+'":"'+(FIELD_EXAMPLES[f]||'escena cotidiana concreta sobre el tema')+'\"').join(',');
-  const userPrompt='Crea '+qty+' scripts DISTINTOS sobre: "'+t+'"\n\n'+
-'DURACIÓN: '+dur+' seg = EXACTAMENTE '+(parseInt(dur)*2.2).toFixed(0)+' palabras en total por script. Cada campo debe tener el texto proporcional. Un script de 30 seg tiene ~66 palabras en total distribuidas entre todos los campos. Un script de 60 seg tiene ~132 palabras. RESPETA ESTO.\n\n'+
-'ESTRUCTURA: '+structure+'\n'+
-'ESTILO: '+style+'\n\n'+
-'REGLAS DE VOZ — OBLIGATORIAS:\n'+
-'- Frases cortas. Una idea por frase. Punto seguido.\n'+
-'- Primera persona. Anécdota real. Detalle concreto.\n'+
-'- Sin tecnicismos. Habla como en un café.\n'+
-'- Los campos juntos deben leerse como UN monólogo continuo. No como secciones separadas.\n'+
-'- Si el gancho habla de un momento específico, el resto del script debe crecer desde ese mismo momento.\n\n'+
-'PALABRAS PROHIBIDAS (reemplaza así):\n'+
-'patrón→"lo que repites" | conciencia→"cuando lo ves" | sanar→eliminar | sombra→"lo que no quieres ver de ti" | inconsciente→"sin darte cuenta" | trauma→"lo que viviste" | herencia→"lo que aprendiste de pequeño" | BNE/bioneuroemoción→no mencionar | rol→eliminar | mereces/eres suficiente→eliminar\n\n'+
-'EJEMPLO DE LONGITUD CORRECTA para 30 seg:\n'+
-'gancho_secreto: "¿Por qué sigues atrayendo exactamente a las personas que te hacen daño? Te lo cuento."\n'+
-'revelacion: "Tu cerebro repite lo conocido. Lo que viviste de niño se convirtió en tu mapa. Y ese mapa te lleva siempre al mismo lugar. No porque seas tonto. Sino porque es lo que aprendiste."\n'+
-'aplicacion: "La próxima vez que reacciones exagerado ante algo pequeño... para. Esa reacción te está mostrando algo tuyo, no del otro."\n'+
-'cta: "Guarda esto. Mándale a alguien que lo necesita."\n\n'+
-'IMPORTANTE: Cada campo debe tener PÁRRAFOS COMPLETOS con ese nivel de detalle. No frases de 5 palabras.\n\n'+
+  const userPrompt='Escribe '+qty+' scripts DISTINTOS sobre: "'+t+'"\n\n'+
+'ESTRUCTURA: '+structure+' | ESTILO: '+style+' | DURACIÓN: '+dur+' seg ('+(parseInt(dur)*2.2).toFixed(0)+' palabras totales por script)\n\n'+
+'RECORDATORIO: Tienes el perfil completo de Guillermo — su historia real, cómo habla, sus frases propias, lo que NUNCA diría, sus anécdotas y sus scripts de referencia. Úsalo TODO. Cada script debe sonar exactamente como él.\n\n'+
+'CRITERIO DE ÉXITO: Si alguien que conoce a Guillermo lee este script y no lo reconoce, el script está mal.\n\n'+
+'CTA OBLIGATORIO — copia una de estas tres EXACTAMENTE (sin modificar):\n'+
+'A: "Guarda esto si lo sentiste. Mándaselo a alguien que lo necesita."\n'+
+'B: "Guarda esto. ¿A quién le mandarías esto ahora mismo?"\n'+
+'C: "Guarda esto antes de seguir scrolleando."\n\n'+
 VIRAL_RULES+'\n\n'+
-'CTA OBLIGATORIO — usa EXACTAMENTE una de estas fórmulas sin cambiarla:\n'+'Opción A: "Guarda esto si lo sentiste. Mándaselo a alguien que lo necesita."\n'+'Opción B: "Guarda esto. ¿A quién le mandarías esto ahora mismo?"\n'+'Opción C: "Guarda esto antes de seguir scrolleando."\n'+'NO inventes CTAs. NO agregues palabras. Copia una de las tres opciones tal cual.\n\n'+'Responde SOLO con JSON. Sin backticks. Sin texto extra.\n'+
+'Responde SOLO con JSON válido. Sin backticks. Sin texto extra.\n'+
 jsonTemplate.replace('"scripts":[{"titulo":""','"scripts":[{"titulo":"título específico y concreto"');
   const btn=document.getElementById('btn-gen-ai');
   const status=document.getElementById('gen-ai-status');
@@ -2955,3 +2959,4 @@ document.querySelectorAll('.feat-card').forEach((card,i)=>{
 </script>
 </body>
 </html>
+
