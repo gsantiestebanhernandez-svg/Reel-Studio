@@ -2739,6 +2739,27 @@ IMPORTANTE: Responde SOLO con JSON. Sin backticks. Sin texto extra. Escribe el c
 
 function copyPrompt(id,btn){navigator.clipboard.writeText(document.getElementById(id).textContent).then(()=>{btn.textContent='Copiado!';setTimeout(()=>btn.textContent='Copiar prompt',2000);});}
 
+function clearModJson(){
+  document.getElementById('mod-import-text').value='';
+  document.getElementById('mod-results').innerHTML='';
+  const badge=document.getElementById('mod-framework-badge');
+  if(badge)badge.style.display='none';
+  notify('JSON borrado','warn');
+}
+
+function autoImportMod(){
+  const raw=document.getElementById('mod-import-text').value.trim();
+  if(!raw)return;
+  // Solo auto-importar si parece JSON válido
+  try{
+    const clean=raw.replace(/^```(?:json)?\s*/i,'').replace(/\s*```$/,'').trim();
+    JSON.parse(clean);
+    importModels();
+  }catch(e){
+    // No es JSON válido todavía, esperar que el usuario pegue más
+  }
+}
+
 async function importModels(){
   try{
     const raw=v('mod-import-text').replace(/^```(?:json)?\s*/i,'').replace(/\s*```$/,'').trim();
