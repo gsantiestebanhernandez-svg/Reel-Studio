@@ -1098,6 +1098,18 @@ label{font-size:12px;color:var(--text2);display:block;margin-bottom:5px;margin-t
             <option>Cargando mics...</option>
           </select>
         </div>
+        <!-- Selector de formato -->
+        <div style="display:flex;align-items:center;gap:6px;">
+          <span class="st-label">📐</span>
+          <select id="studio-format-select" onchange="studioChangeFormat()"
+            style="background:#1a1a2e;border:1px solid rgba(99,102,241,.3);color:#a5b4fc;
+                   border-radius:8px;padding:5px 8px;font-size:12px;font-family:'Space Grotesk',sans-serif;
+                   cursor:pointer;">
+            <option value="9:16">9:16 Vertical (Reels)</option>
+            <option value="1:1">1:1 Cuadrado</option>
+            <option value="16:9">16:9 Horizontal</option>
+          </select>
+        </div>
         <button class="st-btn st-btn-mirror" id="studio-mirror-btn" onclick="studioToggleMirror()">⟺ Espejo</button>
       </div>
     </div>
@@ -1363,10 +1375,28 @@ async function studioStartStreamWithSelected(){
 
   const camId=camSel.value;
   const micId=micSel.value;
+  const formatSel=document.getElementById('studio-format-select');
+  const fmt=formatSel?formatSel.value:'9:16';
+
+  // Constraints de resolución según formato
+  const formatConstraints={
+    '9:16':{width:{ideal:1080},height:{ideal:1920}},
+    '1:1': {width:{ideal:1080},height:{ideal:1080}},
+    '16:9':{width:{ideal:1920},height:{ideal:1080}}
+  }[fmt]||{width:{ideal:1080},height:{ideal:1920}};
+
+  // Aplicar aspect ratio visual al preview
+  const preview=document.getElementById('studio-cam-preview');
+  if(preview){
+    const ratios={'9:16':'56px / 100px','1:1':'1/1','16:9':'160px / 90px'};
+    if(fmt==='9:16'){preview.style.width='56px';preview.style.height='100px';}
+    else if(fmt==='1:1'){preview.style.width='100px';preview.style.height='100px';}
+    else{preview.style.width='160px';preview.style.height='90px';}
+  }
 
   const videoConstraints=camId&&camId!=='Cargando cámaras...'
-    ?{deviceId:{exact:camId}}
-    :{facingMode:'user'};
+    ?{deviceId:{exact:camId},...formatConstraints}
+    :{facingMode:'user',...formatConstraints};
   const audioConstraints=micId&&micId!=='Cargando mics...'
     ?{deviceId:{exact:micId}}
     :true;
@@ -1391,8 +1421,14 @@ async function studioStartStreamWithSelected(){
 }
 
 async function studioChangeCam(){
-  // Si está grabando, no cambiar
   if(studioRecording){notify('No se puede cambiar la cámara mientras grabás','warn');return;}
+  await studioStartStreamWithSelected();
+}
+
+async function studioChangeFormat(){
+  if(studioRecording){notify('No se puede cambiar el formato mientras grabás','warn');
+    const sel=document.getElementById('studio-format-select');
+    return;}
   await studioStartStreamWithSelected();
 }
 
