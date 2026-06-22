@@ -1401,23 +1401,36 @@ async function studioStartStreamWithSelected(){
     ?{deviceId:{exact:micId}}
     :true;
 
+  // Intento 1: cámara + micrófono seleccionado
   try{
-    studioStream=await navigator.mediaDevices.getUserMedia({
-      video:videoConstraints,
-      audio:audioConstraints
-    });
-    video.srcObject=studioStream;
-    video.style.display='block';
-    noCam.classList.remove('show');
-    studioCamActive=true;
-    notify('✓ Cámara conectada: '+(camSel.options[camSel.selectedIndex]?.text||''),'ok');
-  }catch(e){
-    console.warn('Cam no disponible:',e);
-    video.style.display='none';
-    noCam.classList.add('show');
-    studioCamActive=false;
-    notify('Sin acceso a la cámara seleccionada','warn');
+    studioStream=await navigator.mediaDevices.getUserMedia({video:videoConstraints,audio:audioConstraints});
+  }catch(e1){
+    console.warn('Mic seleccionado falló, reintentando con audio genérico:',e1);
+    // Intento 2: cámara + audio genérico (ignora el mic específico)
+    try{
+      studioStream=await navigator.mediaDevices.getUserMedia({video:videoConstraints,audio:true});
+      notify('⚠ Micrófono seleccionado no disponible, usando micrófono por defecto','warn');
+    }catch(e2){
+      console.warn('Audio también falló, reintentando solo video:',e2);
+      // Intento 3: solo cámara, sin audio
+      try{
+        studioStream=await navigator.mediaDevices.getUserMedia({video:videoConstraints,audio:false});
+        notify('⚠ Sin audio — cámara activa en modo silencioso','warn');
+      }catch(e3){
+        console.warn('Cámara no disponible:',e3);
+        video.style.display='none';
+        noCam.classList.add('show');
+        studioCamActive=false;
+        notify('Sin acceso a la cámara seleccionada','warn');
+        return;
+      }
+    }
   }
+  video.srcObject=studioStream;
+  video.style.display='block';
+  noCam.classList.remove('show');
+  studioCamActive=true;
+  notify('✓ Cámara conectada: '+(camSel.options[camSel.selectedIndex]?.text||''),'ok');
 }
 
 async function studioChangeCam(){
